@@ -51,14 +51,14 @@ function RoleList() {
         </thead>
         <tbody>
           {roles.map((role) => (
-            <tr key={role.id}>
+            <tr key={role.role_id}>
               <td>{role.role_name}</td>
               <td>{role.role_desc}</td>
               <td>
-                <Link to={`/companies/${companyId}/roles/${role.id}/edit`}>
+                <Link to={`/companies/${companyId}/roles/${role.role_id}/edit`}>
                   <button>Edit</button>
                 </Link>
-                <button onClick={() => deleteRole(role.id)}>Delete</button>
+                <button onClick={() => deleteRole(role.role_id)}>Delete</button>
               </td>
             </tr>
           ))}

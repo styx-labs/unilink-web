@@ -43,18 +43,18 @@ function CompanyList() {
         </thead>
         <tbody>
           {companies.map((company) => (
-            <tr key={company.id}>
+            <tr key={company.company_id}>
               <td>{company.company_name}</td>
               <td>{company.company_desc}</td>
               <td>{company.founders}</td>
               <td>
-                <Link to={`/companies/${company.id}/roles`}>
+                <Link to={`/companies/${company.company_id}/roles`}>
                   <button>View Roles</button>
                 </Link>
-                <button onClick={() => deleteCompany(company.id)}>
+                <button onClick={() => deleteCompany(company.company_id)}>
                   Delete
                 </button>
-                <Link to={`/companies/${company.id}/edit`}>
+                <Link to={`/companies/${company.company_id}/edit`}>
                   <button>Edit</button>
                 </Link>
               </td>
