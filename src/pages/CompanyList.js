@@ -54,6 +54,9 @@ function CompanyList() {
                 <button onClick={() => deleteCompany(company.id)}>
                   Delete
                 </button>
+                <Link to={`/companies/${company.id}/edit`}>
+                  <button>Edit</button>
+                </Link>
               </td>
             </tr>
           ))}

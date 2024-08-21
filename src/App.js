@@ -4,6 +4,8 @@ import CompanyList from "./pages/CompanyList";
 import AddCompany from "./pages/AddCompany";
 import RoleList from "./pages/RoleList";
 import AddRole from "./pages/AddRole";
+import EditCompany from "./pages/EditCompany";
+import EditRole from "./pages/EditRole";
 import "./App.css";
 
 function App() {
@@ -16,6 +18,11 @@ function App() {
           <Route path="/add-company" element={<AddCompany />} />
           <Route path="/companies/:companyId/roles" element={<RoleList />} />
           <Route path="/companies/:companyId/add-role" element={<AddRole />} />
+          <Route path="/companies/:companyId/edit" element={<EditCompany />} />
+          <Route
+            path="/companies/:companyId/roles/:roleId/edit"
+            element={<EditRole />}
+          />
         </Routes>
       </div>
     </Router>
