@@ -13,6 +13,8 @@ RUN npm install
 # Copy the rest of the application code to the working directory
 COPY . .
 
+ENV API_BASE_URL="https://unilink-app-zzkox64kyq-uc.a.run.app"
+
 # Build the application
 RUN npm run build
 
