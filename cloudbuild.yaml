@@ -1,0 +1,7 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    script: |
+      docker build -t us-central1-docker.pkg.dev/$PROJECT_ID/unilink-web/unilink-web-image:tag1 .
+    automapSubstitutions: true
+images:
+  - "us-central1-docker.pkg.dev/astute-veld-431703-b8/unilink-web/unilink-web-image:tag1"
