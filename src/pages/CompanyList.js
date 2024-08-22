@@ -11,7 +11,7 @@ function CompanyList() {
 
   const fetchCompanies = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/companies");
+      const response = await axios.get("https://unilink-app-zzkox64kyq-uc.a.run.app/companies");
       setCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies:", error);
@@ -20,7 +20,7 @@ function CompanyList() {
 
   const deleteCompany = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/companies/${id}`);
+      await axios.delete(`https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${id}`);
       fetchCompanies();
     } catch (error) {
       console.error("Error deleting company:", error);

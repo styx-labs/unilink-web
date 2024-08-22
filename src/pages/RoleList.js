@@ -13,7 +13,7 @@ function RoleList() {
   const fetchRoles = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/companies/${companyId}/roles`
+        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles`
       );
       setRoles(response.data);
     } catch (error) {
@@ -24,7 +24,7 @@ function RoleList() {
   const deleteRole = async (roleId) => {
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}`
+        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles/${roleId}`
       );
       fetchRoles();
     } catch (error) {

@@ -17,7 +17,7 @@ function EditRole() {
   const fetchRole = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}`
+        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles/${roleId}`
       );
       setFormData(response.data);
     } catch (error) {
@@ -33,7 +33,7 @@ function EditRole() {
     e.preventDefault();
     try {
       await axios.put(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}`,
+        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles/${roleId}`,
         formData
       );
       navigate(`/companies/${companyId}/roles`);

@@ -17,7 +17,7 @@ function AddCompany() {
   const createCompany = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8000/companies", formData);
+      await axios.post("https://unilink-app-zzkox64kyq-uc.a.run.app/companies", formData);
       navigate("/");
     } catch (error) {
       console.error("Error creating company:", error);
