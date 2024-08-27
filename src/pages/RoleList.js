@@ -59,6 +59,9 @@ function RoleList() {
                   <button>Edit</button>
                 </Link>
                 <button onClick={() => deleteRole(role.role_id)}>Delete</button>
+                <Link to={`/companies/${companyId}/roles/${role.role_id}/candidates`}>
+                  <button>View Candidates</button>
+                </Link>
               </td>
             </tr>
           ))}
