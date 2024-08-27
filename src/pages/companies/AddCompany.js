@@ -1,8 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { getToken } from "firebase/app-check";
-import { appCheck } from "../../firebase/firebase";
+// import { getToken } from "firebase/app-check";
+// import { appCheck } from "../../firebase/firebase";
 
 function AddCompany() {
   const [formData, setFormData] = useState({
@@ -19,16 +19,16 @@ function AddCompany() {
   const createCompany = async (e) => {
     e.preventDefault();
     try {
-      const appCheckTokenResponse = await getToken(appCheck, false);
+      // const appCheckTokenResponse = await getToken(appCheck, false);
 
       await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/companies`,
-        formData,
-        {
-          headers: {
-            "X-Firebase-AppCheck": appCheckTokenResponse.token,
-          },
-        }
+        formData
+        // {
+        //   headers: {
+        //     "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        //   },
+        // }
       );
       navigate("/");
     } catch (error) {
