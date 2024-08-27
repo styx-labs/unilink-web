@@ -23,40 +23,42 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
-        <h1>UniLink</h1>
-        <GoogleSignIn />
-        {user ? (
-          <Routes>
-            <Route path="/" element={<CompanyList />} />
-            <Route path="/add-company" element={<AddCompany />} />
-            <Route path="/companies/:companyId/roles" element={<RoleList />} />
-            <Route
-              path="/companies/:companyId/add-role"
-              element={<AddRole />}
-            />
-            <Route
-              path="/companies/:companyId/edit"
-              element={<EditCompany />}
-            />
-            <Route
-              path="/companies/:companyId/roles/:roleId/edit"
-              element={<EditRole />}
-            />
-            <Route
-              path="/companies/:companyId/roles/:roleId/candidates"
-              element={<CandidateList />}
-            />
-            <Route
-              path="/companies/:companyId/roles/:roleId/add-candidate"
-              element={<AddCandidate />}
-            />
-            <Route
-              path="/companies/:companyId/roles/:roleId/candidates/:candidateId/edit"
-              element={<EditCandidate />}
-            />
-          </Routes>
-        ) : null}
+      <div className="App bg-gray-100 min-h-screen">
+        <h1 className="text-3xl font-bold text-center py-6 bg-blue-600 text-white">UniLink</h1>
+        <div className="container mx-auto px-4">
+          <GoogleSignIn />
+          {user ? (
+            <Routes>
+              <Route path="/" element={<CompanyList />} />
+              <Route path="/add-company" element={<AddCompany />} />
+              <Route path="/companies/:companyId/roles" element={<RoleList />} />
+              <Route
+                path="/companies/:companyId/add-role"
+                element={<AddRole />}
+              />
+              <Route
+                path="/companies/:companyId/edit"
+                element={<EditCompany />}
+              />
+              <Route
+                path="/companies/:companyId/roles/:roleId/edit"
+                element={<EditRole />}
+              />
+              <Route
+                path="/companies/:companyId/roles/:roleId/candidates"
+                element={<CandidateList />}
+              />
+              <Route
+                path="/companies/:companyId/roles/:roleId/add-candidate"
+                element={<AddCandidate />}
+              />
+              <Route
+                path="/companies/:companyId/roles/:roleId/candidates/:candidateId/edit"
+                element={<EditCandidate />}
+              />
+            </Routes>
+          ) : null}
+        </div>
       </div>
     </Router>
   );

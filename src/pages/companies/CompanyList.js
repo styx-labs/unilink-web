@@ -43,38 +43,42 @@ function CompanyList() {
   }
 
   return (
-    <div>
-      <Link to="/add-company">
-        <button>Add Company</button>
+    <div className="mt-8">
+      <Link to="/add-company" className="mb-4 inline-block">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Add Company
+        </button>
       </Link>
-      <table>
+      <table className="w-full bg-white shadow-md rounded">
         <thead>
-          <tr>
-            <th>Company Name</th>
-            <th>Description</th>
-            <th>Founders</th>
-            <th>Actions</th>
+          <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <th className="py-3 px-6 text-left">Company Name</th>
+            <th className="py-3 px-6 text-left">Description</th>
+            <th className="py-3 px-6 text-left">Founders</th>
+            <th className="py-3 px-6 text-center">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-gray-600 text-sm font-light">
           {companies.map((company) => (
-            <tr key={company.company_id}>
-              <td>{company.company_name}</td>
-              <td>{company.company_desc}</td>
-              <td>{company.founders}</td>
-              <td>
-                <Link to={`/companies/${company.company_id}/roles`}>
-                  <button className="view-btn">View Roles</button>
-                </Link>
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteCompany(company.company_id)}
-                >
-                  Delete
-                </button>
-                <Link to={`/companies/${company.company_id}/edit`}>
-                  <button className="update-btn">Edit</button>
-                </Link>
+            <tr key={company.company_id} className="border-b border-gray-200 hover:bg-gray-100">
+              <td className="py-3 px-6 text-left whitespace-nowrap">{company.company_name}</td>
+              <td className="py-3 px-6 text-left">{company.company_desc}</td>
+              <td className="py-3 px-6 text-left">{company.founders}</td>
+              <td className="py-3 px-6 text-center">
+                <div className="flex item-center justify-center">
+                  <Link to={`/companies/${company.company_id}/roles`}>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2">View Roles</button>
+                  </Link>
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mr-2"
+                    onClick={() => deleteCompany(company.company_id)}
+                  >
+                    Delete
+                  </button>
+                  <Link to={`/companies/${company.company_id}/edit`}>
+                    <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+                  </Link>
+                </div>
               </td>
             </tr>
           ))}
