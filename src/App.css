@@ -1,109 +1,143 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 20px;
-  }
-  
-  .App {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-  }
-  
-  h1 {
-    color: #1a73e8;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  input {
-    flex: 1;
-    min-width: 200px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  button {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #155db1;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  li {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+:root {
+  --primary-color: #1a73e8;
+  --primary-light: #4285f4;
+  --primary-dark: #0d47a1;
+  --secondary-color: #ffffff;
+  --secondary-light: #f8f9fa;
+  --secondary-dark: #e8eaed;
+  --tertiary-color: #673ab7;
+  --tertiary-light: #9575cd;
+  --tertiary-dark: #4527a0;
+  --text-on-primary: #ffffff;
+  --text-on-secondary: #202124;
+  --text-on-tertiary: #ffffff;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  th, td {
-    border: 1px solid #e9ecef;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-  }
-  
-  .company-info {
-    flex: 1;
-  }
-  
-  .company-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .update-btn {
-    background-color: #28a745;
-  }
-  
-  .update-btn:hover {
-    background-color: #218838;
-  }
-  
-  .delete-btn {
-    background-color: #dc3545;
-  }
-  
-  .delete-btn:hover {
-    background-color: #c82333;
-  }
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: var(--secondary-light);
+  margin: 0;
+  padding: 20px;
+  color: var(--text-on-secondary);
+}
+
+.App {
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+h1, h2 {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px;
+  border: 1px solid var(--secondary-dark);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+button:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid var(--secondary-dark);
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  font-weight: bold;
+}
+
+.back-btn {
+  margin-bottom: 20px;
+}
+
+.company-actions, .role-actions, .candidate-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.update-btn {
+  background-color: var(--tertiary-color);
+  color: var(--text-on-tertiary);
+}
+
+.update-btn:hover {
+  background-color: var(--tertiary-light);
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: var(--text-on-primary);
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.view-btn {
+  background-color: var(--primary-light);
+}
+
+.view-btn:hover {
+  background-color: var(--primary-color);
+}

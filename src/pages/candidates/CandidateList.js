@@ -13,7 +13,7 @@ function CandidateList() {
   const fetchCandidates = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}/candidates`
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates`
       );
       setCandidates(response.data);
     } catch (error) {
@@ -24,7 +24,7 @@ function CandidateList() {
   const deleteCandidate = async (candidateId) => {
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
       );
       fetchCandidates();
     } catch (error) {

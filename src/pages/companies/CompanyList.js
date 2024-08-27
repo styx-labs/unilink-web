@@ -11,7 +11,9 @@ function CompanyList() {
 
   const fetchCompanies = async () => {
     try {
-      const response = await axios.get("https://unilink-app-zzkox64kyq-uc.a.run.app/companies");
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/companies`
+      );
       setCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies:", error);
@@ -20,7 +22,9 @@ function CompanyList() {
 
   const deleteCompany = async (id) => {
     try {
-      await axios.delete(`https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${id}`
+      );
       fetchCompanies();
     } catch (error) {
       console.error("Error deleting company:", error);
@@ -49,13 +53,16 @@ function CompanyList() {
               <td>{company.founders}</td>
               <td>
                 <Link to={`/companies/${company.company_id}/roles`}>
-                  <button>View Roles</button>
+                  <button className="view-btn">View Roles</button>
                 </Link>
-                <button onClick={() => deleteCompany(company.company_id)}>
+                <button
+                  className="delete-btn"
+                  onClick={() => deleteCompany(company.company_id)}
+                >
                   Delete
                 </button>
                 <Link to={`/companies/${company.company_id}/edit`}>
-                  <button>Edit</button>
+                  <button className="update-btn">Edit</button>
                 </Link>
               </td>
             </tr>

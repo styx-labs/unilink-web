@@ -24,7 +24,7 @@ function AddCandidate() {
     e.preventDefault();
     try {
       await axios.post(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}/candidates`,
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates`,
         formData
       );
       navigate(`/companies/${companyId}/roles/${roleId}/candidates`);

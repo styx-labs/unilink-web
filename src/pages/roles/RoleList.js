@@ -13,7 +13,7 @@ function RoleList() {
   const fetchRoles = async () => {
     try {
       const response = await axios.get(
-        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles`
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles`
       );
       setRoles(response.data);
     } catch (error) {
@@ -24,7 +24,7 @@ function RoleList() {
   const deleteRole = async (roleId) => {
     try {
       await axios.delete(
-        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles/${roleId}`
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}`
       );
       fetchRoles();
     } catch (error) {
@@ -59,7 +59,9 @@ function RoleList() {
                   <button>Edit</button>
                 </Link>
                 <button onClick={() => deleteRole(role.role_id)}>Delete</button>
-                <Link to={`/companies/${companyId}/roles/${role.role_id}/candidates`}>
+                <Link
+                  to={`/companies/${companyId}/roles/${role.role_id}/candidates`}
+                >
                   <button>View Candidates</button>
                 </Link>
               </td>

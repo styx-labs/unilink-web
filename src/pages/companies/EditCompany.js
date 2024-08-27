@@ -18,7 +18,7 @@ function EditCompany() {
   const fetchCompany = async () => {
     try {
       const response = await axios.get(
-        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}`
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}`
       );
       setFormData(response.data);
     } catch (error) {
@@ -33,7 +33,10 @@ function EditCompany() {
   const updateCompany = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}`, formData);
+      await axios.put(
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}`,
+        formData
+      );
       navigate("/");
     } catch (error) {
       console.error("Error updating company:", error);

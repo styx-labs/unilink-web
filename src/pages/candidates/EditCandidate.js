@@ -23,7 +23,7 @@ function EditCandidate() {
   const fetchCandidate = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
       );
       setFormData(response.data);
     } catch (error) {
@@ -39,7 +39,7 @@ function EditCandidate() {
     e.preventDefault();
     try {
       await axios.put(
-        `http://127.0.0.1:8000/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`,
         formData
       );
       navigate(`/companies/${companyId}/roles/${roleId}/candidates`);

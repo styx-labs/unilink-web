@@ -33,7 +33,7 @@ function EditRole() {
     e.preventDefault();
     try {
       await axios.put(
-        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles/${roleId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}`,
         formData
       );
       navigate(`/companies/${companyId}/roles`);

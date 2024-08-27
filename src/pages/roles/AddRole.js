@@ -18,7 +18,7 @@ function AddRole() {
     e.preventDefault();
     try {
       await axios.post(
-        `https://unilink-app-zzkox64kyq-uc.a.run.app/companies/${companyId}/roles`,
+        `${process.env.REACT_APP_API_BASE}/companies/${companyId}/roles`,
         formData
       );
       navigate(`/companies/${companyId}/roles`);
