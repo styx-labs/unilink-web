@@ -32,6 +32,20 @@ function CandidateList() {
     }
   };
 
+  const findCandidates = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/linkedin`
+      );
+      if (response.data) {
+        // Assuming the response data is a list of new candidates
+        setCandidates([...candidates, ...response.data]);
+      }
+    } catch (error) {
+      console.error("Error finding candidates:", error);
+    }
+  };
+
   return (
     <div>
       <h2>Candidates</h2>
@@ -41,12 +55,14 @@ function CandidateList() {
       <Link to={`/companies/${companyId}/roles/${roleId}/add-candidate`}>
         <button>Add Candidate</button>
       </Link>
+      <button onClick={findCandidates}>Find Candidates</button>
       <table>
         <thead>
           <tr>
             <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
+            <th>LinkedIn</th>
+            <th>Score</th>
+            <th>Review</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -54,8 +70,11 @@ function CandidateList() {
           {candidates.map((candidate) => (
             <tr key={candidate.candidate_id}>
               <td>{`${candidate.candidate_first_name} ${candidate.candidate_last_name}`}</td>
-              <td>{candidate.email}</td>
-              <td>{candidate.phone_number}</td>
+              <td>
+                <a href={candidate.linkedin}>{candidate.linkedin}</a>
+              </td>
+              <td>{candidate.score}</td>
+              <td>{candidate.review}</td>
               <td>
                 <Link
                   to={`/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}/edit`}
