@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
+import Loader from "../../components/Loader";
 
 function CandidateList() {
   const [candidates, setCandidates] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { companyId, roleId } = useParams();
 
   useEffect(() => {
@@ -11,6 +13,7 @@ function CandidateList() {
   }, [companyId, roleId]);
 
   const fetchCandidates = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates`
@@ -18,6 +21,8 @@ function CandidateList() {
       setCandidates(response.data);
     } catch (error) {
       console.error("Error fetching candidates:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,18 +38,24 @@ function CandidateList() {
   };
 
   const findCandidates = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/linkedin`
       );
       if (response.data) {
-        // Assuming the response data is a list of new candidates
         setCandidates([...candidates, ...response.data]);
       }
     } catch (error) {
       console.error("Error finding candidates:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div>
