@@ -13,6 +13,7 @@ import EditCandidate from "./pages/candidates/EditCandidate";
 import GoogleSignIn from "./components/GoogleSignIn";
 
 import "./styles/global.css";
+import { Link } from "react-router-dom";
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -23,18 +24,20 @@ function App() {
 
   return (
     <Router>
-      <div className="container mx-auto p-6 space-y-8">
-        <header className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">UniLink</h1>
+      <div className="container mx-auto p-6 space-y-8 bg-gray-100 dark:bg-gray-900 min-h-screen">
+        <header className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-primary">
+            <Link to="/">UniLink</Link>
+          </h1>
         </header>
-        <div className="">
+        <div className="flex flex-col gap-4">
           <GoogleSignIn />
           {user ? (
             <Routes>
               <Route path="/" element={<CompanyList />} />
               <Route path="/add-company" element={<AddCompany />} />
               <Route
-                path="/companies/:companyId"
+                path="/companies/:companyId/"
                 element={
                   <Routes>
                     <Route index element={<RoleList />} />

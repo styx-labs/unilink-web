@@ -2,6 +2,8 @@ import React from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/firebase";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
 
 function GoogleSignIn() {
   const [user] = useAuthState(auth);
@@ -24,14 +26,14 @@ function GoogleSignIn() {
   };
 
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden p-4">
       {user ? (
-        <div>
-          <p>Welcome, {user.displayName}</p>
-          <button onClick={signOut}>Sign Out</button>
+        <div className="flex flex-row justify-between item-center">
+          <h2>Welcome, {user.displayName}</h2>
+          <Button onClick={signOut}>Sign Out</Button>
         </div>
       ) : (
-        <button onClick={signInWithGoogle}>Sign In with Google</button>
+        <Button onClick={signInWithGoogle}>Sign In with Google</Button>
       )}
     </div>
   );
