@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "../../components/ui/button";
 import {
@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-
+import { LoadingSpinner } from "../../components/ui/loader";
 interface Role {
   id: string;
   role_name: string;
@@ -46,30 +46,33 @@ function RoleList() {
 
   const fetchRoles = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles`
       );
       setRoles(response.data);
-      console.log(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching roles:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const deleteRole = async (roleId: string) => {
     try {
+      setLoading(true);
       await axios.delete(
         `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}`
       );
       fetchRoles();
     } catch (error) {
       console.error("Error deleting role:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const addRole = async () => {
-    setLoading(true);
     try {
       await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles`,
@@ -86,7 +89,6 @@ function RoleList() {
   };
 
   const updateRole = async () => {
-    setLoading(true);
     try {
       await axios.put(
         `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${editingRole?.id}`,
@@ -94,8 +96,8 @@ function RoleList() {
       );
       fetchRoles();
       setEditingRole(null);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Error updating role:", error);
     }
   };
 
@@ -106,6 +108,10 @@ function RoleList() {
       { id: "requirements", label: "Requirements", type: "textarea" },
     ],
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">

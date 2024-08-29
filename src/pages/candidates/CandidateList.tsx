@@ -12,7 +12,7 @@ import {
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Textarea } from "../../components/ui/textarea";
-import Loader from "../../components/Loader";
+import { LoadingSpinner } from "../../components/ui/loader";
 
 import { useParams, Link } from "react-router-dom";
 import { ChevronRight, Pencil, Trash2, Plus } from "lucide-react";
@@ -52,8 +52,6 @@ const fields = {
     { id: "resume", label: "Resume", type: "textarea" },
     { id: "email", label: "Email", type: "input" },
     { id: "phone_number", label: "Phone Number", type: "input" },
-    { id: "generated_desc", label: "Generated Description", type: "textarea" },
-    { id: "generated_score", label: "Generated Score", type: "input" },
   ],
 };
 
@@ -148,7 +146,7 @@ function CandidateList() {
   };
 
   if (loading) {
-    return <Loader />;
+    return <LoadingSpinner />;
   }
 
   return (

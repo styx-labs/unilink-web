@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Loader from "../../components/Loader";
+import { LoadingSpinner } from "../../components/ui/loader";
 import { Button } from "../../components/ui/button";
 import {
   Table,
@@ -112,7 +112,7 @@ function CompanyList() {
   };
 
   if (loading) {
-    return <Loader />;
+    return <LoadingSpinner />;
   }
 
   return (
