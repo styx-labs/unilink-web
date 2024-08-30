@@ -1,20 +1,26 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
+import {
+  BrowserRouter as Router,
+  Link,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 import { auth } from "./firebase/firebase";
-import CompanyList from "./pages/companies/CompanyList";
-import RoleList from "./pages/roles/RoleList";
+import { useAuthState } from "react-firebase-hooks/auth";
 import CandidateList from "./pages/candidates/CandidateList";
-import GoogleSignIn from "./components/GoogleSignIn";
-import { Navigate } from "react-router-dom";
-import "./styles/global.css";
-import { Link } from "react-router-dom";
 import CandidatePage from "./pages/candidates/CandidatePage";
+import CompanyList from "./pages/companies/CompanyList";
+import LoginPage from "./pages/login/LoginPage";
+import { LoadingSpinner } from "./components/ui/loader";
+import RoleList from "./pages/roles/RoleList";
+import UserMenu from "./components/UserMenu";
+import "./styles/global.css";
 
 function App() {
   const [user, loading] = useAuthState(auth);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -24,27 +30,35 @@ function App() {
           <h1 className="text-3xl font-bold text-primary">
             <Link to="/">UniLink</Link>
           </h1>
+          {user && <UserMenu user={user} />}
         </header>
         <div className="flex flex-col gap-4">
-          <GoogleSignIn />
-          {user ? (
-            <Routes>
-              <Route path="/" element={<Navigate replace to="/companies" />} />
-              <Route path="/companies" element={<CompanyList />} />
-              <Route
-                path="/companies/:companyId/roles"
-                element={<RoleList />}
-              />
-              <Route
-                path="/companies/:companyId/roles/:roleId/candidates"
-                element={<CandidateList />}
-              />
-              <Route
-                path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
-                element={<CandidatePage />}
-              />
-            </Routes>
-          ) : null}
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            {user ? (
+              <>
+                <Route
+                  path="/"
+                  element={<Navigate replace to="/companies" />}
+                />
+                <Route path="/companies" element={<CompanyList />} />
+                <Route
+                  path="/companies/:companyId/roles"
+                  element={<RoleList />}
+                />
+                <Route
+                  path="/companies/:companyId/roles/:roleId/candidates"
+                  element={<CandidateList />}
+                />
+                <Route
+                  path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
+                  element={<CandidatePage />}
+                />
+              </>
+            ) : (
+              <Route path="*" element={<Navigate replace to="/login" />} />
+            )}
+          </Routes>
         </div>
       </div>
     </Router>
