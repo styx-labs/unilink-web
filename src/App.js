@@ -8,6 +8,7 @@ import GoogleSignIn from "./components/GoogleSignIn";
 import { Navigate } from "react-router-dom";
 import "./styles/global.css";
 import { Link } from "react-router-dom";
+import CandidatePage from "./pages/candidates/CandidatePage";
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -37,6 +38,10 @@ function App() {
               <Route
                 path="/companies/:companyId/roles/:roleId/candidates"
                 element={<CandidateList />}
+              />
+              <Route
+                path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
+                element={<CandidatePage />}
               />
             </Routes>
           ) : null}

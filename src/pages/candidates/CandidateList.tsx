@@ -204,6 +204,13 @@ function CandidateList() {
                   <TableCell>{candidate.generated_desc}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
+                      <Link
+                        to={`/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`}
+                      >
+                        <Button variant="ghost" size="sm">
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="sm"
