@@ -1,3 +1,4 @@
+import React from "react";
 import {
   BrowserRouter as Router,
   Link,
@@ -16,7 +17,7 @@ import RoleList from "./pages/roles/RoleList";
 import UserMenu from "./components/UserMenu";
 import "./styles/global.css";
 
-function App() {
+const App: React.FC = () => {
   const [user, loading] = useAuthState(auth);
 
   if (loading) {
@@ -63,6 +64,6 @@ function App() {
       </div>
     </Router>
   );
-}
+};
 
 export default App;

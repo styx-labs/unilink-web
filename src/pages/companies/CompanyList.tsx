@@ -2,28 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { LoadingSpinner } from "../../components/ui/loader";
 import { Button } from "../../components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/table";
-import { ChevronRight, Pencil, Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
-import { Link } from "react-router-dom";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "../../components/ui/dialog";
-import { Label } from "../../components/ui/label";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
+import DialogForm from "../../components/DialogForm";
+import DataTable from "../../components/DataTable";
 
 interface Company {
   company_id: number;
@@ -31,6 +13,12 @@ interface Company {
   company_desc: string;
   founders: string;
 }
+
+const fields = [
+  { id: "company_name", label: "Company Name", type: "input" as const },
+  { id: "company_desc", label: "Description", type: "textarea" as const },
+  { id: "founders", label: "Founders", type: "input" as const },
+];
 
 function CompanyList() {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -91,7 +79,7 @@ function CompanyList() {
     }
   };
 
-  const deleteCompany = async (id: number) => {
+  const deleteCompany = async (id: string) => {
     setLoading(true);
     try {
       await axios.delete(
@@ -100,15 +88,9 @@ function CompanyList() {
       fetchCompanies();
     } catch (error) {
       console.error("Error deleting company:", error);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const fields = {
-    companies: [
-      { id: "company_name", label: "Company Name", type: "input" },
-      { id: "company_desc", label: "Description", type: "textarea" },
-      { id: "founders", label: "Founders", type: "input" },
-    ],
   };
 
   if (loading) {
@@ -127,178 +109,43 @@ function CompanyList() {
             <Plus className="mr-2 h-4 w-4" /> Add Company
           </Button>
         </div>
-        {companies.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Company Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Founders</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {companies.map((company) => (
-                <TableRow key={company.company_id}>
-                  <TableCell>{company.company_name}</TableCell>
-                  <TableCell>{company.company_desc}</TableCell>
-                  <TableCell>{company.founders}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Link to={`/companies/${company.company_id}/roles`}>
-                        <Button variant="ghost">
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        onClick={() => setEditingCompany(company)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => deleteCompany(company.company_id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="text-center py-8">
-            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              No companies found
-            </h3>
-            <p className="text-gray-500 dark:text-gray-500 mt-2">
-              Get started by adding a new company.
-            </p>
-            <Button className="mt-4" onClick={() => setIsAddModalOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Add Your First Company
-            </Button>
-          </div>
-        )}
+        <DataTable
+          columns={[
+            { key: "company_name", label: "Company Name" },
+            { key: "company_desc", label: "Description" },
+            { key: "founders", label: "Founders" },
+          ]}
+          data={companies}
+          onEdit={setEditingCompany}
+          onDelete={deleteCompany}
+          detailsPath={(company: Company) =>
+            `/companies/${company.company_id}/roles`
+          }
+          idField="company_id"
+        />
       </div>
 
-      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add Company</DialogTitle>
-            <DialogDescription>
-              Enter the details for the new company here. Click save when you're
-              done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {[
-              { id: "company_name", label: "Company Name", type: "input" },
-              { id: "company_desc", label: "Description", type: "textarea" },
-              { id: "founders", label: "Founders", type: "input" },
-            ].map((field) => (
-              <div
-                key={field.id}
-                className="grid grid-cols-4 items-center gap-4"
-              >
-                <Label htmlFor={field.id} className="text-right">
-                  {field.label}
-                </Label>
-                {field.type === "input" ? (
-                  <Input
-                    id={field.id}
-                    value={newCompany[field.id as keyof Company] || ""}
-                    onChange={(e) =>
-                      setNewCompany({
-                        ...newCompany,
-                        [field.id]: e.target.value,
-                      })
-                    }
-                    className="col-span-3"
-                  />
-                ) : (
-                  <Textarea
-                    id={field.id}
-                    value={newCompany[field.id as keyof Company] || ""}
-                    onChange={(e) =>
-                      setNewCompany({
-                        ...newCompany,
-                        [field.id]: e.target.value,
-                      })
-                    }
-                    className="col-span-3"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <Button type="submit" onClick={addCompany}>
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DialogForm
+        title="Add Company"
+        description="Enter the details for the new company here."
+        fields={fields}
+        open={isAddModalOpen}
+        onOpenChange={setIsAddModalOpen}
+        onSubmit={addCompany}
+        values={newCompany}
+        setValues={setNewCompany}
+      />
 
-      <Dialog
+      <DialogForm
+        title="Edit Company"
+        description="Make changes to the company here."
+        fields={fields}
         open={!!editingCompany}
         onOpenChange={() => setEditingCompany(null)}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Edit Company</DialogTitle>
-            <DialogDescription>
-              Make changes to the company here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {fields.companies.map((field) => (
-              <div
-                key={field.id}
-                className="grid grid-cols-4 items-center gap-4"
-              >
-                <Label htmlFor={field.id} className="text-right">
-                  {field.label}
-                </Label>
-                {field.type === "input" ? (
-                  <Input
-                    id={field.id}
-                    type="text"
-                    defaultValue={editingCompany?.[field.id as keyof Company]}
-                    onChange={(e) =>
-                      setEditingCompany(
-                        editingCompany
-                          ? { ...editingCompany, [field.id]: e.target.value }
-                          : null
-                      )
-                    }
-                    className="col-span-3"
-                  />
-                ) : (
-                  <Textarea
-                    id={field.id}
-                    defaultValue={editingCompany?.[field.id as keyof Company]}
-                    onChange={(e) =>
-                      setEditingCompany(
-                        editingCompany
-                          ? { ...editingCompany, [field.id]: e.target.value }
-                          : null
-                      )
-                    }
-                    className="col-span-3"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <Button type="submit" onClick={updateCompany}>
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onSubmit={updateCompany}
+        values={editingCompany || {}}
+        setValues={setEditingCompany}
+      />
     </div>
   );
 }

@@ -1,59 +1,39 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Button } from "../../components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "../../components/ui/dialog";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
 import { LoadingSpinner } from "../../components/ui/loader";
-
-import { useParams, Link } from "react-router-dom";
-import { ChevronRight, Pencil, Trash2, Plus } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/table";
+import DialogForm from "../../components/DialogForm";
+import DataTable from "../../components/DataTable";
+import { useParams } from "react-router-dom";
 
 interface Candidate {
-  candidate_id: string | undefined;
-  candidate_first_name: string | undefined;
-  candidate_last_name: string | undefined;
+  candidate_id: string;
+  candidate_first_name: string;
+  candidate_last_name: string;
   candidate_desc: string | null;
-  linkedin: string | undefined;
-  github: string | undefined;
-  resume: string | undefined;
-  email: string | undefined;
-  phone_number: string | undefined;
-  generated_desc: string | undefined;
-  generated_score: number | 0;
-  created_at: string | undefined;
-  updated_at: string | undefined;
+  linkedin: string;
+  github: string;
+  resume: string;
+  email: string;
+  phone_number: string;
+  generated_desc: string;
+  generated_score: number;
+  created_at: string;
+  updated_at: string;
 }
 
-const fields = {
-  candidates: [
-    { id: "candidate_first_name", label: "First Name", type: "input" },
-    { id: "candidate_last_name", label: "Last Name", type: "input" },
-    { id: "candidate_desc", label: "Description", type: "textarea" },
-    { id: "linkedin", label: "LinkedIn", type: "input" },
-    { id: "github", label: "Github", type: "input" },
-    { id: "resume", label: "Resume", type: "textarea" },
-    { id: "email", label: "Email", type: "input" },
-    { id: "phone_number", label: "Phone Number", type: "input" },
-  ],
-};
+const fields = [
+  { id: "candidate_first_name", label: "First Name", type: "input" as const },
+  { id: "candidate_last_name", label: "Last Name", type: "input" as const },
+  { id: "candidate_desc", label: "Description", type: "textarea" as const },
+  { id: "linkedin", label: "LinkedIn", type: "input" as const },
+  { id: "github", label: "Github", type: "input" as const },
+  { id: "resume", label: "Resume", type: "textarea" as const },
+  { id: "email", label: "Email", type: "input" as const },
+  { id: "phone_number", label: "Phone Number", type: "input" as const },
+];
 
 function CandidateList() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -83,14 +63,17 @@ function CandidateList() {
     }
   };
 
-  const deleteCandidate = async (candidateId: any) => {
+  const deleteCandidate = async (id: string) => {
+    setLoading(true);
     try {
       await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${id}`
       );
       fetchCandidates();
     } catch (error) {
       console.error("Error deleting candidate:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,10 +95,11 @@ function CandidateList() {
   };
 
   const updateCandidate = async () => {
+    if (!editingCandidate) return;
     setLoading(true);
     try {
       await axios.put(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${editingCandidate?.candidate_id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${editingCandidate.candidate_id}`,
         editingCandidate
       );
       fetchCandidates();
@@ -175,150 +159,45 @@ function CandidateList() {
             </Button>
           </div>
         </div>
-        {candidates.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>LinkedIn</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Review</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {candidates.map((candidate) => (
-                <TableRow key={candidate.candidate_id}>
-                  <TableCell>{`${candidate.candidate_first_name} ${candidate.candidate_last_name}`}</TableCell>
-                  <TableCell>
-                    <a
-                      href={candidate.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      {candidate.linkedin}
-                    </a>
-                  </TableCell>
-                  <TableCell>{candidate.generated_score}</TableCell>
-                  <TableCell>{candidate.generated_desc}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Link
-                        to={`/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`}
-                      >
-                        <Button variant="ghost" size="sm">
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditingCandidate(candidate)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteCandidate(candidate.candidate_id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="text-center py-8">
-            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              No candidates found
-            </h3>
-            <p className="text-gray-500 dark:text-gray-500 mt-2">
-              Get started by adding a new candidate.
-            </p>
-            <Button onClick={() => setIsAddModalOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Add Your First Candidate
-            </Button>
-            <Button onClick={findLinkedInCandidates}>
-              <Plus className="mr-2 h-4 w-4" /> Find LinkedIn Candidates
-            </Button>
-          </div>
-        )}
+        <DataTable
+          columns={[
+            { key: "candidate_first_name", label: "First Name" },
+            { key: "candidate_last_name", label: "Last Name" },
+            { key: "linkedin", label: "LinkedIn" },
+            { key: "generated_score", label: "Score" },
+            { key: "generated_desc", label: "Review" },
+          ]}
+          data={candidates}
+          onEdit={setEditingCandidate}
+          onDelete={deleteCandidate}
+          detailsPath={(candidate) =>
+            `/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`
+          }
+          idField="candidate_id"
+        />
       </div>
 
-      {/* Add Candidate Modal */}
-      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add Candidate</DialogTitle>
-            <DialogDescription>
-              Enter the details for the new candidate here.
-            </DialogDescription>
-          </DialogHeader>
-          {fields.candidates.map((field) => (
-            <div key={field.id} className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor={field.id} className="text-right">
-                {field.label}
-              </Label>
-              {field.type === "input" ? (
-                <Input
-                  id={field.id}
-                  type="text"
-                  value={newCandidate?.[field.id as keyof Candidate] || ""}
-                  onChange={(e) =>
-                    setNewCandidate({
-                      ...newCandidate,
-                      [field.id]: e.target.value,
-                    })
-                  }
-                  className="col-span-3"
-                />
-              ) : (
-                <Textarea
-                  id={field.id}
-                  value={newCandidate?.[field.id as keyof Candidate] || ""}
-                  onChange={(e) =>
-                    setNewCandidate({
-                      ...newCandidate,
-                      [field.id]: e.target.value,
-                    })
-                  }
-                  className="col-span-3"
-                />
-              )}
-            </div>
-          ))}
-          <DialogFooter>
-            <Button type="submit" onClick={addCandidate}>
-              Save Candidate
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DialogForm
+        title="Add Candidate"
+        description="Enter the details for the new candidate here."
+        fields={fields}
+        open={isAddModalOpen}
+        onOpenChange={setIsAddModalOpen}
+        onSubmit={addCandidate}
+        values={newCandidate}
+        setValues={setNewCandidate}
+      />
 
-      {/* Edit Candidate Modal */}
-      <Dialog
+      <DialogForm
+        title="Edit Candidate"
+        description="Make changes to the candidate here."
+        fields={fields}
         open={!!editingCandidate}
         onOpenChange={() => setEditingCandidate(null)}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Edit Candidate</DialogTitle>
-            <DialogDescription>
-              Make changes to the candidate here.
-            </DialogDescription>
-          </DialogHeader>
-          {/* Form fields similar to CompanyList */}
-          <DialogFooter>
-            <Button type="submit" onClick={updateCandidate}>
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onSubmit={updateCandidate}
+        values={editingCandidate || {}}
+        setValues={setEditingCandidate}
+      />
     </div>
   );
 }

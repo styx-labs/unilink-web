@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebase";
 import { Button } from "./ui/button";
@@ -36,7 +35,10 @@ function UserMenu({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? ""} />
+            <AvatarImage
+              src={user.photoURL ?? ""}
+              alt={user.displayName ?? ""}
+            />
             <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
           </Avatar>
         </Button>
