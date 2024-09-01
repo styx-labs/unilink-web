@@ -131,10 +131,6 @@ function CandidateList({ nested }: CandidateListProps) {
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       {nested && (
@@ -180,6 +176,7 @@ function CandidateList({ nested }: CandidateListProps) {
               : `/candidates/${candidate.candidate_id}`
           }
           idField="candidate_id"
+          isLoading={loading}
         />
       </div>
 

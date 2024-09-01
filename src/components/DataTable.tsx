@@ -10,6 +10,7 @@ import {
 import { Button } from "./ui/button";
 import { ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Skeleton } from "./ui/skeleton";
 
 interface Column {
   key: string;
@@ -22,7 +23,8 @@ interface DataTableProps {
   onEdit: (item: any) => void;
   onDelete: (id: string) => void;
   detailsPath: (item: any) => string;
-  idField?: string; // Add this line
+  idField?: string;
+  isLoading?: boolean;
 }
 
 const DataTable: React.FC<DataTableProps> = ({
@@ -31,8 +33,42 @@ const DataTable: React.FC<DataTableProps> = ({
   onEdit,
   onDelete,
   detailsPath,
-  idField = "id", // Add this line with a default value
+  idField = "id",
+  isLoading = false,
 }) => {
+  if (isLoading) {
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((column) => (
+              <TableHead key={column.key}>{column.label}</TableHead>
+            ))}
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[...Array(5)].map((_, index) => (
+            <TableRow key={index}>
+              {columns.map((column) => (
+                <TableCell key={column.key}>
+                  <Skeleton className="h-4 w-full" />
+                </TableCell>
+              ))}
+              <TableCell>
+                <div className="flex space-x-2">
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  }
+
   return (
     <Table>
       <TableHeader>

@@ -96,10 +96,6 @@ function RoleList() {
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       <BreadCrumbs
@@ -130,6 +126,7 @@ function RoleList() {
             `/companies/${companyId}/roles/${role.role_id}/candidates`
           }
           idField="role_id"
+          isLoading={loading}
         />
       </div>
 

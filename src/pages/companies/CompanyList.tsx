@@ -93,10 +93,6 @@ function CompanyList() {
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       <div className="p-4">
@@ -121,6 +117,7 @@ function CompanyList() {
             `/companies/${company.company_id}/roles`
           }
           idField="company_id"
+          isLoading={loading}
         />
       </div>
 
