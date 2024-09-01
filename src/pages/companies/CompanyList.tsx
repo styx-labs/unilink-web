@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
-
+import { useLocation } from "react-router-dom";
 interface Company {
   company_id: number;
   company_name: string;
@@ -26,7 +26,7 @@ function CompanyList() {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [newCompany, setNewCompany] = useState<Partial<Company>>({});
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
-
+  const location = useLocation();
   useEffect(() => {
     fetchCompanies();
   }, []);
@@ -99,7 +99,6 @@ function CompanyList() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-      <BreadCrumbs items={[{ label: "Companies", path: "/" }]} />
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">

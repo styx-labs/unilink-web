@@ -18,6 +18,7 @@ import {
   FileText,
 } from "lucide-react";
 import axios from "axios";
+import BreadCrumbs from "../../components/breadcrumbs";
 
 interface Candidate {
   candidate_id: string;
@@ -33,7 +34,11 @@ interface Candidate {
   generated_score: number;
 }
 
-const CandidatePage: React.FC = () => {
+interface CandidatePageProps {
+  nested: boolean;
+}
+
+const CandidatePage: React.FC<CandidatePageProps> = ({ nested }) => {
   const { companyId, roleId, candidateId } = useParams();
   const navigate = useNavigate();
   const [candidate, setCandidate] = React.useState<Candidate | null>(null);
@@ -41,9 +46,10 @@ const CandidatePage: React.FC = () => {
   React.useEffect(() => {
     const fetchCandidate = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
-        );
+        const url = nested
+          ? `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
+          : `${process.env.REACT_APP_API_BASE_URL}/candidates/${candidateId}`;
+        const response = await axios.get(url);
         setCandidate(response.data);
       } catch (error) {
         console.error("Error fetching candidate:", error);
@@ -51,14 +57,30 @@ const CandidatePage: React.FC = () => {
     };
 
     fetchCandidate();
-  }, [companyId, roleId, candidateId]);
+  }, [companyId, roleId, candidateId, nested]);
 
   if (!candidate) {
     return <div>Loading...</div>;
   }
 
+  const breadcrumbItems = nested
+    ? [
+        { label: "Companies", path: "/" },
+        { label: "Roles", path: `/companies/${companyId}/roles` },
+        {
+          label: "Candidates",
+          path: `/companies/${companyId}/roles/${roleId}/candidates`,
+        },
+        { label: candidate.candidate_first_name, path: "" },
+      ]
+    : [
+        { label: "Candidates", path: "/candidates" },
+        { label: candidate.candidate_first_name, path: "" },
+      ];
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      <BreadCrumbs items={breadcrumbItems} />
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
@@ -67,7 +89,11 @@ const CandidatePage: React.FC = () => {
           <Button
             variant="outline"
             onClick={() =>
-              navigate(`/companies/${companyId}/roles/${roleId}/candidates`)
+              navigate(
+                nested
+                  ? `/companies/${companyId}/roles/${roleId}/candidates`
+                  : "/candidates"
+              )
             }
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Candidates
@@ -167,20 +193,22 @@ const CandidatePage: React.FC = () => {
                       "No generated description available."}
                   </div>
                 </div>
-                <div>
-                  <Label>Generated Score</Label>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                      <div
-                        className="bg-primary h-2.5 rounded-full"
-                        style={{ width: `${candidate.generated_score}%` }}
-                      ></div>
+                {nested && (
+                  <div>
+                    <Label>Generated Score</Label>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                        <div
+                          className="bg-primary h-2.5 rounded-full"
+                          style={{ width: `${candidate.generated_score}%` }}
+                        ></div>
+                      </div>
+                      <span className="font-medium">
+                        {candidate.generated_score}%
+                      </span>
                     </div>
-                    <span className="font-medium">
-                      {candidate.generated_score}%
-                    </span>
                   </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>

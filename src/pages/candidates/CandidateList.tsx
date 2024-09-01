@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 interface Candidate {
   candidate_id: string;
@@ -35,7 +35,12 @@ const fields = [
   { id: "phone_number", label: "Phone Number", type: "input" as const },
 ];
 
-function CandidateList() {
+interface CandidateListProps {
+  nested: boolean;
+}
+
+function CandidateList({ nested }: CandidateListProps) {
+  const location = useLocation();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -49,12 +54,14 @@ function CandidateList() {
     fetchCandidates();
   }, [companyId, roleId]);
 
+  const apiUrl = nested
+    ? `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates`
+    : `${process.env.REACT_APP_API_BASE_URL}/candidates`;
+
   const fetchCandidates = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates`
-      );
+      const response = await axios.get(apiUrl);
       setCandidates(response.data);
     } catch (error) {
       console.error("Error fetching candidates:", error);
@@ -66,9 +73,7 @@ function CandidateList() {
   const deleteCandidate = async (id: string) => {
     setLoading(true);
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${id}`
-      );
+      await axios.delete(`${apiUrl}/${id}`);
       fetchCandidates();
     } catch (error) {
       console.error("Error deleting candidate:", error);
@@ -80,10 +85,7 @@ function CandidateList() {
   const addCandidate = async () => {
     setLoading(true);
     try {
-      await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates`,
-        newCandidate
-      );
+      await axios.post(apiUrl, newCandidate);
       fetchCandidates();
       setIsAddModalOpen(false);
       setNewCandidate({});
@@ -99,7 +101,7 @@ function CandidateList() {
     setLoading(true);
     try {
       await axios.put(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${editingCandidate.candidate_id}`,
+        `${apiUrl}/${editingCandidate.candidate_id}`,
         editingCandidate
       );
       fetchCandidates();
@@ -135,16 +137,18 @@ function CandidateList() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-      <BreadCrumbs
-        items={[
-          { label: "Companies", path: "/" },
-          { label: "Roles", path: `/companies/${companyId}/roles` },
-          {
-            label: "Candidates",
-            path: `/companies/${companyId}/roles/${roleId}/candidates`,
-          },
-        ]}
-      />
+      {nested && (
+        <BreadCrumbs
+          items={[
+            { label: "Companies", path: "/" },
+            { label: "Roles", path: `/companies/${companyId}/roles` },
+            {
+              label: "Candidates",
+              path: `/companies/${companyId}/roles/${roleId}/candidates`,
+            },
+          ]}
+        />
+      )}
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
@@ -171,7 +175,9 @@ function CandidateList() {
           onEdit={setEditingCandidate}
           onDelete={deleteCandidate}
           detailsPath={(candidate) =>
-            `/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`
+            nested
+              ? `/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`
+              : `/candidates/${candidate.candidate_id}`
           }
           idField="candidate_id"
         />
