@@ -40,7 +40,6 @@ interface CandidateListProps {
 }
 
 function CandidateList({ nested }: CandidateListProps) {
-  const location = useLocation();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -71,45 +70,50 @@ function CandidateList({ nested }: CandidateListProps) {
   };
 
   const deleteCandidate = async (id: string) => {
-    setLoading(true);
     try {
       await api.delete(`${apiUrl}/${id}`);
-      fetchCandidates();
+      setCandidates(
+        candidates.filter((candidate) => candidate.candidate_id !== id)
+      );
     } catch (error) {
       console.error("Error deleting candidate:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const addCandidate = async () => {
-    setLoading(true);
     try {
-      await api.post(apiUrl, newCandidate);
+      const completeCandidate = fields.reduce((acc, field) => {
+        acc[field.id as keyof Candidate] =
+          newCandidate[field.id as keyof Candidate] ?? "";
+        return acc;
+      }, {} as Partial<Record<keyof Candidate, string | number>>);
+
+      await api.post(apiUrl, completeCandidate);
       fetchCandidates();
       setIsAddModalOpen(false);
       setNewCandidate({});
     } catch (error) {
       console.error("Error adding candidate:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const updateCandidate = async () => {
     if (!editingCandidate) return;
-    setLoading(true);
     try {
       await api.put(
         `${apiUrl}/${editingCandidate.candidate_id}`,
         editingCandidate
       );
-      fetchCandidates();
+      setCandidates(
+        candidates.map((candidate) =>
+          candidate.candidate_id === editingCandidate.candidate_id
+            ? editingCandidate
+            : candidate
+        )
+      );
       setEditingCandidate(null);
     } catch (error) {
       console.error("Error updating candidate:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

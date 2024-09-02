@@ -45,19 +45,15 @@ function RoleList() {
   };
 
   const deleteRole = async (id: string) => {
-    setLoading(true);
     try {
       await api.delete(`/companies/${companyId}/roles/${id}`);
-      fetchRoles();
+      setRoles(roles.filter((role) => role.role_id !== id));
     } catch (error) {
       console.error("Error deleting role:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const addRole = async () => {
-    setLoading(true);
     try {
       await api.post(`/companies/${companyId}/roles`, newRole);
       fetchRoles();
@@ -65,25 +61,24 @@ function RoleList() {
       setNewRole({});
     } catch (error) {
       console.error("Error adding role:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const updateRole = async () => {
     if (!editingRole) return;
-    setLoading(true);
     try {
       await api.put(
         `/companies/${companyId}/roles/${editingRole.role_id}`,
         editingRole
       );
-      fetchRoles();
+      setRoles(
+        roles.map((role) =>
+          role.role_id === editingRole.role_id ? editingRole : role
+        )
+      );
       setEditingRole(null);
     } catch (error) {
       console.error("Error updating role:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -3,11 +3,10 @@ import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
-import { useLocation } from "react-router-dom";
 import api from "../../api/axiosConfig";
 
 interface Company {
-  company_id: number;
+  company_id: string;
   company_name: string;
   company_desc: string;
   founders: string;
@@ -25,7 +24,6 @@ function CompanyList() {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [newCompany, setNewCompany] = useState<Partial<Company>>({});
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
-  const location = useLocation();
   useEffect(() => {
     fetchCompanies();
   }, []);
@@ -43,42 +41,39 @@ function CompanyList() {
   };
 
   const addCompany = async () => {
-    setLoading(true);
     try {
-      await api.post("/companies", newCompany);
+      const response = await api.post("/companies", newCompany);
       fetchCompanies();
       setIsAddModalOpen(false);
       setNewCompany({});
     } catch (error) {
       console.error("Error adding company:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const updateCompany = async () => {
     if (!editingCompany) return;
-    setLoading(true);
     try {
       await api.put(`/companies/${editingCompany.company_id}`, editingCompany);
-      fetchCompanies();
+      setCompanies(
+        companies.map((company) =>
+          company.company_id === editingCompany.company_id
+            ? editingCompany
+            : company
+        )
+      );
       setEditingCompany(null);
     } catch (error) {
       console.error("Error updating company:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const deleteCompany = async (id: string) => {
-    setLoading(true);
     try {
       await api.delete(`/companies/${id}`);
-      fetchCompanies();
+      setCompanies(companies.filter((company) => company.company_id !== id));
     } catch (error) {
       console.error("Error deleting company:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
