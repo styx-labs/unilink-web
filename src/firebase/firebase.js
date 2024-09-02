@@ -25,7 +25,7 @@ const auth = getAuth(app);
 
 // Initialize App Check
 if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-  window.FIREBASE_APPCHECK_DEBUG_TOKEN = "6ae2067c-7b66-4fca-b6ed-2995c378f5c4";
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
 const appCheck = initializeAppCheck(app, {

@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { LoadingSpinner } from "../../components/ui/loader";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
-import BreadCrumbs from "../../components/breadcrumbs";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import { useLocation } from "react-router-dom";
+import api from "../../api/axiosConfig";
+
 interface Company {
   company_id: number;
   company_name: string;
@@ -34,9 +33,7 @@ function CompanyList() {
   const fetchCompanies = async () => {
     setLoading(true);
     try {
-      const response = await axios.get<Company[]>(
-        `${process.env.REACT_APP_API_BASE_URL}/companies`
-      );
+      const response = await api.get<Company[]>("/companies");
       setCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies:", error);
@@ -48,10 +45,7 @@ function CompanyList() {
   const addCompany = async () => {
     setLoading(true);
     try {
-      await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/companies`,
-        newCompany
-      );
+      await api.post("/companies", newCompany);
       fetchCompanies();
       setIsAddModalOpen(false);
       setNewCompany({});
@@ -66,10 +60,7 @@ function CompanyList() {
     if (!editingCompany) return;
     setLoading(true);
     try {
-      await axios.put(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${editingCompany.company_id}`,
-        editingCompany
-      );
+      await api.put(`/companies/${editingCompany.company_id}`, editingCompany);
       fetchCompanies();
       setEditingCompany(null);
     } catch (error) {
@@ -82,9 +73,7 @@ function CompanyList() {
   const deleteCompany = async (id: string) => {
     setLoading(true);
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${id}`
-      );
+      await api.delete(`/companies/${id}`);
       fetchCompanies();
     } catch (error) {
       console.error("Error deleting company:", error);

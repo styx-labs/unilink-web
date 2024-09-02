@@ -7,7 +7,7 @@ import BreadCrumbs from "../../components/breadcrumbs";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import { useParams, useLocation } from "react-router-dom";
-
+import api from "../../api/axiosConfig";
 interface Candidate {
   candidate_id: string;
   candidate_first_name: string;
@@ -55,13 +55,13 @@ function CandidateList({ nested }: CandidateListProps) {
   }, [companyId, roleId]);
 
   const apiUrl = nested
-    ? `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates`
-    : `${process.env.REACT_APP_API_BASE_URL}/candidates`;
+    ? `/companies/${companyId}/roles/${roleId}/candidates`
+    : `/candidates`;
 
   const fetchCandidates = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(apiUrl);
+      const response = await api.get(apiUrl);
       setCandidates(response.data);
     } catch (error) {
       console.error("Error fetching candidates:", error);
@@ -73,7 +73,7 @@ function CandidateList({ nested }: CandidateListProps) {
   const deleteCandidate = async (id: string) => {
     setLoading(true);
     try {
-      await axios.delete(`${apiUrl}/${id}`);
+      await api.delete(`${apiUrl}/${id}`);
       fetchCandidates();
     } catch (error) {
       console.error("Error deleting candidate:", error);
@@ -85,7 +85,7 @@ function CandidateList({ nested }: CandidateListProps) {
   const addCandidate = async () => {
     setLoading(true);
     try {
-      await axios.post(apiUrl, newCandidate);
+      await api.post(apiUrl, newCandidate);
       fetchCandidates();
       setIsAddModalOpen(false);
       setNewCandidate({});
@@ -100,7 +100,7 @@ function CandidateList({ nested }: CandidateListProps) {
     if (!editingCandidate) return;
     setLoading(true);
     try {
-      await axios.put(
+      await api.put(
         `${apiUrl}/${editingCandidate.candidate_id}`,
         editingCandidate
       );
@@ -116,8 +116,8 @@ function CandidateList({ nested }: CandidateListProps) {
   const findLinkedInCandidates = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/linkedin`,
+      const response = await api.post(
+        `/companies/${companyId}/roles/${roleId}/candidates/linkedin`,
         {
           company_id: companyId,
           role_id: roleId,

@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { LoadingSpinner } from "../../components/ui/loader";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
-
+import api from "../../api/axiosConfig";
 interface Role {
   role_id: string;
   role_name: string;
@@ -37,9 +35,7 @@ function RoleList() {
   const fetchRoles = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles`
-      );
+      const response = await api.get(`/companies/${companyId}/roles`);
       setRoles(response.data);
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -51,9 +47,7 @@ function RoleList() {
   const deleteRole = async (id: string) => {
     setLoading(true);
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${id}`
-      );
+      await api.delete(`/companies/${companyId}/roles/${id}`);
       fetchRoles();
     } catch (error) {
       console.error("Error deleting role:", error);
@@ -65,10 +59,7 @@ function RoleList() {
   const addRole = async () => {
     setLoading(true);
     try {
-      await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles`,
-        newRole
-      );
+      await api.post(`/companies/${companyId}/roles`, newRole);
       fetchRoles();
       setIsAddModalOpen(false);
       setNewRole({});
@@ -83,8 +74,8 @@ function RoleList() {
     if (!editingRole) return;
     setLoading(true);
     try {
-      await axios.put(
-        `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${editingRole.role_id}`,
+      await api.put(
+        `/companies/${companyId}/roles/${editingRole.role_id}`,
         editingRole
       );
       fetchRoles();
