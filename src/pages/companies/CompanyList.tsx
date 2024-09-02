@@ -42,7 +42,12 @@ function CompanyList() {
 
   const addCompany = async () => {
     try {
-      const response = await api.post("/companies", newCompany);
+      const completeCompany = fields.reduce((acc, field) => {
+        acc[field.id as keyof Company] =
+          newCompany[field.id as keyof Company] ?? "";
+        return acc;
+      }, {} as Partial<Record<keyof Company, string | number>>);
+      await api.post("/companies", completeCompany);
       fetchCompanies();
       setIsAddModalOpen(false);
       setNewCompany({});

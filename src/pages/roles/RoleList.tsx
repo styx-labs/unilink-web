@@ -55,7 +55,11 @@ function RoleList() {
 
   const addRole = async () => {
     try {
-      await api.post(`/companies/${companyId}/roles`, newRole);
+      const completeRole = fields.reduce((acc, field) => {
+        acc[field.id as keyof Role] = newRole[field.id as keyof Role] ?? "";
+        return acc;
+      }, {} as Partial<Record<keyof Role, string | number>>);
+      await api.post(`/companies/${companyId}/roles`, completeRole);
       fetchRoles();
       setIsAddModalOpen(false);
       setNewRole({});
