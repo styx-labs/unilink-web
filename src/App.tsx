@@ -50,7 +50,7 @@ const App: React.FC = () => {
                   />
                   <Route
                     path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
-                    element={<CandidatePage nested={true} />}
+                    element={<CandidatePage />}
                   />
                   <Route
                     path="/companies/:companyId/roles/:roleId/candidates"
@@ -59,7 +59,7 @@ const App: React.FC = () => {
                   <Route path="/candidates" element={<CandidateList />} />
                   <Route
                     path="/candidates/:candidateId"
-                    element={<CandidatePage nested={false} />}
+                    element={<CandidatePage />}
                   />
                   <Route path="/roles" element={<RoleList />} />
                 </>
