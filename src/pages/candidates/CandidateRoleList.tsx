@@ -62,7 +62,7 @@ function CandidateRoleList() {
     }
   };
 
-  const deleteCandidate = async (id: string) => {
+  const deleteCandidateRole = async (id: string) => {
     try {
       await api.delete(
         `/companies/${companyId}/roles/${roleId}/candidates/${id}`
@@ -149,7 +149,7 @@ function CandidateRoleList() {
               linkedin: candidate.candidate.linkedin,
               notes: candidate.notes,
             }))}
-            onDelete={deleteCandidate}
+            onDelete={deleteCandidateRole}
             detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
             idField="candidate_id"
             isLoading={loading}
