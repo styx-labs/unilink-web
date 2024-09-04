@@ -17,8 +17,9 @@ import {
   Github,
   FileText,
 } from "lucide-react";
+import axios from "axios";
 import BreadCrumbs from "../../components/breadcrumbs";
-import api from "../../api/axiosConfig";
+
 interface Candidate {
   candidate_id: string;
   candidate_first_name: string;
@@ -46,9 +47,9 @@ const CandidatePage: React.FC<CandidatePageProps> = ({ nested }) => {
     const fetchCandidate = async () => {
       try {
         const url = nested
-          ? `/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
-          : `/candidates/${candidateId}`;
-        const response = await api.get(url);
+          ? `${process.env.REACT_APP_API_BASE_URL}/companies/${companyId}/roles/${roleId}/candidates/${candidateId}`
+          : `${process.env.REACT_APP_API_BASE_URL}/candidates/${candidateId}`;
+        const response = await axios.get(url);
         setCandidate(response.data);
       } catch (error) {
         console.error("Error fetching candidate:", error);

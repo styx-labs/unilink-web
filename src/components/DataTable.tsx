@@ -20,8 +20,8 @@ interface Column {
 interface DataTableProps {
   columns: Column[];
   data: any[];
-  onEdit: (item: any) => void;
-  onDelete: (id: string) => void;
+  onEdit?: (item: any) => void;
+  onDelete?: (id: string) => void;
   detailsPath: (item: any) => string;
   idField?: string;
   isLoading?: boolean;
@@ -92,16 +92,24 @@ const DataTable: React.FC<DataTableProps> = ({
                     <ChevronRight className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => onEdit(item)}>
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(item[idField])}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {onEdit && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(item)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(item[idField])}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </TableCell>
           </TableRow>

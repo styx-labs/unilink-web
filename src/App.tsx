@@ -8,6 +8,7 @@ import {
 import { auth } from "./firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import CandidateList from "./pages/candidates/CandidateList";
+import CandidateRoleList from "./pages/candidates/CandidateRoleList";
 import CandidatePage from "./pages/candidates/CandidatePage";
 import CompanyList from "./pages/companies/CompanyList";
 import LoginPage from "./pages/login/LoginPage";
@@ -48,17 +49,14 @@ const App: React.FC = () => {
                     element={<RoleList />}
                   />
                   <Route
-                    path="/companies/:companyId/roles/:roleId/candidates"
-                    element={<CandidateList nested={true} />}
-                  />
-                  <Route
                     path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
                     element={<CandidatePage nested={true} />}
                   />
                   <Route
-                    path="/candidates"
-                    element={<CandidateList nested={false} />}
+                    path="/companies/:companyId/roles/:roleId/candidates"
+                    element={<CandidateRoleList />}
                   />
+                  <Route path="/candidates" element={<CandidateList />} />
                   <Route
                     path="/candidates/:candidateId"
                     element={<CandidatePage nested={false} />}
