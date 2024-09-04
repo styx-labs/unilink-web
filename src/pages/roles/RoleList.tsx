@@ -107,6 +107,7 @@ function RoleList() {
           columns={[
             { key: "role_name", label: "Title" },
             { key: "role_desc", label: "Description" },
+            { key: "role_requirements", label: "Requirements" },
             { key: "role_candidates", label: "Candidates" },
           ]}
           data={roles}
