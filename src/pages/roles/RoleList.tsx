@@ -10,14 +10,14 @@ interface Role {
   role_id: string;
   role_name: string;
   role_desc: string;
-  requirements: string;
+  role_requirements: string;
   role_candidates: string;
 }
 
 const fields = [
   { id: "role_name", label: "Role Name", type: "input" as const },
   { id: "role_desc", label: "Description", type: "textarea" as const },
-  { id: "requirements", label: "Requirements", type: "textarea" as const },
+  { id: "role_requirements", label: "Requirements", type: "textarea" as const },
 ];
 
 function RoleList() {

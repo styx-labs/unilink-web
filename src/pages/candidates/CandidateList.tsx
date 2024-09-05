@@ -3,7 +3,6 @@ import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
-import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
 
 export interface Candidate {
