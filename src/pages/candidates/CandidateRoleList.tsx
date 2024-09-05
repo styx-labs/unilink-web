@@ -5,16 +5,19 @@ import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
-import { Candidate } from "./CandidateList";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
+import { CandidateRole, Candidate, CandidateRoleStatus } from "../../lib/types";
+import DialogForm from "../../components/DialogForm";
 
-interface CandidateRole {
-  candidate_id: string;
-  candidate: Candidate;
-  notes: string;
-  created_at: string;
-  updated_at: string;
-}
+const fields = [
+  {
+    id: "candidate_role_status",
+    label: "Status",
+    type: "select" as const,
+    options: Object.values(CandidateRoleStatus),
+  },
+  { id: "candidate_role_notes", label: "Notes", type: "textarea" as const },
+];
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
@@ -24,7 +27,9 @@ function CandidateRoleList() {
     useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [candidateNotes, setCandidateNotes] = useState<string>("");
-
+  const [editingCandidateRole, setEditingCandidateRole] =
+    useState<CandidateRole | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const { companyId, roleId } = useParams();
 
   useEffect(() => {
@@ -82,7 +87,7 @@ function CandidateRoleList() {
         selectedCandidates.map((candidateId) =>
           api.post(`/companies/${companyId}/roles/${roleId}/candidates`, {
             candidate_id: candidateId,
-            notes: candidateNotes,
+            candidate_role_notes: candidateNotes,
           })
         )
       );
@@ -92,6 +97,20 @@ function CandidateRoleList() {
       setCandidateNotes("");
     } catch (error) {
       console.error("Error adding existing candidates:", error);
+    }
+  };
+
+  const updateCandidateRole = async () => {
+    if (!editingCandidateRole) return;
+    try {
+      await api.put(
+        `/companies/${companyId}/roles/${roleId}/candidates/${editingCandidateRole.candidate_id}`,
+        editingCandidateRole
+      );
+      fetchCandidates();
+      setEditingCandidateRole(null);
+    } catch (error) {
+      console.error("Error updating candidate role:", error);
     }
   };
 
@@ -131,6 +150,7 @@ function CandidateRoleList() {
         ) : (
           <DataTable
             columns={[
+              { key: "candidate_role_status", label: "Status" },
               {
                 key: "candidate_first_name",
                 label: "First Name",
@@ -140,16 +160,21 @@ function CandidateRoleList() {
                 label: "Last Name",
               },
               { key: "linkedin", label: "LinkedIn" },
-              { key: "notes", label: "Notes" },
+              { key: "candidate_role_notes", label: "Notes" },
             ]}
             data={candidates.map((candidate) => ({
               ...candidate,
               candidate_first_name: candidate.candidate.candidate_first_name,
               candidate_last_name: candidate.candidate.candidate_last_name,
               linkedin: candidate.candidate.linkedin,
-              notes: candidate.notes,
+              candidate_role_notes: candidate.candidate_role_notes,
+              candidate_role_status: candidate.candidate_role_status,
             }))}
             onDelete={deleteCandidate}
+            onEdit={(candidate) => {
+              setEditingCandidateRole(candidate);
+              setIsEditModalOpen(true);
+            }}
             detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
             idField="candidate_id"
             isLoading={loading}
@@ -166,6 +191,19 @@ function CandidateRoleList() {
         candidateNotes={candidateNotes}
         setCandidateNotes={setCandidateNotes}
         addExistingCandidates={addExistingCandidates}
+      />
+
+      <DialogForm
+        title="Edit Candidate Role"
+        description="Edit the candidate role here."
+        fields={fields}
+        open={!!editingCandidateRole}
+        onOpenChange={() => setEditingCandidateRole(null)}
+        onSubmit={updateCandidateRole}
+        values={editingCandidateRole || {}}
+        setValues={(newValues) =>
+          setEditingCandidateRole(newValues as CandidateRole)
+        }
       />
     </div>
   );

@@ -6,22 +6,7 @@ import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
-
-enum RoleStatus {
-  OPEN = "Open",
-  IN_REVIEW = "In Review",
-  CLOSED_FILLED = "Closed Filled",
-  CLOSED_UNFILLED = "Closed Unfilled",
-  CLOSED_CANCELLED = "Closed Cancelled",
-}
-
-interface Role {
-  role_id: string;
-  role_name: string;
-  role_status: RoleStatus;
-  role_desc: string;
-  role_requirements: string;
-}
+import { Role, RoleStatus } from "../../lib/types";
 
 const fields = [
   { id: "role_name", label: "Role Name", type: "input" as const },
