@@ -8,14 +8,22 @@ import {
   DialogFooter,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface Field {
   id: string;
   label: string;
-  type: "input" | "textarea";
+  type: "input" | "textarea" | "select" | "url" | "email" | "tel";
+  options?: string[];
 }
 
 interface DialogFormProps {
@@ -25,11 +33,11 @@ interface DialogFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: () => void;
-  values: any;
-  setValues: (values: any) => void;
+  values: Record<string, any>;
+  setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
 }
 
-const DialogForm: React.FC<DialogFormProps> = ({
+function DialogForm({
   title,
   description,
   fields,
@@ -38,10 +46,17 @@ const DialogForm: React.FC<DialogFormProps> = ({
   onSubmit,
   values,
   setValues,
-}) => {
+}: DialogFormProps) {
+  const handleChange = (
+    id: string,
+    value: string | number | readonly string[]
+  ) => {
+    setValues((prev) => ({ ...prev, [id]: value }));
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -52,22 +67,47 @@ const DialogForm: React.FC<DialogFormProps> = ({
               <Label htmlFor={field.id} className="text-right">
                 {field.label}
               </Label>
-              {field.type === "input" ? (
+              {field.type === "input" && (
                 <Input
                   id={field.id}
                   value={values[field.id] || ""}
-                  onChange={(e) =>
-                    setValues({ ...values, [field.id]: e.target.value })
-                  }
+                  onChange={(e) => handleChange(field.id, e.target.value)}
                   className="col-span-3"
                 />
-              ) : (
+              )}
+              {field.type === "textarea" && (
                 <Textarea
                   id={field.id}
                   value={values[field.id] || ""}
-                  onChange={(e) =>
-                    setValues({ ...values, [field.id]: e.target.value })
-                  }
+                  onChange={(e) => handleChange(field.id, e.target.value)}
+                  className="col-span-3"
+                />
+              )}
+              {field.type === "select" && (
+                <Select
+                  value={values[field.id] || ""}
+                  onValueChange={(value) => handleChange(field.id, value)}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select an option" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {field.options?.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {(field.type === "url" ||
+                field.type === "email" ||
+                field.type === "tel") && (
+                <Input
+                  id={field.id}
+                  type={field.type}
+                  value={values[field.id] || ""}
+                  onChange={(e) => handleChange(field.id, e.target.value)}
                   className="col-span-3"
                 />
               )}
@@ -75,13 +115,11 @@ const DialogForm: React.FC<DialogFormProps> = ({
           ))}
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={onSubmit}>
-            Save changes
-          </Button>
+          <Button onClick={onSubmit}>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-};
+}
 
 export default DialogForm;

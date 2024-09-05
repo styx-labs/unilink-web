@@ -118,7 +118,7 @@ function CompanyList() {
         onOpenChange={setIsAddModalOpen}
         onSubmit={addCompany}
         values={newCompany}
-        setValues={setNewCompany}
+        setValues={(newValues) => setEditingCompany(newValues as Company)}
       />
 
       <DialogForm
@@ -129,7 +129,7 @@ function CompanyList() {
         onOpenChange={() => setEditingCompany(null)}
         onSubmit={updateCompany}
         values={editingCompany || {}}
-        setValues={setEditingCompany}
+        setValues={(newValues) => setEditingCompany(newValues as Company)}
       />
     </div>
   );

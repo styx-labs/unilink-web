@@ -62,7 +62,7 @@ function CandidateRoleList() {
     }
   };
 
-  const deleteCandidateRole = async (id: string) => {
+  const deleteCandidate = async (id: string) => {
     try {
       await api.delete(
         `/companies/${companyId}/roles/${roleId}/candidates/${id}`
@@ -126,7 +126,7 @@ function CandidateRoleList() {
             </Button>
           </div>
         </div>
-        {candidates.length === 0 ? (
+        {candidates.length === 0 && !loading ? (
           <p>No candidates found.</p>
         ) : (
           <DataTable
@@ -149,7 +149,7 @@ function CandidateRoleList() {
               linkedin: candidate.candidate.linkedin,
               notes: candidate.notes,
             }))}
-            onDelete={deleteCandidateRole}
+            onDelete={deleteCandidate}
             detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
             idField="candidate_id"
             isLoading={loading}

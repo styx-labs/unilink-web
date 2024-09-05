@@ -15,6 +15,7 @@ import { Skeleton } from "./ui/skeleton";
 interface Column {
   key: string;
   label: string;
+  render?: (value: any) => React.ReactNode;
 }
 
 interface DataTableProps {
@@ -83,7 +84,11 @@ const DataTable: React.FC<DataTableProps> = ({
         {data.map((item) => (
           <TableRow key={item[idField]}>
             {columns.map((column) => (
-              <TableCell key={column.key}>{item[column.key]}</TableCell>
+              <TableCell key={column.key} style={{ whiteSpace: "pre-wrap" }}>
+                {column.render
+                  ? column.render(item[column.key])
+                  : item[column.key]}
+              </TableCell>
             ))}
             <TableCell>
               <div className="flex space-x-2">

@@ -6,16 +6,31 @@ import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
+
+enum RoleStatus {
+  OPEN = "Open",
+  IN_REVIEW = "In Review",
+  CLOSED_FILLED = "Closed Filled",
+  CLOSED_UNFILLED = "Closed Unfilled",
+  CLOSED_CANCELLED = "Closed Cancelled",
+}
+
 interface Role {
   role_id: string;
   role_name: string;
+  role_status: RoleStatus;
   role_desc: string;
   role_requirements: string;
-  role_candidates: string;
 }
 
 const fields = [
   { id: "role_name", label: "Role Name", type: "input" as const },
+  {
+    id: "role_status",
+    label: "Status",
+    type: "select" as const,
+    options: Object.values(RoleStatus),
+  },
   { id: "role_desc", label: "Description", type: "textarea" as const },
   { id: "role_requirements", label: "Requirements", type: "textarea" as const },
 ];
@@ -106,9 +121,9 @@ function RoleList() {
         <DataTable
           columns={[
             { key: "role_name", label: "Title" },
+            { key: "role_status", label: "Status" },
             { key: "role_desc", label: "Description" },
             { key: "role_requirements", label: "Requirements" },
-            { key: "role_candidates", label: "Candidates" },
           ]}
           data={roles}
           onEdit={setEditingRole}
@@ -129,7 +144,7 @@ function RoleList() {
         onOpenChange={setIsAddModalOpen}
         onSubmit={addRole}
         values={newRole}
-        setValues={setNewRole}
+        setValues={(newValues) => setNewRole(newValues as Role)}
       />
 
       <DialogForm
@@ -140,7 +155,7 @@ function RoleList() {
         onOpenChange={() => setEditingRole(null)}
         onSubmit={updateRole}
         values={editingRole || {}}
-        setValues={setEditingRole}
+        setValues={(newValues) => setEditingRole(newValues as Role)}
       />
     </div>
   );

@@ -23,11 +23,11 @@ const fields = [
   { id: "candidate_first_name", label: "First Name", type: "input" as const },
   { id: "candidate_last_name", label: "Last Name", type: "input" as const },
   { id: "candidate_desc", label: "Description", type: "textarea" as const },
-  { id: "linkedin", label: "LinkedIn", type: "input" as const },
-  { id: "github", label: "Github", type: "input" as const },
+  { id: "linkedin", label: "LinkedIn", type: "url" as const },
+  { id: "github", label: "Github", type: "url" as const },
   { id: "resume", label: "Resume", type: "textarea" as const },
-  { id: "email", label: "Email", type: "input" as const },
-  { id: "phone_number", label: "Phone Number", type: "input" as const },
+  { id: "email", label: "Email", type: "email" as const },
+  { id: "phone_number", label: "Phone Number", type: "tel" as const },
 ];
 
 function CandidateList() {
@@ -144,7 +144,7 @@ function CandidateList() {
         onOpenChange={setIsAddModalOpen}
         onSubmit={addCandidate}
         values={newCandidate}
-        setValues={setNewCandidate}
+        setValues={(newValues) => setEditingCandidate(newValues as Candidate)}
       />
 
       <DialogForm
@@ -155,7 +155,7 @@ function CandidateList() {
         onOpenChange={() => setEditingCandidate(null)}
         onSubmit={updateCandidate}
         values={editingCandidate || {}}
-        setValues={setEditingCandidate}
+        setValues={(newValues) => setEditingCandidate(newValues as Candidate)}
       />
     </div>
   );
