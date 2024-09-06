@@ -19,7 +19,7 @@ export default function LoginPage() {
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(() => {
         navigate("/companies");
       })
       .catch((error) => {
