@@ -16,6 +16,17 @@ import {
 } from "../../lib/types";
 import { CandidateRoleForm } from "./CandidateRoleForm";
 
+const fields = [
+  { id: "candidate_first_name", label: "First Name", type: "input" as const },
+  { id: "candidate_last_name", label: "Last Name", type: "input" as const },
+  { id: "candidate_desc", label: "Description", type: "textarea" as const },
+  { id: "linkedin", label: "LinkedIn", type: "input" as const },
+  { id: "github", label: "Github", type: "input" as const },
+  { id: "resume", label: "Resume", type: "textarea" as const },
+  { id: "email", label: "Email", type: "input" as const },
+  { id: "phone_number", label: "Phone Number", type: "input" as const },
+];
+
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
   const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);
@@ -157,6 +168,11 @@ function CandidateRoleList() {
             <Button onClick={() => setIsAddExistingModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
+            <div className="flex space-x-2">
+            <Button onClick={() => setIsAddModalOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" /> Add New Candidate
+            </Button>
+          </div>
           </div>
         </div>
         {candidates.length === 0 && !loading ? (
