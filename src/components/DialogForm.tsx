@@ -18,11 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-
+import NotesInput from "./NotesInput";
+import { CandidateRoleNote } from "../lib/types";
 interface Field {
   id: string;
   label: string;
-  type: "input" | "textarea" | "select" | "url" | "email" | "tel";
+  type: "input" | "textarea" | "select" | "url" | "email" | "tel" | "notes";
   options?: string[];
 }
 
@@ -49,14 +50,14 @@ function DialogForm({
 }: DialogFormProps) {
   const handleChange = (
     id: string,
-    value: string | number | readonly string[]
+    value: string | number | readonly string[] | CandidateRoleNote[]
   ) => {
     setValues((prev) => ({ ...prev, [id]: value }));
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -108,6 +109,16 @@ function DialogForm({
                   type={field.type}
                   value={values[field.id] || ""}
                   onChange={(e) => handleChange(field.id, e.target.value)}
+                  className="col-span-3"
+                />
+              )}
+              {field.type === "notes" && (
+                <NotesInput
+                  value={values[field.id] || []}
+                  onChange={(notes: CandidateRoleNote[]) =>
+                    handleChange(field.id, notes)
+                  }
+                  options={field.options || []}
                   className="col-span-3"
                 />
               )}

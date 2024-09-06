@@ -6,7 +6,12 @@ import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
-import { CandidateRole, Candidate, CandidateRoleStatus } from "../../lib/types";
+import {
+  CandidateRole,
+  Candidate,
+  CandidateRoleStatus,
+  CandidateRoleNoteType,
+} from "../../lib/types";
 import DialogForm from "../../components/DialogForm";
 
 const fields = [
@@ -16,7 +21,12 @@ const fields = [
     type: "select" as const,
     options: Object.values(CandidateRoleStatus),
   },
-  { id: "candidate_role_notes", label: "Notes", type: "textarea" as const },
+  {
+    id: "candidate_role_notes",
+    label: "Notes",
+    type: "notes" as const,
+    options: Object.values(CandidateRoleNoteType),
+  },
 ];
 
 function CandidateRoleList() {
@@ -87,7 +97,6 @@ function CandidateRoleList() {
         selectedCandidates.map((candidateId) =>
           api.post(`/companies/${companyId}/roles/${roleId}/candidates`, {
             candidate_id: candidateId,
-            candidate_role_notes: candidateNotes,
           })
         )
       );

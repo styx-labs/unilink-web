@@ -22,10 +22,23 @@ export interface Candidate {
 export interface CandidateRole {
   candidate_id: string;
   candidate: Candidate;
-  candidate_role_notes: string;
-  candidate_role_status: string;
+  candidate_role_notes: CandidateRoleNote[] | null;
+  candidate_role_status: CandidateRoleStatus;
   created_at: string;
   updated_at: string;
+}
+
+export interface CandidateRoleNote {
+  type: CandidateRoleNoteType;
+  notes: string;
+}
+
+export enum CandidateRoleNoteType {
+  GENERATED = "Generated",
+  TAKEHOME = "Takehome Assignment",
+  EMAIL = "Email",
+  PHONE_SCREEN = "Phone Screen",
+  OTHER = "Other",
 }
 
 export interface Role {
