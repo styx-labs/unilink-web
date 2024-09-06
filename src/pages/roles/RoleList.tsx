@@ -18,6 +18,11 @@ const fields = [
   },
   { id: "role_desc", label: "Description", type: "textarea" as const },
   { id: "role_requirements", label: "Requirements", type: "textarea" as const },
+  {
+    id: "role_criteria",
+    label: "Criteria",
+    type: "array" as const,
+  },
 ];
 
 function RoleList() {
@@ -56,9 +61,13 @@ function RoleList() {
   const addRole = async () => {
     try {
       const completeRole = fields.reduce((acc, field) => {
-        acc[field.id as keyof Role] = newRole[field.id as keyof Role] ?? "";
+        if (field.id === "role_criteria") {
+          acc[field.id] = newRole[field.id] || [];
+        } else {
+          acc[field.id as keyof Role] = newRole[field.id as keyof Role] ?? "";
+        }
         return acc;
-      }, {} as Partial<Record<keyof Role, string | number>>);
+      }, {} as Partial<Record<keyof Role, string | number | string[]>>);
       await api.post(`/companies/${companyId}/roles`, completeRole);
       fetchRoles();
       setIsAddModalOpen(false);

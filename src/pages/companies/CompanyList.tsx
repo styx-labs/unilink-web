@@ -15,7 +15,11 @@ interface Company {
 const fields = [
   { id: "company_name", label: "Company Name", type: "input" as const },
   { id: "company_desc", label: "Description", type: "textarea" as const },
-  { id: "founders", label: "Founders", type: "input" as const },
+  {
+    id: "founders",
+    label: "Founders",
+    type: "array" as const,
+  },
 ];
 
 function CompanyList() {
@@ -97,7 +101,11 @@ function CompanyList() {
           columns={[
             { key: "company_name", label: "Company Name" },
             { key: "company_desc", label: "Description" },
-            { key: "founders", label: "Founders" },
+            { 
+              key: "founders", 
+              label: "Founders",
+              render: (founders: string[]) => founders.join(", ")
+            },
           ]}
           data={companies}
           onEdit={setEditingCompany}

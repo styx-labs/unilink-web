@@ -23,7 +23,15 @@ import { CandidateRoleNote } from "../lib/types";
 interface Field {
   id: string;
   label: string;
-  type: "input" | "textarea" | "select" | "url" | "email" | "tel" | "notes";
+  type:
+    | "input"
+    | "textarea"
+    | "select"
+    | "url"
+    | "email"
+    | "tel"
+    | "notes"
+    | "array";
   options?: string[];
 }
 
@@ -121,6 +129,51 @@ function DialogForm({
                   options={field.options || []}
                   className="col-span-3"
                 />
+              )}
+              {field.type === "array" && (
+                <div className="col-span-3">
+                  {((values[field.id] as string[]) || []).map((item, index) => (
+                    <div key={index} className="flex items-center mb-2">
+                      <Input
+                        type={field.type || "text"}
+                        value={item}
+                        onChange={(e) => {
+                          const newArray = [...(values[field.id] as string[])];
+                          newArray[index] = e.target.value;
+                          handleChange(field.id, newArray);
+                        }}
+                        className="flex-grow"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newArray = [...(values[field.id] as string[])];
+                          newArray.splice(index, 1);
+                          handleChange(field.id, newArray);
+                        }}
+                        className="ml-2"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newArray = [
+                        ...((values[field.id] as string[]) || []),
+                        "",
+                      ];
+                      handleChange(field.id, newArray);
+                    }}
+                  >
+                    Add {field.label}
+                  </Button>
+                </div>
               )}
             </div>
           ))}
