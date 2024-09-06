@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
 import { Candidate } from "./CandidateList";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
+import DialogForm from "../../components/DialogForm";
 
 interface CandidateRole {
   candidate_id: string;
@@ -16,6 +17,17 @@ interface CandidateRole {
   updated_at: string;
 }
 
+const fields = [
+  { id: "candidate_first_name", label: "First Name", type: "input" as const },
+  { id: "candidate_last_name", label: "Last Name", type: "input" as const },
+  { id: "candidate_desc", label: "Description", type: "textarea" as const },
+  { id: "linkedin", label: "LinkedIn", type: "input" as const },
+  { id: "github", label: "Github", type: "input" as const },
+  { id: "resume", label: "Resume", type: "textarea" as const },
+  { id: "email", label: "Email", type: "input" as const },
+  { id: "phone_number", label: "Phone Number", type: "input" as const },
+];
+
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
   const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);
@@ -24,6 +36,9 @@ function CandidateRoleList() {
     useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [candidateNotes, setCandidateNotes] = useState<string>("");
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [newCandidate, setNewCandidate] = useState<Partial<Candidate>>({});
 
   const { companyId, roleId } = useParams();
 
@@ -95,6 +110,23 @@ function CandidateRoleList() {
     }
   };
 
+  const addCandidate = async () => {
+    try {
+      const completeCandidate = fields.reduce((acc, field) => {
+        acc[field.id as keyof Candidate] =
+          newCandidate[field.id as keyof Candidate] ?? "";
+        return acc;
+      }, {} as Partial<Record<keyof Candidate, string | number>>);
+
+      await api.post(`/companies/${companyId}/roles/${roleId}/candidates/create`, completeCandidate);
+      fetchCandidates();
+      setIsAddModalOpen(false);
+      setNewCandidate({});
+    } catch (error) {
+      console.error("Error adding candidate:", error);
+    }
+  };
+
   const toggleCandidateSelection = (candidateId: string) => {
     setSelectedCandidates((prev) =>
       prev.includes(candidateId)
@@ -124,6 +156,11 @@ function CandidateRoleList() {
             <Button onClick={() => setIsAddExistingModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
+            <div className="flex space-x-2">
+            <Button onClick={() => setIsAddModalOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" /> Add New Candidate
+            </Button>
+          </div>
           </div>
         </div>
         {candidates.length === 0 ? (
@@ -166,6 +203,17 @@ function CandidateRoleList() {
         candidateNotes={candidateNotes}
         setCandidateNotes={setCandidateNotes}
         addExistingCandidates={addExistingCandidates}
+      />
+
+      <DialogForm
+        title="Add New Candidate"
+        description="Enter the details for the new candidate here."
+        fields={fields}
+        open={isAddModalOpen}
+        onOpenChange={setIsAddModalOpen}
+        onSubmit={addCandidate}
+        values={newCandidate}
+        setValues={setNewCandidate}
       />
     </div>
   );
