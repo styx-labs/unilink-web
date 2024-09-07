@@ -2,7 +2,15 @@ export interface Company {
   company_id: string;
   company_name: string;
   company_desc: string;
-  founders: string;
+  founders: CompanyFounder[];
+}
+
+export interface CompanyFounder {
+  founder_name: string;
+  founder_role: string;
+  founder_email: string;
+  founder_phone: string;
+  founder_linkedin_url: string;
 }
 
 export interface Candidate {

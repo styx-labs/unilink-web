@@ -4,13 +4,7 @@ import { Plus } from "lucide-react";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import api from "../../api/axiosConfig";
-
-interface Company {
-  company_id: string;
-  company_name: string;
-  company_desc: string;
-  founders: string;
-}
+import { Company, CompanyFounder } from "../../lib/types";
 
 const fields = [
   { id: "company_name", label: "Company Name", type: "input" as const },
@@ -18,7 +12,7 @@ const fields = [
   {
     id: "founders",
     label: "Founders",
-    type: "array" as const,
+    type: "founders" as const,
   },
 ];
 
@@ -47,10 +41,14 @@ function CompanyList() {
   const addCompany = async () => {
     try {
       const completeCompany = fields.reduce((acc, field) => {
-        acc[field.id as keyof Company] =
-          newCompany[field.id as keyof Company] ?? "";
+        if (field.id === "founders") {
+          acc[field.id] = (newCompany[field.id] as CompanyFounder[]) ?? [];
+        } else {
+          acc[field.id as keyof Omit<Company, "founders">] =
+            newCompany[field.id as keyof Omit<Company, "founders">] ?? "";
+        }
         return acc;
-      }, {} as Partial<Record<keyof Company, string | number>>);
+      }, {} as Partial<Company>);
       await api.post("/companies", completeCompany);
       fetchCompanies();
       setIsAddModalOpen(false);
@@ -101,10 +99,10 @@ function CompanyList() {
           columns={[
             { key: "company_name", label: "Company Name" },
             { key: "company_desc", label: "Description" },
-            { 
-              key: "founders", 
+            {
+              key: "founders",
               label: "Founders",
-              render: (founders: string[]) => founders.join(", ")
+              render: (founders: CompanyFounder[]) => founders.map(f => f.founder_name).join(", ")
             },
           ]}
           data={companies}

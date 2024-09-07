@@ -20,6 +20,8 @@ import { Checkbox } from "../../components/ui/checkbox";
 import { Label } from "../../components/ui/label";
 import { Textarea } from "../../components/ui/textarea";
 import { Candidate } from "./CandidateList";
+import NotesInput from "../../components/NotesInput";
+import { CandidateRoleNote, CandidateRoleNoteType } from "../../lib/types";
 
 interface AddExistingCandidatesDialogProps {
   open: boolean;
@@ -27,8 +29,8 @@ interface AddExistingCandidatesDialogProps {
   allCandidates: Candidate[];
   selectedCandidates: string[];
   toggleCandidateSelection: (candidateId: string) => void;
-  candidateNotes: string;
-  setCandidateNotes: (notes: string) => void;
+  candidateNotes: CandidateRoleNote[];
+  setCandidateNotes: (notes: CandidateRoleNote[]) => void;
   addExistingCandidates: () => void;
 }
 
@@ -86,14 +88,11 @@ function AddExistingCandidatesDialog({
 
           <div className="space-y-2">
             <Label htmlFor="candidateNotes">Notes</Label>
-            <Textarea
-              id="candidateNotes"
+            <NotesInput
               value={candidateNotes}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setCandidateNotes(e.target.value)
-              }
+              onChange={setCandidateNotes}
+              options={Object.values(CandidateRoleNoteType)}
               className="w-full"
-              placeholder="Add any notes about these candidates for this role"
             />
           </div>
         </div>

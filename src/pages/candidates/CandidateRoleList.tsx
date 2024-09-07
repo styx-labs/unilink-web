@@ -11,6 +11,7 @@ import {
   Candidate,
   CandidateRoleStatus,
   CandidateRoleNoteType,
+  CandidateRoleNote,
 } from "../../lib/types";
 import DialogForm from "../../components/DialogForm";
 
@@ -36,7 +37,7 @@ function CandidateRoleList() {
   const [isAddExistingModalOpen, setIsAddExistingModalOpen] =
     useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
-  const [candidateNotes, setCandidateNotes] = useState<string>("");
+  const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
   const [editingCandidateRole, setEditingCandidateRole] =
     useState<CandidateRole | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
@@ -44,8 +45,11 @@ function CandidateRoleList() {
 
   useEffect(() => {
     fetchCandidates();
-    fetchAllCandidates();
   }, [companyId, roleId]);
+
+  useEffect(() => {
+    fetchAllCandidates();
+  }, [candidates]);
 
   const fetchCandidates = async () => {
     setLoading(true);
@@ -68,7 +72,7 @@ function CandidateRoleList() {
         candidates.map((c) => c.candidate_id)
       );
       const filteredCandidates = response.data.filter(
-        (candidate: CandidateRole) =>
+        (candidate: Candidate) =>
           !existingCandidateIds.has(candidate.candidate_id)
       );
       setAllCandidates(filteredCandidates);
@@ -97,13 +101,14 @@ function CandidateRoleList() {
         selectedCandidates.map((candidateId) =>
           api.post(`/companies/${companyId}/roles/${roleId}/candidates`, {
             candidate_id: candidateId,
+            candidate_role_notes: candidateNotes,
           })
         )
       );
       fetchCandidates();
       setIsAddExistingModalOpen(false);
       setSelectedCandidates([]);
-      setCandidateNotes("");
+      setCandidateNotes([]);
     } catch (error) {
       console.error("Error adding existing candidates:", error);
     }

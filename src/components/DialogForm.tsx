@@ -19,7 +19,8 @@ import {
   SelectValue,
 } from "./ui/select";
 import NotesInput from "./NotesInput";
-import { CandidateRoleNote } from "../lib/types";
+import FoundersInput from "./FoundersInput";
+import { CandidateRoleNote, CompanyFounder } from "../lib/types";
 interface Field {
   id: string;
   label: string;
@@ -31,7 +32,8 @@ interface Field {
     | "email"
     | "tel"
     | "notes"
-    | "array";
+    | "array"
+    | "founders";
   options?: string[];
 }
 
@@ -56,10 +58,7 @@ function DialogForm({
   values,
   setValues,
 }: DialogFormProps) {
-  const handleChange = (
-    id: string,
-    value: string | number | readonly string[] | CandidateRoleNote[]
-  ) => {
+  const handleChange = (id: string, value: any) => {
     setValues((prev) => ({ ...prev, [id]: value }));
   };
 
@@ -174,6 +173,15 @@ function DialogForm({
                     Add {field.label}
                   </Button>
                 </div>
+              )}
+              {field.type === "founders" && (
+                <FoundersInput
+                  value={values[field.id] || []}
+                  onChange={(founders: CompanyFounder[]) =>
+                    handleChange(field.id, founders)
+                  }
+                  className="col-span-3"
+                />
               )}
             </div>
           ))}
