@@ -55,7 +55,11 @@ export interface Role {
   role_status: RoleStatus;
   role_desc: string;
   role_requirements: string;
-  role_criteria: string[];
+  role_criteria: RoleCriteria[];
+}
+
+export interface RoleCriteria {
+  criteria_name: string;
 }
 
 export enum RoleStatus {

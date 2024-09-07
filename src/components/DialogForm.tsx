@@ -21,6 +21,8 @@ import {
 import NotesInput from "./NotesInput";
 import FoundersInput from "./FoundersInput";
 import { CandidateRoleNote, CompanyFounder } from "../lib/types";
+import { RoleCriteria } from "../lib/types";
+
 interface Field {
   id: string;
   label: string;
@@ -46,6 +48,7 @@ interface DialogFormProps {
   onSubmit: () => void;
   values: Record<string, any>;
   setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  onGenerateCriteria?: () => void;
 }
 
 function DialogForm({
@@ -57,6 +60,7 @@ function DialogForm({
   onSubmit,
   values,
   setValues,
+  onGenerateCriteria,
 }: DialogFormProps) {
   const handleChange = (id: string, value: any) => {
     setValues((prev) => ({ ...prev, [id]: value }));
@@ -131,14 +135,14 @@ function DialogForm({
               )}
               {field.type === "array" && (
                 <div className="col-span-3">
-                  {((values[field.id] as string[]) || []).map((item, index) => (
+                  {((values[field.id] as RoleCriteria[]) || []).map((item, index) => (
                     <div key={index} className="flex items-center mb-2">
                       <Input
-                        type={field.type || "text"}
-                        value={item}
+                        type="text"
+                        value={item.criteria_name}
                         onChange={(e) => {
-                          const newArray = [...(values[field.id] as string[])];
-                          newArray[index] = e.target.value;
+                          const newArray = [...(values[field.id] as RoleCriteria[])];
+                          newArray[index] = { criteria_name: e.target.value };
                           handleChange(field.id, newArray);
                         }}
                         className="flex-grow"
@@ -148,7 +152,7 @@ function DialogForm({
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          const newArray = [...(values[field.id] as string[])];
+                          const newArray = [...(values[field.id] as RoleCriteria[])];
                           newArray.splice(index, 1);
                           handleChange(field.id, newArray);
                         }}
@@ -164,8 +168,8 @@ function DialogForm({
                     size="sm"
                     onClick={() => {
                       const newArray = [
-                        ...((values[field.id] as string[]) || []),
-                        "",
+                        ...((values[field.id] as RoleCriteria[]) || []),
+                        { criteria_name: "" },
                       ];
                       handleChange(field.id, newArray);
                     }}
@@ -189,6 +193,13 @@ function DialogForm({
         <DialogFooter>
           <Button onClick={onSubmit}>Save changes</Button>
         </DialogFooter>
+        {onGenerateCriteria && (
+          <div className="flex justify-end mb-4">
+            <Button onClick={onGenerateCriteria} variant="outline">
+              Generate Criteria
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

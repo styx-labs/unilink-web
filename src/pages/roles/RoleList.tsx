@@ -6,7 +6,7 @@ import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
-import { Role, RoleStatus } from "../../lib/types";
+import { Role, RoleStatus, RoleCriteria } from "../../lib/types";
 
 const fields = [
   { id: "role_name", label: "Role Name", type: "input" as const },
@@ -62,12 +62,17 @@ function RoleList() {
     try {
       const completeRole = fields.reduce((acc, field) => {
         if (field.id === "role_criteria") {
-          acc[field.id] = newRole[field.id] || [];
+          acc[field.id] = (newRole[field.id] as RoleCriteria[]) ?? [];
+        } else if (field.id === "role_status") {
+          acc[field.id] = newRole[field.id] as RoleStatus;
         } else {
-          acc[field.id as keyof Role] = newRole[field.id as keyof Role] ?? "";
+          acc[field.id as keyof Omit<Role, "role_criteria" | "role_status">] =
+            newRole[
+              field.id as keyof Omit<Role, "role_criteria" | "role_status">
+            ] ?? "";
         }
         return acc;
-      }, {} as Partial<Record<keyof Role, string | number | string[]>>);
+      }, {} as Partial<Role>);
       await api.post(`/companies/${companyId}/roles`, completeRole);
       fetchRoles();
       setIsAddModalOpen(false);
@@ -95,6 +100,22 @@ function RoleList() {
     }
   };
 
+  const generateCriteria = async () => {
+    if (!editingRole) return;
+    try {
+      const response = await api.post(
+        `/companies/${companyId}/roles/${editingRole.role_id}/generate_criteria`
+      );
+      const generatedCriteria = response.data;
+      setEditingRole({
+        ...editingRole,
+        role_criteria: generatedCriteria,
+      });
+    } catch (error) {
+      console.error("Error generating criteria:", error);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       <BreadCrumbs
@@ -118,6 +139,12 @@ function RoleList() {
             { key: "role_status", label: "Status" },
             { key: "role_desc", label: "Description" },
             { key: "role_requirements", label: "Requirements" },
+            {
+              key: "role_criteria",
+              label: "Criteria",
+              render: (criteria: RoleCriteria[]) =>
+                criteria.map((c) => c.criteria_name).join(", "),
+            },
           ]}
           data={roles}
           onEdit={setEditingRole}
@@ -150,6 +177,7 @@ function RoleList() {
         onSubmit={updateRole}
         values={editingRole || {}}
         setValues={(newValues) => setEditingRole(newValues as Role)}
+        onGenerateCriteria={generateCriteria}
       />
     </div>
   );
