@@ -32,6 +32,7 @@ export interface CandidateRole {
   candidate: Candidate;
   candidate_role_notes: CandidateRoleNote[] | null;
   candidate_role_status: CandidateRoleStatus;
+  criteria_scores: CriteriaScoringItem[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -77,4 +78,9 @@ export enum CandidateRoleStatus {
   OFFER = "Offer",
   HIRED = "Hired",
   REJECTED = "Rejected",
+}
+
+export interface CriteriaScoringItem {
+  criteria_name: string;
+  score: number;
 }

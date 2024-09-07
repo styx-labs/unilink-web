@@ -12,6 +12,7 @@ import {
   CandidateRoleStatus,
   CandidateRoleNoteType,
   CandidateRoleNote,
+  CriteriaScoringItem,
 } from "../../lib/types";
 import DialogForm from "../../components/DialogForm";
 
@@ -27,6 +28,11 @@ const fields = [
     label: "Notes",
     type: "notes" as const,
     options: Object.values(CandidateRoleNoteType),
+  },
+  {
+    id: "criteria_scores",
+    label: "Criteria Scores",
+    type: "criteriascores" as const,
   },
 ];
 
@@ -119,7 +125,10 @@ function CandidateRoleList() {
     try {
       await api.put(
         `/companies/${companyId}/roles/${roleId}/candidates/${editingCandidateRole.candidate_id}`,
-        editingCandidateRole
+        {
+          ...editingCandidateRole,
+          criteria_scores: editingCandidateRole.criteria_scores || [],
+        }
       );
       fetchCandidates();
       setEditingCandidateRole(null);
@@ -175,6 +184,16 @@ function CandidateRoleList() {
               },
               { key: "linkedin", label: "LinkedIn" },
               { key: "candidate_role_notes", label: "Notes" },
+              {
+                key: "criteria_scores",
+                label: "Criteria Scores",
+                render: (scores: CriteriaScoringItem[]) =>
+                  scores
+                    ? scores
+                        .map((s) => `${s.criteria_name}: ${s.score}`)
+                        .join(", ")
+                    : "",
+              },
             ]}
             data={candidates.map((candidate) => ({
               ...candidate,
@@ -183,6 +202,7 @@ function CandidateRoleList() {
               linkedin: candidate.candidate.linkedin,
               candidate_role_notes: candidate.candidate_role_notes,
               candidate_role_status: candidate.candidate_role_status,
+              criteria_scores: candidate.criteria_scores,
             }))}
             onDelete={deleteCandidate}
             onEdit={(candidate) => {

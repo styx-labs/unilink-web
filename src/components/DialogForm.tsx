@@ -20,7 +20,11 @@ import {
 } from "./ui/select";
 import NotesInput from "./NotesInput";
 import FoundersInput from "./FoundersInput";
-import { CandidateRoleNote, CompanyFounder } from "../lib/types";
+import {
+  CandidateRoleNote,
+  CompanyFounder,
+  CriteriaScoringItem,
+} from "../lib/types";
 import { RoleCriteria } from "../lib/types";
 
 interface Field {
@@ -35,7 +39,8 @@ interface Field {
     | "tel"
     | "notes"
     | "array"
-    | "founders";
+    | "founders"
+    | "criteriascores";
   options?: string[];
 }
 
@@ -68,7 +73,7 @@ function DialogForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -135,33 +140,39 @@ function DialogForm({
               )}
               {field.type === "array" && (
                 <div className="col-span-3">
-                  {((values[field.id] as RoleCriteria[]) || []).map((item, index) => (
-                    <div key={index} className="flex items-center mb-2">
-                      <Input
-                        type="text"
-                        value={item.criteria_name}
-                        onChange={(e) => {
-                          const newArray = [...(values[field.id] as RoleCriteria[])];
-                          newArray[index] = { criteria_name: e.target.value };
-                          handleChange(field.id, newArray);
-                        }}
-                        className="flex-grow"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const newArray = [...(values[field.id] as RoleCriteria[])];
-                          newArray.splice(index, 1);
-                          handleChange(field.id, newArray);
-                        }}
-                        className="ml-2"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  ))}
+                  {((values[field.id] as RoleCriteria[]) || []).map(
+                    (item, index) => (
+                      <div key={index} className="flex items-center mb-2">
+                        <Input
+                          type="text"
+                          value={item.criteria_name}
+                          onChange={(e) => {
+                            const newArray = [
+                              ...(values[field.id] as RoleCriteria[]),
+                            ];
+                            newArray[index] = { criteria_name: e.target.value };
+                            handleChange(field.id, newArray);
+                          }}
+                          className="flex-grow"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newArray = [
+                              ...(values[field.id] as RoleCriteria[]),
+                            ];
+                            newArray.splice(index, 1);
+                            handleChange(field.id, newArray);
+                          }}
+                          className="ml-2"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )
+                  )}
                   <Button
                     type="button"
                     variant="outline"
@@ -186,6 +197,75 @@ function DialogForm({
                   }
                   className="col-span-3"
                 />
+              )}
+              {field.type === "criteriascores" && (
+                <div className="col-span-3">
+                  {((values[field.id] as CriteriaScoringItem[]) || []).map(
+                    (item, index) => (
+                      <div key={index} className="flex items-center mb-2">
+                        <Input
+                          type="text"
+                          value={item.criteria_name}
+                          onChange={(e) => {
+                            const newArray = [
+                              ...(values[field.id] as CriteriaScoringItem[]),
+                            ];
+                            newArray[index] = {
+                              ...newArray[index],
+                              criteria_name: e.target.value,
+                            };
+                            handleChange(field.id, newArray);
+                          }}
+                          className="flex-grow mr-2"
+                        />
+                        <Input
+                          type="number"
+                          value={item.score}
+                          onChange={(e) => {
+                            const newArray = [
+                              ...(values[field.id] as CriteriaScoringItem[]),
+                            ];
+                            newArray[index] = {
+                              ...newArray[index],
+                              score: parseFloat(e.target.value),
+                            };
+                            handleChange(field.id, newArray);
+                          }}
+                          className="w-24"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newArray = [
+                              ...(values[field.id] as CriteriaScoringItem[]),
+                            ];
+                            newArray.splice(index, 1);
+                            handleChange(field.id, newArray);
+                          }}
+                          className="ml-2"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newArray = [
+                        ...((values[field.id] as CriteriaScoringItem[]) || []),
+                        { criteria_name: "", score: 0 },
+                      ];
+                      handleChange(field.id, newArray);
+                    }}
+                  >
+                    Add Criteria Score
+                  </Button>
+                </div>
               )}
             </div>
           ))}
