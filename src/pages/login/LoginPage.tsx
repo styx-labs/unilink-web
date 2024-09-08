@@ -19,8 +19,7 @@ export default function LoginPage() {
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log("Signed in successfully", result.user);
+      .then(() => {
         navigate("/companies");
       })
       .catch((error) => {

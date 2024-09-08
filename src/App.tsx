@@ -16,6 +16,7 @@ import { LoadingSpinner } from "./components/ui/loader";
 import RoleList from "./pages/roles/RoleList";
 import UserMenu from "./components/UserMenu";
 import Sidebar from "./components/Sidebar";
+import { Link } from "react-router-dom";
 import "./styles/global.css";
 
 const App: React.FC = () => {
@@ -31,7 +32,9 @@ const App: React.FC = () => {
         {user && <Sidebar />}
         <div className="flex-1 flex flex-col overflow-hidden">
           <header className="bg-white dark:bg-gray-800 p-4 flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-primary">UniLink</h1>
+            <Link to="/">
+              <h1 className="text-3xl font-bold text-primary">UniLink</h1>
+            </Link>
             {user && <UserMenu user={user} />}
           </header>
           <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">

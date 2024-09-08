@@ -15,6 +15,7 @@ import { Skeleton } from "./ui/skeleton";
 interface Column {
   key: string;
   label: string;
+  render?: (value: any) => React.ReactNode;
 }
 
 interface DataTableProps {
@@ -36,38 +37,20 @@ const DataTable: React.FC<DataTableProps> = ({
   idField = "id",
   isLoading = false,
 }) => {
-  if (isLoading) {
-    return (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map((column) => (
-              <TableHead key={column.key}>{column.label}</TableHead>
-            ))}
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[...Array(5)].map((_, index) => (
-            <TableRow key={index}>
-              {columns.map((column) => (
-                <TableCell key={column.key}>
-                  <Skeleton className="h-4 w-full" />
-                </TableCell>
-              ))}
-              <TableCell>
-                <div className="flex space-x-2">
-                  <Skeleton className="h-8 w-8" />
-                  <Skeleton className="h-8 w-8" />
-                  <Skeleton className="h-8 w-8" />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    );
-  }
+  const renderCellContent = (item: any, column: Column) => {
+    const value = item[column.key];
+    if (column.render) {
+      return column.render(value);
+    }
+    if (Array.isArray(value)) {
+      return value.map((v, index) => (
+        <div key={index}>
+          {v.type}: {v.notes}
+        </div>
+      ));
+    }
+    return value;
+  };
 
   return (
     <Table>
@@ -80,40 +63,63 @@ const DataTable: React.FC<DataTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((item) => (
-          <TableRow key={item[idField]}>
-            {columns.map((column) => (
-              <TableCell key={column.key}>{item[column.key]}</TableCell>
+        {isLoading ? (
+          <>
+            {[...Array(5)].map((_, index) => (
+              <TableRow key={index}>
+                {columns.map((column) => (
+                  <TableCell key={column.key}>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                ))}
+                <TableCell>
+                  <div className="flex space-x-2">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </TableCell>
+              </TableRow>
             ))}
-            <TableCell>
-              <div className="flex space-x-2">
-                <Button variant="ghost" size="sm">
+          </>
+        ) : (
+          data.map((item) => (
+            <TableRow key={item[idField]}>
+              {columns.map((column) => (
+                <TableCell key={column.key}>
+                  {renderCellContent(item, column)}
+                </TableCell>
+              ))}
+              <TableCell>
+                <div className="flex space-x-2">
+                  {onEdit && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit(item)}
+                    >
+                      <Pencil className="h-4 w-4 text-blue-500" />
+                    </Button>
+                  )}
+                  {onDelete && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(item[idField])}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  )}
                   <Link to={detailsPath(item)}>
-                    <ChevronRight className="h-4 w-4" />
+                    <Button variant="ghost" size="sm">
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </Link>
-                </Button>
-                {onEdit && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onEdit(item)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                )}
-                {onDelete && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDelete(item[idField])}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))
+        )}
       </TableBody>
     </Table>
   );

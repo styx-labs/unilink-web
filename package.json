@@ -8,6 +8,8 @@
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-scroll-area": "^1.1.0",
+    "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -21,6 +23,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-firebase-hooks": "^5.1.1",
+    "react-markdown": "^9.0.1",
+    "react-phone-number-input": "^3.4.5",
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
     "tailwind-merge": "^2.5.2",
@@ -33,7 +37,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tsc": "tsc",
-    "tsc:watch": "tsc -w"
+    "tsc:watch": "tsc -w",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -54,6 +60,7 @@
     ]
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.1",
     "@types/axios": "^0.14.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.5.0",
@@ -61,8 +68,12 @@
     "@types/react-dom": "^18.3.0",
     "@types/react-router-dom": "^5.3.3",
     "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.35.2",
+    "globals": "^15.9.0",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "typescript-eslint": "^8.4.0"
   }
 }

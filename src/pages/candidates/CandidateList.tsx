@@ -1,61 +1,70 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
-import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
-import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
-
-export interface Candidate {
-  candidate_id: string;
-  candidate_first_name: string;
-  candidate_last_name: string;
-  candidate_desc: string | null;
-  linkedin: string;
-  github: string;
-  resume: string;
-  email: string;
-  phone_number: string;
-  created_at: string;
-  updated_at: string;
-}
+import { Candidate } from "../../lib/types";
+import { CandidateForm } from "./CandidateForm";
 
 const fields = [
   { id: "candidate_first_name", label: "First Name", type: "input" as const },
   { id: "candidate_last_name", label: "Last Name", type: "input" as const },
   { id: "candidate_desc", label: "Description", type: "textarea" as const },
-  { id: "linkedin", label: "LinkedIn", type: "input" as const },
-  { id: "github", label: "Github", type: "input" as const },
+  { id: "linkedin", label: "LinkedIn", type: "url" as const },
+  { id: "github", label: "Github", type: "url" as const },
   { id: "resume", label: "Resume", type: "textarea" as const },
-  { id: "email", label: "Email", type: "input" as const },
-  { id: "phone_number", label: "Phone Number", type: "input" as const },
+  { id: "email", label: "Email", type: "email" as const },
+  { id: "phone_number", label: "Phone Number", type: "tel" as const },
 ];
 
 function CandidateList() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [newCandidate, setNewCandidate] = useState<Partial<Candidate>>({});
-  const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(
-    null
-  );
+  const [formData, setFormData] = useState<{
+    candidate: Partial<Candidate>;
+    isOpen: boolean;
+    isEditing: boolean;
+  }>({
+    candidate: {},
+    isOpen: false,
+    isEditing: false,
+  });
 
   useEffect(() => {
     fetchCandidates();
   }, []);
 
-  const addCandidate = async () => {
+  const openAddForm = () => {
+    setFormData({ candidate: {}, isOpen: true, isEditing: false });
+  };
+
+  const openEditForm = (candidate: Candidate) => {
+    setFormData({ candidate, isOpen: true, isEditing: true });
+  };
+
+  const closeForm = () => {
+    setFormData({ candidate: {}, isOpen: false, isEditing: false });
+  };
+
+  const handleSubmit = async (submittedCandidate: Partial<Candidate>) => {
+    if (formData.isEditing) {
+      await updateCandidate(submittedCandidate as Candidate);
+    } else {
+      await addCandidate(submittedCandidate);
+    }
+    closeForm();
+  };
+
+  const addCandidate = async (candidate: Partial<Candidate>) => {
     try {
       const completeCandidate = fields.reduce((acc, field) => {
         acc[field.id as keyof Candidate] =
-          newCandidate[field.id as keyof Candidate] ?? "";
+          candidate[field.id as keyof Candidate] ?? "";
         return acc;
       }, {} as Partial<Record<keyof Candidate, string | number>>);
 
       await api.post(`/candidates`, completeCandidate);
       fetchCandidates();
-      setIsAddModalOpen(false);
-      setNewCandidate({});
     } catch (error) {
       console.error("Error adding candidate:", error);
     }
@@ -73,21 +82,14 @@ function CandidateList() {
     }
   };
 
-  const updateCandidate = async () => {
-    if (!editingCandidate) return;
+  const updateCandidate = async (candidate: Candidate) => {
     try {
-      await api.put(
-        `/candidates/${editingCandidate.candidate_id}`,
-        editingCandidate
-      );
+      await api.put(`/candidates/${candidate.candidate_id}`, candidate);
       setCandidates(
-        candidates.map((candidate) =>
-          candidate.candidate_id === editingCandidate.candidate_id
-            ? editingCandidate
-            : candidate
+        candidates.map((c) =>
+          c.candidate_id === candidate.candidate_id ? candidate : c
         )
       );
-      setEditingCandidate(null);
     } catch (error) {
       console.error("Error updating candidate:", error);
     }
@@ -112,7 +114,7 @@ function CandidateList() {
             Candidates
           </h2>
           <div className="flex space-x-2">
-            <Button onClick={() => setIsAddModalOpen(true)}>
+            <Button onClick={openAddForm}>
               <Plus className="mr-2 h-4 w-4" /> Add New Candidate
             </Button>
           </div>
@@ -129,7 +131,7 @@ function CandidateList() {
             { key: "phone_number", label: "Phone Number" },
           ]}
           data={candidates}
-          onEdit={setEditingCandidate}
+          onEdit={openEditForm}
           onDelete={deleteCandidate}
           detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
           idField="candidate_id"
@@ -137,26 +139,17 @@ function CandidateList() {
         />
       </div>
 
-      <DialogForm
-        title="Add New Candidate"
-        description="Enter the details for the new candidate here."
-        fields={fields}
-        open={isAddModalOpen}
-        onOpenChange={setIsAddModalOpen}
-        onSubmit={addCandidate}
-        values={newCandidate}
-        setValues={setNewCandidate}
-      />
-
-      <DialogForm
-        title="Edit Candidate"
-        description="Make changes to the candidate here."
-        fields={fields}
-        open={!!editingCandidate}
-        onOpenChange={() => setEditingCandidate(null)}
-        onSubmit={updateCandidate}
-        values={editingCandidate || {}}
-        setValues={setEditingCandidate}
+      <CandidateForm
+        candidate={formData.candidate}
+        onSubmit={handleSubmit}
+        open={formData.isOpen}
+        onOpenChange={closeForm}
+        title={formData.isEditing ? "Edit Candidate" : "Add Candidate"}
+        description={
+          formData.isEditing
+            ? "Make changes to the candidate here."
+            : "Enter the details for the new candidate here."
+        }
       />
     </div>
   );

@@ -1,21 +1,19 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
-import BreadCrumbs from "../../components/breadcrumbs";
+import BreadCrumbs from "../../components/Breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
-import { Candidate } from "./CandidateList";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
-import DialogForm from "../../components/DialogForm";
-
-interface CandidateRole {
-  candidate_id: string;
-  candidate: Candidate;
-  notes: string;
-  created_at: string;
-  updated_at: string;
-}
+import {
+  CandidateRole,
+  Candidate,
+  CandidateRoleNote,
+  CriteriaScoringItem,
+} from "../../lib/types";
+import { CandidateRoleForm } from "./CandidateRoleForm";
+import { CandidateForm } from "./CandidateForm";
 
 const fields = [
   { id: "candidate_first_name", label: "First Name", type: "input" as const },
@@ -34,18 +32,28 @@ function CandidateRoleList() {
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddExistingModalOpen, setIsAddExistingModalOpen] =
     useState<boolean>(false);
+  const [isAddNewModalOpen, setIsAddNewModalOpen] = useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
-  const [candidateNotes, setCandidateNotes] = useState<string>("");
-
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [newCandidate, setNewCandidate] = useState<Partial<Candidate>>({});
+  const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
+  const [formData, setFormData] = useState<{
+    candidateRole: Partial<CandidateRole>;
+    isOpen: boolean;
+    isEditing: boolean;
+  }>({
+    candidateRole: {},
+    isOpen: false,
+    isEditing: false,
+  });
 
   const { companyId, roleId } = useParams();
 
   useEffect(() => {
     fetchCandidates();
-    fetchAllCandidates();
   }, [companyId, roleId]);
+
+  useEffect(() => {
+    fetchAllCandidates();
+  }, [candidates]);
 
   const fetchCandidates = async () => {
     setLoading(true);
@@ -68,7 +76,7 @@ function CandidateRoleList() {
         candidates.map((c) => c.candidate_id)
       );
       const filteredCandidates = response.data.filter(
-        (candidate: CandidateRole) =>
+        (candidate: Candidate) =>
           !existingCandidateIds.has(candidate.candidate_id)
       );
       setAllCandidates(filteredCandidates);
@@ -77,7 +85,7 @@ function CandidateRoleList() {
     }
   };
 
-  const deleteCandidateRole = async (id: string) => {
+  const deleteCandidate = async (id: string) => {
     try {
       await api.delete(
         `/companies/${companyId}/roles/${roleId}/candidates/${id}`
@@ -97,31 +105,49 @@ function CandidateRoleList() {
         selectedCandidates.map((candidateId) =>
           api.post(`/companies/${companyId}/roles/${roleId}/candidates`, {
             candidate_id: candidateId,
-            notes: candidateNotes,
+            candidate_role_notes: candidateNotes,
           })
         )
       );
       fetchCandidates();
       setIsAddExistingModalOpen(false);
       setSelectedCandidates([]);
-      setCandidateNotes("");
+      setCandidateNotes([]);
     } catch (error) {
       console.error("Error adding existing candidates:", error);
     }
   };
 
-  const addCandidate = async () => {
+  const updateCandidateRole = async (
+    updatedCandidateRole: Partial<CandidateRole>
+  ) => {
     try {
-      const completeCandidate = fields.reduce((acc, field) => {
-        acc[field.id as keyof Candidate] =
-          newCandidate[field.id as keyof Candidate] ?? "";
-        return acc;
-      }, {} as Partial<Record<keyof Candidate, string | number>>);
-
-      await api.post(`/companies/${companyId}/roles/${roleId}/candidates/create`, completeCandidate);
+      await api.put(
+        `/companies/${companyId}/roles/${roleId}/candidates/${updatedCandidateRole.candidate_id}`,
+        {
+          ...updatedCandidateRole,
+          criteria_scores: updatedCandidateRole.criteria_scores || [],
+        }
+      );
       fetchCandidates();
-      setIsAddModalOpen(false);
-      setNewCandidate({});
+      setFormData({ candidateRole: {}, isOpen: false, isEditing: false });
+    } catch (error) {
+      console.error("Error updating candidate role:", error);
+    }
+  };
+
+  const openEditForm = (candidateRole: CandidateRole) => {
+    setFormData({ candidateRole, isOpen: true, isEditing: true });
+  };
+
+  const addCandidate = async (newCandidate: Partial<Candidate>) => {
+    try {
+      await api.post(
+        `/companies/${companyId}/roles/${roleId}/candidates/create`,
+        newCandidate
+      );
+      fetchCandidates();
+      setIsAddNewModalOpen(false);
     } catch (error) {
       console.error("Error adding candidate:", error);
     }
@@ -156,18 +182,17 @@ function CandidateRoleList() {
             <Button onClick={() => setIsAddExistingModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
-            <div className="flex space-x-2">
-            <Button onClick={() => setIsAddModalOpen(true)}>
+            <Button onClick={() => setIsAddNewModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add New Candidate
             </Button>
           </div>
-          </div>
         </div>
-        {candidates.length === 0 ? (
+        {candidates.length === 0 && !loading ? (
           <p>No candidates found.</p>
         ) : (
           <DataTable
             columns={[
+              { key: "candidate_role_status", label: "Status" },
               {
                 key: "candidate_first_name",
                 label: "First Name",
@@ -176,17 +201,35 @@ function CandidateRoleList() {
                 key: "candidate_last_name",
                 label: "Last Name",
               },
-              { key: "linkedin", label: "LinkedIn" },
-              { key: "notes", label: "Notes" },
+              {
+                key: "candidate_role_generated_description",
+                label: "Generated Description",
+              },
+              { key: "candidate_role_notes", label: "Notes" },
+              {
+                key: "criteria_scores",
+                label: "Criteria Scores",
+                render: (scores: CriteriaScoringItem[]) =>
+                  scores
+                    ? scores
+                        .map((s) => `${s.criteria_name}: ${s.score}`)
+                        .join(", ")
+                    : "",
+              },
             ]}
             data={candidates.map((candidate) => ({
               ...candidate,
               candidate_first_name: candidate.candidate.candidate_first_name,
               candidate_last_name: candidate.candidate.candidate_last_name,
               linkedin: candidate.candidate.linkedin,
-              notes: candidate.notes,
+              candidate_role_notes: candidate.candidate_role_notes,
+              candidate_role_status: candidate.candidate_role_status,
+              criteria_scores: candidate.criteria_scores,
+              candidate_role_generated_description:
+                candidate.candidate_role_generated_description,
             }))}
-            onDelete={deleteCandidateRole}
+            onDelete={deleteCandidate}
+            onEdit={(candidate) => openEditForm(candidate)}
             detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
             idField="candidate_id"
             isLoading={loading}
@@ -200,20 +243,27 @@ function CandidateRoleList() {
         allCandidates={allCandidates}
         selectedCandidates={selectedCandidates}
         toggleCandidateSelection={toggleCandidateSelection}
-        candidateNotes={candidateNotes}
-        setCandidateNotes={setCandidateNotes}
         addExistingCandidates={addExistingCandidates}
       />
 
-      <DialogForm
+      <CandidateForm
+        candidate={{}}
+        onSubmit={addCandidate}
+        open={isAddNewModalOpen}
+        onOpenChange={setIsAddNewModalOpen}
         title="Add New Candidate"
         description="Enter the details for the new candidate here."
-        fields={fields}
-        open={isAddModalOpen}
-        onOpenChange={setIsAddModalOpen}
-        onSubmit={addCandidate}
-        values={newCandidate}
-        setValues={setNewCandidate}
+      />
+
+      <CandidateRoleForm
+        candidateRole={formData.candidateRole}
+        onSubmit={updateCandidateRole}
+        open={formData.isOpen}
+        onOpenChange={(open) => setFormData({ ...formData, isOpen: open })}
+        isEditing={formData.isEditing}
+        companyId={companyId || ""}
+        roleId={roleId || ""}
+
       />
     </div>
   );
