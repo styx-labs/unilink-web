@@ -2,35 +2,23 @@ import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
-import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
-import { Role, RoleStatus, RoleCriteria } from "../../lib/types";
-
-const fields = [
-  { id: "role_name", label: "Role Name", type: "input" as const },
-  {
-    id: "role_status",
-    label: "Status",
-    type: "select" as const,
-    options: Object.values(RoleStatus),
-  },
-  { id: "role_desc", label: "Description", type: "textarea" as const },
-  { id: "role_requirements", label: "Requirements", type: "textarea" as const },
-  {
-    id: "role_criteria",
-    label: "Criteria",
-    type: "array" as const,
-  },
-];
-
+import { Role, RoleCriteria } from "../../lib/types";
+import { RoleForm } from "./RoleForm";
 function RoleList() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [newRole, setNewRole] = useState<Partial<Role>>({});
-  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [formData, setFormData] = useState<{
+    role: Partial<Role>;
+    isOpen: boolean;
+    isEditing: boolean;
+  }>({
+    role: {},
+    isOpen: false,
+    isEditing: false,
+  });
   const { companyId } = useParams();
 
   useEffect(() => {
@@ -49,41 +37,37 @@ function RoleList() {
     }
   };
 
-  const deleteRole = async (id: string) => {
-    try {
-      await api.delete(`/companies/${companyId}/roles/${id}`);
-      setRoles(roles.filter((role) => role.role_id !== id));
-    } catch (error) {
-      console.error("Error deleting role:", error);
-    }
+  const openAddForm = () => {
+    setFormData({ role: {}, isOpen: true, isEditing: false });
   };
 
-  const addRole = async () => {
+  const openEditForm = (role: Role) => {
+    setFormData({ role, isOpen: true, isEditing: true });
+  };
+
+  const closeForm = () => {
+    setFormData({ role: {}, isOpen: false, isEditing: false });
+  };
+
+  const handleSubmit = async (submittedRole: Partial<Role>) => {
+    if (formData.isEditing) {
+      await updateRole(submittedRole as Role);
+    } else {
+      await addRole(submittedRole);
+    }
+    closeForm();
+  };
+
+  const addRole = async (newRole: Partial<Role>) => {
     try {
-      const completeRole = fields.reduce((acc, field) => {
-        if (field.id === "role_criteria") {
-          acc[field.id] = (newRole[field.id] as RoleCriteria[]) ?? [];
-        } else if (field.id === "role_status") {
-          acc[field.id] = newRole[field.id] as RoleStatus;
-        } else {
-          acc[field.id as keyof Omit<Role, "role_criteria" | "role_status">] =
-            newRole[
-              field.id as keyof Omit<Role, "role_criteria" | "role_status">
-            ] ?? "";
-        }
-        return acc;
-      }, {} as Partial<Role>);
-      await api.post(`/companies/${companyId}/roles`, completeRole);
+      await api.post(`/companies/${companyId}/roles`, newRole);
       fetchRoles();
-      setIsAddModalOpen(false);
-      setNewRole({});
     } catch (error) {
       console.error("Error adding role:", error);
     }
   };
 
-  const updateRole = async () => {
-    if (!editingRole) return;
+  const updateRole = async (editingRole: Role) => {
     try {
       await api.put(
         `/companies/${companyId}/roles/${editingRole.role_id}`,
@@ -94,25 +78,17 @@ function RoleList() {
           role.role_id === editingRole.role_id ? editingRole : role
         )
       );
-      setEditingRole(null);
     } catch (error) {
       console.error("Error updating role:", error);
     }
   };
 
-  const generateCriteria = async () => {
-    if (!editingRole) return;
+  const deleteRole = async (id: string) => {
     try {
-      const response = await api.post(
-        `/companies/${companyId}/roles/${editingRole.role_id}/generate_criteria`
-      );
-      const generatedCriteria = response.data;
-      setEditingRole({
-        ...editingRole,
-        role_criteria: generatedCriteria,
-      });
+      await api.delete(`/companies/${companyId}/roles/${id}`);
+      setRoles(roles.filter((role) => role.role_id !== id));
     } catch (error) {
-      console.error("Error generating criteria:", error);
+      console.error("Error deleting role:", error);
     }
   };
 
@@ -129,7 +105,7 @@ function RoleList() {
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
             Roles
           </h2>
-          <Button onClick={() => setIsAddModalOpen(true)}>
+          <Button onClick={openAddForm}>
             <Plus className="mr-2 h-4 w-4" /> Add Role
           </Button>
         </div>
@@ -147,8 +123,8 @@ function RoleList() {
             },
           ]}
           data={roles}
-          onEdit={setEditingRole}
-          onDelete={(id) => deleteRole(id as string)}
+          onEdit={openEditForm}
+          onDelete={deleteRole}
           detailsPath={(role) =>
             `/companies/${companyId}/roles/${role.role_id}/candidates`
           }
@@ -157,27 +133,17 @@ function RoleList() {
         />
       </div>
 
-      <DialogForm
-        title="Add Role"
-        description="Enter the details for the new role here."
-        fields={fields}
-        open={isAddModalOpen}
-        onOpenChange={setIsAddModalOpen}
-        onSubmit={addRole}
-        values={newRole}
-        setValues={(newValues) => setNewRole(newValues as Role)}
-      />
-
-      <DialogForm
-        title="Edit Role"
-        description="Make changes to the role here."
-        fields={fields}
-        open={!!editingRole}
-        onOpenChange={() => setEditingRole(null)}
-        onSubmit={updateRole}
-        values={editingRole || {}}
-        setValues={(newValues) => setEditingRole(newValues as Role)}
-        onGenerateCriteria={generateCriteria}
+      <RoleForm
+        role={formData.role}
+        onSubmit={handleSubmit}
+        open={formData.isOpen}
+        onOpenChange={closeForm}
+        title={formData.isEditing ? "Edit Role" : "Add Role"}
+        description={
+          formData.isEditing
+            ? "Make changes to the role here."
+            : "Enter the details for the new role here."
+        }
       />
     </div>
   );

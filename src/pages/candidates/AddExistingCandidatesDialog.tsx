@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,11 +17,12 @@ import {
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
-import { Candidate } from "./CandidateList";
 import NotesInput from "../../components/NotesInput";
-import { CandidateRoleNote, CandidateRoleNoteType } from "../../lib/types";
-
+import {
+  Candidate,
+  CandidateRoleNote,
+  CandidateRoleNoteType,
+} from "../../lib/types";
 interface AddExistingCandidatesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

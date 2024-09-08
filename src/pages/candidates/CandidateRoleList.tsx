@@ -15,6 +15,9 @@ import {
   CriteriaScoringItem,
 } from "../../lib/types";
 import DialogForm from "../../components/DialogForm";
+import { SelectField } from "../../components/GenericInputFields";
+import NotesInput from "../../components/NotesInput";
+import { CriteriaScoresInput } from "../../components/CriteriaScoresInput";
 
 const fields = [
   {
@@ -230,15 +233,64 @@ function CandidateRoleList() {
       <DialogForm
         title="Edit Candidate Role"
         description="Edit the candidate role here."
-        fields={fields}
         open={!!editingCandidateRole}
         onOpenChange={() => setEditingCandidateRole(null)}
         onSubmit={updateCandidateRole}
-        values={editingCandidateRole || {}}
-        setValues={(newValues) =>
-          setEditingCandidateRole(newValues as CandidateRole)
-        }
-      />
+      >
+        {fields.map((field) => {
+          switch (field.type) {
+            case "select":
+              return (
+                <SelectField
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  value={
+                    (editingCandidateRole?.[
+                      field.id as keyof CandidateRole
+                    ] as string) || ""
+                  }
+                  onChange={(id, value) =>
+                    setEditingCandidateRole({
+                      ...editingCandidateRole,
+                      [id]: value,
+                    } as CandidateRole)
+                  }
+                  options={field.options || []}
+                />
+              );
+            case "notes":
+              return (
+                <NotesInput
+                  key={field.id}
+                  value={editingCandidateRole?.candidate_role_notes || []}
+                  onChange={(notes: CandidateRoleNote[]) =>
+                    setEditingCandidateRole({
+                      ...editingCandidateRole,
+                      candidate_role_notes: notes,
+                    } as CandidateRole)
+                  }
+                  options={field.options || []}
+                />
+              );
+            case "criteriascores":
+              return (
+                <CriteriaScoresInput
+                  key={field.id}
+                  values={editingCandidateRole?.criteria_scores || []}
+                  onChange={(scores: CriteriaScoringItem[]) =>
+                    setEditingCandidateRole({
+                      ...editingCandidateRole,
+                      criteria_scores: scores,
+                    } as CandidateRole)
+                  }
+                />
+              );
+            default:
+              return null;
+          }
+        })}
+      </DialogForm>
     </div>
   );
 }

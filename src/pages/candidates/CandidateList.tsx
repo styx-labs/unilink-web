@@ -4,20 +4,8 @@ import { Plus } from "lucide-react";
 import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import api from "../../api/axiosConfig";
-
-export interface Candidate {
-  candidate_id: string;
-  candidate_first_name: string;
-  candidate_last_name: string;
-  candidate_desc: string | null;
-  linkedin: string;
-  github: string;
-  resume: string;
-  email: string;
-  phone_number: string;
-  created_at: string;
-  updated_at: string;
-}
+import { InputField, TextareaField } from "../../components/GenericInputFields";
+import { Candidate } from "../../lib/types";
 
 const fields = [
   { id: "candidate_first_name", label: "First Name", type: "input" as const },
@@ -139,24 +127,104 @@ function CandidateList() {
       <DialogForm
         title="Add New Candidate"
         description="Enter the details for the new candidate here."
-        fields={fields}
         open={isAddModalOpen}
         onOpenChange={setIsAddModalOpen}
         onSubmit={addCandidate}
-        values={newCandidate}
-        setValues={(newValues) => setEditingCandidate(newValues as Candidate)}
-      />
+      >
+        {fields.map((field) => {
+          switch (field.type) {
+            case "input":
+            case "url":
+            case "email":
+            case "tel":
+              return (
+                <InputField
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  value={
+                    (newCandidate[field.id as keyof Candidate] as string) || ""
+                  }
+                  onChange={(id, value) =>
+                    setNewCandidate({ ...newCandidate, [id]: value })
+                  }
+                />
+              );
+            case "textarea":
+              return (
+                <TextareaField
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  value={
+                    (newCandidate[field.id as keyof Candidate] as string) || ""
+                  }
+                  onChange={(id, value) =>
+                    setNewCandidate({ ...newCandidate, [id]: value })
+                  }
+                />
+              );
+            default:
+              return null;
+          }
+        })}
+      </DialogForm>
 
       <DialogForm
         title="Edit Candidate"
         description="Make changes to the candidate here."
-        fields={fields}
         open={!!editingCandidate}
         onOpenChange={() => setEditingCandidate(null)}
         onSubmit={updateCandidate}
-        values={editingCandidate || {}}
-        setValues={(newValues) => setEditingCandidate(newValues as Candidate)}
-      />
+      >
+        {fields.map((field) => {
+          switch (field.type) {
+            case "input":
+            case "url":
+            case "email":
+            case "tel":
+              return (
+                <InputField
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  value={
+                    (editingCandidate?.[
+                      field.id as keyof Candidate
+                    ] as string) || ""
+                  }
+                  onChange={(id, value) =>
+                    setEditingCandidate({
+                      ...editingCandidate,
+                      [id]: value,
+                    } as Candidate)
+                  }
+                />
+              );
+            case "textarea":
+              return (
+                <TextareaField
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  value={
+                    (editingCandidate?.[
+                      field.id as keyof Candidate
+                    ] as string) || ""
+                  }
+                  onChange={(id, value) =>
+                    setEditingCandidate({
+                      ...editingCandidate,
+                      [id]: value,
+                    } as Candidate)
+                  }
+                />
+              );
+            default:
+              return null;
+          }
+        })}
+      </DialogForm>
     </div>
   );
 }
