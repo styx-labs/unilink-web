@@ -33,6 +33,7 @@ export interface CandidateRole {
   candidate_role_notes: CandidateRoleNote[] | null;
   candidate_role_status: CandidateRoleStatus;
   criteria_scores: CriteriaScoringItem[] | null;
+  candidate_role_generated_description: string | null;
   created_at: string;
   updated_at: string;
 }

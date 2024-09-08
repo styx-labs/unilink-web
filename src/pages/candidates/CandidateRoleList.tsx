@@ -189,7 +189,10 @@ function CandidateRoleList() {
                 key: "candidate_last_name",
                 label: "Last Name",
               },
-              { key: "linkedin", label: "LinkedIn" },
+              {
+                key: "candidate_role_generated_description",
+                label: "Generated Description",
+              },
               { key: "candidate_role_notes", label: "Notes" },
               {
                 key: "criteria_scores",
@@ -210,6 +213,8 @@ function CandidateRoleList() {
               candidate_role_notes: candidate.candidate_role_notes,
               candidate_role_status: candidate.candidate_role_status,
               criteria_scores: candidate.criteria_scores,
+              candidate_role_generated_description:
+                candidate.candidate_role_generated_description,
             }))}
             onDelete={deleteCandidate}
             onEdit={(candidate) => openEditForm(candidate)}
@@ -244,6 +249,8 @@ function CandidateRoleList() {
         open={formData.isOpen}
         onOpenChange={(open) => setFormData({ ...formData, isOpen: open })}
         isEditing={formData.isEditing}
+        companyId={companyId || ""}
+        roleId={roleId || ""}
       />
     </div>
   );

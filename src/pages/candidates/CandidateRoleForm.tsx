@@ -17,6 +17,10 @@ import {
   CriteriaScoringItem,
 } from "../../lib/types";
 import { Label } from "../../components/ui/label";
+import { Button } from "../../components/ui/button";
+import api from "../../api/axiosConfig";
+import { Markdown } from "../../components/Markdown";
+import { ScrollArea } from "../../components/ui/scroll-area";
 
 interface CandidateRoleFormProps {
   candidateRole: Partial<CandidateRole>;
@@ -24,6 +28,8 @@ interface CandidateRoleFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isEditing: boolean;
+  companyId: string;
+  roleId: string;
 }
 
 const fields = [
@@ -52,6 +58,8 @@ export function CandidateRoleForm({
   open,
   onOpenChange,
   isEditing,
+  companyId,
+  roleId,
 }: CandidateRoleFormProps) {
   const [formData, setFormData] =
     useState<Partial<CandidateRole>>(candidateRole);
@@ -62,6 +70,22 @@ export function CandidateRoleForm({
 
   const handleSubmit = () => {
     onSubmit(formData);
+  };
+
+  const generateCandidateRoleDescription = async () => {
+    if (!candidateRole.candidate_id || !roleId) return;
+    try {
+      const response = await api.post(
+        `/companies/${companyId}/roles/${roleId}/candidates/${candidateRole.candidate_id}/generate_description`
+      );
+      const generatedDescription = response.data;
+      setFormData((prevData) => ({
+        ...prevData,
+        candidate_role_generated_description: generatedDescription,
+      }));
+    } catch (error) {
+      console.error("Error generating description:", error);
+    }
   };
 
   return (
@@ -83,6 +107,23 @@ export function CandidateRoleForm({
             {renderField(field, formData, setFormData)}
           </div>
         ))}
+        <Button onClick={generateCandidateRoleDescription}>
+          Generate Description
+        </Button>
+        <div className="space-y-2">
+          <Label htmlFor="generated-description">Generated Description</Label>
+          <ScrollArea className="h-[200px] w-full border rounded-md p-4">
+            {formData.candidate_role_generated_description ? (
+              <Markdown
+                content={formData.candidate_role_generated_description}
+              />
+            ) : (
+              <p className="text-muted-foreground italic">
+                No description generated yet
+              </p>
+            )}
+          </ScrollArea>
+        </div>
       </div>
     </DialogForm>
   );
