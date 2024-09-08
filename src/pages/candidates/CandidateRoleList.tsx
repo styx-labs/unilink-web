@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
-import BreadCrumbs from "../../components/Breadcrumbs";
+import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
@@ -263,7 +263,6 @@ function CandidateRoleList() {
         isEditing={formData.isEditing}
         companyId={companyId || ""}
         roleId={roleId || ""}
-
       />
     </div>
   );

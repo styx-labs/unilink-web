@@ -18,7 +18,7 @@ import {
   FileText,
 } from "lucide-react";
 
-import BreadCrumbs from "../../components/Breadcrumbs";
+import BreadCrumbs from "../../components/breadcrumbs";
 import api from "../../api/axiosConfig";
 import { Skeleton } from "../../components/ui/skeleton";
 
