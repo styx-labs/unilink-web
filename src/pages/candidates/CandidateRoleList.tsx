@@ -15,6 +15,17 @@ import {
 import { CandidateRoleForm } from "./CandidateRoleForm";
 import { CandidateForm } from "./CandidateForm";
 
+const fields = [
+  { id: "candidate_first_name", label: "First Name", type: "input" as const },
+  { id: "candidate_last_name", label: "Last Name", type: "input" as const },
+  { id: "candidate_desc", label: "Description", type: "textarea" as const },
+  { id: "linkedin", label: "LinkedIn", type: "input" as const },
+  { id: "github", label: "Github", type: "input" as const },
+  { id: "resume", label: "Resume", type: "textarea" as const },
+  { id: "email", label: "Email", type: "input" as const },
+  { id: "phone_number", label: "Phone Number", type: "input" as const },
+];
+
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
   const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);
@@ -33,6 +44,7 @@ function CandidateRoleList() {
     isOpen: false,
     isEditing: false,
   });
+
   const { companyId, roleId } = useParams();
 
   useEffect(() => {
@@ -251,6 +263,7 @@ function CandidateRoleList() {
         isEditing={formData.isEditing}
         companyId={companyId || ""}
         roleId={roleId || ""}
+
       />
     </div>
   );
