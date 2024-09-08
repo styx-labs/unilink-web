@@ -49,7 +49,6 @@ function CandidateRoleList() {
   const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
   const [editingCandidateRole, setEditingCandidateRole] =
     useState<CandidateRole | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const { companyId, roleId } = useParams();
 
   useEffect(() => {
@@ -210,7 +209,6 @@ function CandidateRoleList() {
             onDelete={deleteCandidate}
             onEdit={(candidate) => {
               setEditingCandidateRole(candidate);
-              setIsEditModalOpen(true);
             }}
             detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
             idField="candidate_id"

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Company, CompanyFounder } from "../../lib/types";
 import DialogForm from "../../components/DialogForm";
-import { InputField, TextareaField } from "../../components/GenericInputFields";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { Label } from "../../components/ui/label";
 import FoundersInput from "../../components/FoundersInput";
 
 export function CompanyForm({
@@ -37,24 +39,34 @@ export function CompanyForm({
       onOpenChange={onOpenChange}
       onSubmit={handleSubmit}
     >
-      <InputField
-        id="company_name"
-        label="Company Name"
-        value={formData.company_name || ""}
-        onChange={(id, value) => setFormData({ ...formData, [id]: value })}
-      />
-      <TextareaField
-        id="company_desc"
-        label="Description"
-        value={formData.company_desc || ""}
-        onChange={(id, value) => setFormData({ ...formData, [id]: value })}
-      />
-      <FoundersInput
-        value={formData.founders || []}
-        onChange={(founders: CompanyFounder[]) =>
-          setFormData({ ...formData, founders })
-        }
-      />
+      <div className="space-y-4">
+        <div>
+          <Label>Company Name</Label>
+          <Input
+            id="company_name"
+            value={formData.company_name || ""}
+            onChange={(e) =>
+              setFormData({ ...formData, company_name: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <Label>Description</Label>
+          <Textarea
+            id="company_desc"
+            value={formData.company_desc || ""}
+            onChange={(e) =>
+              setFormData({ ...formData, company_desc: e.target.value })
+            }
+          />
+        </div>
+        <FoundersInput
+          value={formData.founders || []}
+          onChange={(founders: CompanyFounder[]) =>
+            setFormData({ ...formData, founders })
+          }
+        />
+      </div>
     </DialogForm>
   );
 }

@@ -53,6 +53,7 @@ export const TextareaField = ({
       value={value}
       onChange={(e) => onChange(id, e.target.value)}
       className="col-span-3"
+      rows={4}
     />
   </div>
 );

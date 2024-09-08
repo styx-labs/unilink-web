@@ -3,14 +3,6 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -22,6 +14,18 @@ import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "../lib/utils";
 import { CompanyFounder } from "../lib/types";
 import { Edit, Plus, Trash2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Link } from "react-router-dom";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { formatPhoneNumber } from "react-phone-number-input";
 
 interface FoundersInputProps {
   value: CompanyFounder[];
@@ -62,6 +66,9 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
         founder_linkedin_url: "",
       });
       setIsDialogOpen(false);
+    } else {
+      // Show an error message or handle invalid input
+      alert("Please enter valid founder information.");
     }
   };
 
@@ -90,55 +97,72 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
 
   return (
     <div className={cn("space-y-4", className)}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Company Founders</CardTitle>
-          <CardDescription>Manage founders for this company</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[300px] pr-4">
-            {value.map((founder, index) => (
-              <Card key={index} className="mb-4">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {founder.founder_name}
-                  </CardTitle>
-                  <CardDescription>{founder.founder_role}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+      <Label>Company Founders</Label>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {value.map((founder, index) => (
+          <Card key={index} className="flex flex-col justify-between">
+            <CardHeader>
+              <CardTitle>{founder.founder_name}</CardTitle>
+              <CardDescription>{founder.founder_role}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col align-start">
+              {founder.founder_email && (
+                <p className="text-sm">
+                  <Link
+                    to={`mailto:${founder.founder_email}`}
+                    className="text-sm text-blue-600 hover:text-blue-800"
+                  >
                     {founder.founder_email}
-                  </p>
-                </CardContent>
-                <CardFooter className="flex justify-end space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => editFounder(index)}
+                  </Link>
+                </p>
+              )}
+              {founder.founder_phone && (
+                <p className="text-sm">
+                  <Link
+                    to={`sms:${founder.founder_phone}`}
+                    className="text-sm text-blue-600 hover:text-blue-800"
                   >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteFounder(index)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </ScrollArea>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={openNewFounderDialog}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Founder
-          </Button>
-        </CardFooter>
-      </Card>
+                    {formatPhoneNumber(founder.founder_phone) ||
+                      founder.founder_phone}
+                  </Link>
+                </p>
+              )}
+              {founder.founder_linkedin_url && (
+                <Link
+                  to={founder.founder_linkedin_url}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {founder.founder_linkedin_url}
+                </Link>
+              )}
+            </CardContent>
+            <CardFooter className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => editFounder(index)}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => deleteFounder(index)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+      <Button onClick={openNewFounderDialog}>
+        <Plus className="h-4 w-4 mr-2" />
+        Add New Founder
+      </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl">
@@ -153,10 +177,8 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="founder-name" className="text-right">
-                Name
-              </Label>
+            <div className="grid gap-2">
+              <Label htmlFor="founder-name">Name</Label>
               <Input
                 id="founder-name"
                 value={currentFounder.founder_name}
@@ -166,13 +188,10 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
                     founder_name: e.target.value,
                   })
                 }
-                className="col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="founder-role" className="text-right">
-                Role
-              </Label>
+            <div className="grid gap-2">
+              <Label htmlFor="founder-role">Role</Label>
               <Input
                 id="founder-role"
                 value={currentFounder.founder_role}
@@ -182,13 +201,10 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
                     founder_role: e.target.value,
                   })
                 }
-                className="col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="founder-email" className="text-right">
-                Email
-              </Label>
+            <div className="grid gap-2">
+              <Label htmlFor="founder-email">Email</Label>
               <Input
                 id="founder-email"
                 type="email"
@@ -199,30 +215,25 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
                     founder_email: e.target.value,
                   })
                 }
-                className="col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="founder-phone" className="text-right">
-                Phone
-              </Label>
-              <Input
+            <div className="grid gap-2">
+              <Label htmlFor="founder-phone">Phone</Label>
+              <PhoneInput
                 id="founder-phone"
-                type="tel"
                 value={currentFounder.founder_phone}
-                onChange={(e) =>
+                onChange={(value) =>
                   setCurrentFounder({
                     ...currentFounder,
-                    founder_phone: e.target.value,
+                    founder_phone: value || "",
                   })
                 }
-                className="col-span-3"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                defaultCountry="US"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="founder-linkedin" className="text-right">
-                LinkedIn URL
-              </Label>
+            <div className="grid gap-2">
+              <Label htmlFor="founder-linkedin">LinkedIn URL</Label>
               <Input
                 id="founder-linkedin"
                 type="url"
@@ -233,7 +244,6 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
                     founder_linkedin_url: e.target.value,
                   })
                 }
-                className="col-span-3"
               />
             </div>
           </div>
