@@ -3,11 +3,9 @@ import DialogForm from "../../components/DialogForm";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { Label } from "../../components/ui/label";
-import { Button } from "../../components/ui/button";
 import { useParams } from "react-router-dom";
-import api from "../../api/axiosConfig";
 import { Role, RoleStatus } from "../../lib/types";
-import { RoleCriteriaInput } from "../../components/RoleCriteriaInput";
+import { RoleCriteriaInput } from "../../components/inputs/RoleCriteriaInput";
 import {
   Select,
   SelectContent,

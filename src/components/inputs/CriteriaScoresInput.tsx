@@ -1,7 +1,7 @@
 import React from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { CriteriaScoringItem } from "../lib/types";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { CriteriaScoringItem } from "../../lib/types";
 
 interface CriteriaScoresInputProps {
   values: CriteriaScoringItem[];

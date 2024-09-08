@@ -1,8 +1,8 @@
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { RoleCriteria } from "../lib/types";
-import api from "../api/axiosConfig";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { RoleCriteria } from "../../lib/types";
+import api from "../../api/axiosConfig";
 
 export const RoleCriteriaInput = ({
   id,

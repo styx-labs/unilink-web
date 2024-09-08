@@ -4,7 +4,7 @@ import DialogForm from "../../components/DialogForm";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { Label } from "../../components/ui/label";
-import FoundersInput from "../../components/FoundersInput";
+import FoundersInput from "../../components/inputs/FoundersInput";
 
 export function CompanyForm({
   company,

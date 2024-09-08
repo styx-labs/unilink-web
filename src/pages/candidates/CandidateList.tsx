@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
-import DialogForm from "../../components/DialogForm";
 import DataTable from "../../components/DataTable";
 import api from "../../api/axiosConfig";
-import { InputField, TextareaField } from "../../components/GenericInputFields";
 import { Candidate } from "../../lib/types";
+import { CandidateForm } from "./CandidateForm";
 
 const fields = [
   { id: "candidate_first_name", label: "First Name", type: "input" as const },
@@ -21,28 +20,51 @@ const fields = [
 function CandidateList() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [newCandidate, setNewCandidate] = useState<Partial<Candidate>>({});
-  const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(
-    null
-  );
+  const [formData, setFormData] = useState<{
+    candidate: Partial<Candidate>;
+    isOpen: boolean;
+    isEditing: boolean;
+  }>({
+    candidate: {},
+    isOpen: false,
+    isEditing: false,
+  });
 
   useEffect(() => {
     fetchCandidates();
   }, []);
 
-  const addCandidate = async () => {
+  const openAddForm = () => {
+    setFormData({ candidate: {}, isOpen: true, isEditing: false });
+  };
+
+  const openEditForm = (candidate: Candidate) => {
+    setFormData({ candidate, isOpen: true, isEditing: true });
+  };
+
+  const closeForm = () => {
+    setFormData({ candidate: {}, isOpen: false, isEditing: false });
+  };
+
+  const handleSubmit = async (submittedCandidate: Partial<Candidate>) => {
+    if (formData.isEditing) {
+      await updateCandidate(submittedCandidate as Candidate);
+    } else {
+      await addCandidate(submittedCandidate);
+    }
+    closeForm();
+  };
+
+  const addCandidate = async (candidate: Partial<Candidate>) => {
     try {
       const completeCandidate = fields.reduce((acc, field) => {
         acc[field.id as keyof Candidate] =
-          newCandidate[field.id as keyof Candidate] ?? "";
+          candidate[field.id as keyof Candidate] ?? "";
         return acc;
       }, {} as Partial<Record<keyof Candidate, string | number>>);
 
       await api.post(`/candidates`, completeCandidate);
       fetchCandidates();
-      setIsAddModalOpen(false);
-      setNewCandidate({});
     } catch (error) {
       console.error("Error adding candidate:", error);
     }
@@ -60,21 +82,14 @@ function CandidateList() {
     }
   };
 
-  const updateCandidate = async () => {
-    if (!editingCandidate) return;
+  const updateCandidate = async (candidate: Candidate) => {
     try {
-      await api.put(
-        `/candidates/${editingCandidate.candidate_id}`,
-        editingCandidate
-      );
+      await api.put(`/candidates/${candidate.candidate_id}`, candidate);
       setCandidates(
-        candidates.map((candidate) =>
-          candidate.candidate_id === editingCandidate.candidate_id
-            ? editingCandidate
-            : candidate
+        candidates.map((c) =>
+          c.candidate_id === candidate.candidate_id ? candidate : c
         )
       );
-      setEditingCandidate(null);
     } catch (error) {
       console.error("Error updating candidate:", error);
     }
@@ -99,7 +114,7 @@ function CandidateList() {
             Candidates
           </h2>
           <div className="flex space-x-2">
-            <Button onClick={() => setIsAddModalOpen(true)}>
+            <Button onClick={openAddForm}>
               <Plus className="mr-2 h-4 w-4" /> Add New Candidate
             </Button>
           </div>
@@ -116,7 +131,7 @@ function CandidateList() {
             { key: "phone_number", label: "Phone Number" },
           ]}
           data={candidates}
-          onEdit={setEditingCandidate}
+          onEdit={openEditForm}
           onDelete={deleteCandidate}
           detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
           idField="candidate_id"
@@ -124,107 +139,18 @@ function CandidateList() {
         />
       </div>
 
-      <DialogForm
-        title="Add New Candidate"
-        description="Enter the details for the new candidate here."
-        open={isAddModalOpen}
-        onOpenChange={setIsAddModalOpen}
-        onSubmit={addCandidate}
-      >
-        {fields.map((field) => {
-          switch (field.type) {
-            case "input":
-            case "url":
-            case "email":
-            case "tel":
-              return (
-                <InputField
-                  key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  value={
-                    (newCandidate[field.id as keyof Candidate] as string) || ""
-                  }
-                  onChange={(id, value) =>
-                    setNewCandidate({ ...newCandidate, [id]: value })
-                  }
-                />
-              );
-            case "textarea":
-              return (
-                <TextareaField
-                  key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  value={
-                    (newCandidate[field.id as keyof Candidate] as string) || ""
-                  }
-                  onChange={(id, value) =>
-                    setNewCandidate({ ...newCandidate, [id]: value })
-                  }
-                />
-              );
-            default:
-              return null;
-          }
-        })}
-      </DialogForm>
-
-      <DialogForm
-        title="Edit Candidate"
-        description="Make changes to the candidate here."
-        open={!!editingCandidate}
-        onOpenChange={() => setEditingCandidate(null)}
-        onSubmit={updateCandidate}
-      >
-        {fields.map((field) => {
-          switch (field.type) {
-            case "input":
-            case "url":
-            case "email":
-            case "tel":
-              return (
-                <InputField
-                  key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  value={
-                    (editingCandidate?.[
-                      field.id as keyof Candidate
-                    ] as string) || ""
-                  }
-                  onChange={(id, value) =>
-                    setEditingCandidate({
-                      ...editingCandidate,
-                      [id]: value,
-                    } as Candidate)
-                  }
-                />
-              );
-            case "textarea":
-              return (
-                <TextareaField
-                  key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  value={
-                    (editingCandidate?.[
-                      field.id as keyof Candidate
-                    ] as string) || ""
-                  }
-                  onChange={(id, value) =>
-                    setEditingCandidate({
-                      ...editingCandidate,
-                      [id]: value,
-                    } as Candidate)
-                  }
-                />
-              );
-            default:
-              return null;
-          }
-        })}
-      </DialogForm>
+      <CandidateForm
+        candidate={formData.candidate}
+        onSubmit={handleSubmit}
+        open={formData.isOpen}
+        onOpenChange={closeForm}
+        title={formData.isEditing ? "Edit Candidate" : "Add Candidate"}
+        description={
+          formData.isEditing
+            ? "Make changes to the candidate here."
+            : "Enter the details for the new candidate here."
+        }
+      />
     </div>
   );
 }

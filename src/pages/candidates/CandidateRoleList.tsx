@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
-import BreadCrumbs from "../../components/breadcrumbs";
+import BreadCrumbs from "../../components/Breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig";
@@ -15,9 +15,9 @@ import {
   CriteriaScoringItem,
 } from "../../lib/types";
 import DialogForm from "../../components/DialogForm";
-import { SelectField } from "../../components/GenericInputFields";
-import NotesInput from "../../components/NotesInput";
-import { CriteriaScoresInput } from "../../components/CriteriaScoresInput";
+import { SelectField } from "../../components/inputs/GenericInputFields";
+import NotesInput from "../../components/inputs/NotesInput";
+import { CriteriaScoresInput } from "../../components/inputs/CriteriaScoresInput";
 
 const fields = [
   {

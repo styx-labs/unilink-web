@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +9,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import { ScrollArea } from "./ui/scroll-area";
-import { cn } from "../lib/utils";
-import { CompanyFounder } from "../lib/types";
+} from "../ui/dialog";
+import { cn } from "../../lib/utils";
+import { CompanyFounder } from "../../lib/types";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import {
   Card,
@@ -21,7 +20,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "../ui/card";
 import { Link } from "react-router-dom";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";

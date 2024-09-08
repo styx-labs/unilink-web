@@ -67,17 +67,17 @@ const DataTable: React.FC<DataTableProps> = ({
           <>
             {[...Array(5)].map((_, index) => (
               <TableRow key={index}>
-                  {columns.map((column) => (
-                    <TableCell key={column.key}>
-                      <Skeleton className="h-4 w-full" />
-                    </TableCell>
-                  ))}
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Skeleton className="h-8 w-8" />
-                      <Skeleton className="h-8 w-8" />
-                      <Skeleton className="h-8 w-8" />
-                    </div>
+                {columns.map((column) => (
+                  <TableCell key={column.key}>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                ))}
+                <TableCell>
+                  <div className="flex space-x-2">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -94,24 +94,24 @@ const DataTable: React.FC<DataTableProps> = ({
                 <div className="flex space-x-2">
                   {onEdit && (
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => onEdit(item)}
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-4 w-4 text-blue-500" />
                     </Button>
                   )}
                   {onDelete && (
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => onDelete(item[idField])}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   )}
                   <Link to={detailsPath(item)}>
-                    <Button variant="outline" size="sm">
+                    <Button variant="ghost" size="sm">
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </Link>

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Label } from "./ui/label";
+} from "../ui/select";
+import { Label } from "../ui/label";
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -24,10 +24,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import { ScrollArea } from "./ui/scroll-area";
-import { cn } from "../lib/utils";
-import { CandidateRoleNote, CandidateRoleNoteType } from "../lib/types";
+} from "../ui/dialog";
+import { ScrollArea } from "../ui/scroll-area";
+import { cn } from "../../lib/utils";
+import { CandidateRoleNote, CandidateRoleNoteType } from "../../lib/types";
 import { Edit, Plus, Trash2 } from "lucide-react";
 
 interface NotesInputProps {

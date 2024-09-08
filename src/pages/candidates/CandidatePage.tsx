@@ -17,7 +17,7 @@ import {
   Github,
   FileText,
 } from "lucide-react";
-import BreadCrumbs from "../../components/breadcrumbs";
+import BreadCrumbs from "../../components/Breadcrumbs";
 import api from "../../api/axiosConfig";
 interface Candidate {
   candidate_id: string;
