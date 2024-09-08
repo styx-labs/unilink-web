@@ -9,23 +9,11 @@ import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
 import {
   CandidateRole,
   Candidate,
-  CandidateRoleStatus,
-  CandidateRoleNoteType,
   CandidateRoleNote,
   CriteriaScoringItem,
 } from "../../lib/types";
 import { CandidateRoleForm } from "./CandidateRoleForm";
-
-const fields = [
-  { id: "candidate_first_name", label: "First Name", type: "input" as const },
-  { id: "candidate_last_name", label: "Last Name", type: "input" as const },
-  { id: "candidate_desc", label: "Description", type: "textarea" as const },
-  { id: "linkedin", label: "LinkedIn", type: "input" as const },
-  { id: "github", label: "Github", type: "input" as const },
-  { id: "resume", label: "Resume", type: "textarea" as const },
-  { id: "email", label: "Email", type: "input" as const },
-  { id: "phone_number", label: "Phone Number", type: "input" as const },
-];
+import { CandidateForm } from "./CandidateForm";
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
@@ -33,6 +21,7 @@ function CandidateRoleList() {
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddExistingModalOpen, setIsAddExistingModalOpen] =
     useState<boolean>(false);
+  const [isAddNewModalOpen, setIsAddNewModalOpen] = useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
   const [formData, setFormData] = useState<{
@@ -139,6 +128,19 @@ function CandidateRoleList() {
     setFormData({ candidateRole, isOpen: true, isEditing: true });
   };
 
+  const addCandidate = async (newCandidate: Partial<Candidate>) => {
+    try {
+      await api.post(
+        `/companies/${companyId}/roles/${roleId}/candidates/create`,
+        newCandidate
+      );
+      fetchCandidates();
+      setIsAddNewModalOpen(false);
+    } catch (error) {
+      console.error("Error adding candidate:", error);
+    }
+  };
+
   const toggleCandidateSelection = (candidateId: string) => {
     setSelectedCandidates((prev) =>
       prev.includes(candidateId)
@@ -168,11 +170,9 @@ function CandidateRoleList() {
             <Button onClick={() => setIsAddExistingModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
-            <div className="flex space-x-2">
-            <Button onClick={() => setIsAddModalOpen(true)}>
+            <Button onClick={() => setIsAddNewModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add New Candidate
             </Button>
-          </div>
           </div>
         </div>
         {candidates.length === 0 && !loading ? (
@@ -227,6 +227,15 @@ function CandidateRoleList() {
         selectedCandidates={selectedCandidates}
         toggleCandidateSelection={toggleCandidateSelection}
         addExistingCandidates={addExistingCandidates}
+      />
+
+      <CandidateForm
+        candidate={{}}
+        onSubmit={addCandidate}
+        open={isAddNewModalOpen}
+        onOpenChange={setIsAddNewModalOpen}
+        title="Add New Candidate"
+        description="Enter the details for the new candidate here."
       />
 
       <CandidateRoleForm
