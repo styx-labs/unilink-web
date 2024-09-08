@@ -14,30 +14,7 @@ import {
   CandidateRoleNote,
   CriteriaScoringItem,
 } from "../../lib/types";
-import DialogForm from "../../components/DialogForm";
-import { SelectField } from "../../components/inputs/GenericInputFields";
-import NotesInput from "../../components/inputs/NotesInput";
-import { CriteriaScoresInput } from "../../components/inputs/CriteriaScoresInput";
-
-const fields = [
-  {
-    id: "candidate_role_status",
-    label: "Status",
-    type: "select" as const,
-    options: Object.values(CandidateRoleStatus),
-  },
-  {
-    id: "candidate_role_notes",
-    label: "Notes",
-    type: "notes" as const,
-    options: Object.values(CandidateRoleNoteType),
-  },
-  {
-    id: "criteria_scores",
-    label: "Criteria Scores",
-    type: "criteriascores" as const,
-  },
-];
+import { CandidateRoleForm } from "./CandidateRoleForm";
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
@@ -47,8 +24,15 @@ function CandidateRoleList() {
     useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
-  const [editingCandidateRole, setEditingCandidateRole] =
-    useState<CandidateRole | null>(null);
+  const [formData, setFormData] = useState<{
+    candidateRole: Partial<CandidateRole>;
+    isOpen: boolean;
+    isEditing: boolean;
+  }>({
+    candidateRole: {},
+    isOpen: false,
+    isEditing: false,
+  });
   const { companyId, roleId } = useParams();
 
   useEffect(() => {
@@ -122,21 +106,26 @@ function CandidateRoleList() {
     }
   };
 
-  const updateCandidateRole = async () => {
-    if (!editingCandidateRole) return;
+  const updateCandidateRole = async (
+    updatedCandidateRole: Partial<CandidateRole>
+  ) => {
     try {
       await api.put(
-        `/companies/${companyId}/roles/${roleId}/candidates/${editingCandidateRole.candidate_id}`,
+        `/companies/${companyId}/roles/${roleId}/candidates/${updatedCandidateRole.candidate_id}`,
         {
-          ...editingCandidateRole,
-          criteria_scores: editingCandidateRole.criteria_scores || [],
+          ...updatedCandidateRole,
+          criteria_scores: updatedCandidateRole.criteria_scores || [],
         }
       );
       fetchCandidates();
-      setEditingCandidateRole(null);
+      setFormData({ candidateRole: {}, isOpen: false, isEditing: false });
     } catch (error) {
       console.error("Error updating candidate role:", error);
     }
+  };
+
+  const openEditForm = (candidateRole: CandidateRole) => {
+    setFormData({ candidateRole, isOpen: true, isEditing: true });
   };
 
   const toggleCandidateSelection = (candidateId: string) => {
@@ -207,9 +196,7 @@ function CandidateRoleList() {
               criteria_scores: candidate.criteria_scores,
             }))}
             onDelete={deleteCandidate}
-            onEdit={(candidate) => {
-              setEditingCandidateRole(candidate);
-            }}
+            onEdit={(candidate) => openEditForm(candidate)}
             detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
             idField="candidate_id"
             isLoading={loading}
@@ -223,72 +210,16 @@ function CandidateRoleList() {
         allCandidates={allCandidates}
         selectedCandidates={selectedCandidates}
         toggleCandidateSelection={toggleCandidateSelection}
-        candidateNotes={candidateNotes}
-        setCandidateNotes={setCandidateNotes}
         addExistingCandidates={addExistingCandidates}
       />
 
-      <DialogForm
-        title="Edit Candidate Role"
-        description="Edit the candidate role here."
-        open={!!editingCandidateRole}
-        onOpenChange={() => setEditingCandidateRole(null)}
+      <CandidateRoleForm
+        candidateRole={formData.candidateRole}
         onSubmit={updateCandidateRole}
-      >
-        {fields.map((field) => {
-          switch (field.type) {
-            case "select":
-              return (
-                <SelectField
-                  key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  value={
-                    (editingCandidateRole?.[
-                      field.id as keyof CandidateRole
-                    ] as string) || ""
-                  }
-                  onChange={(id, value) =>
-                    setEditingCandidateRole({
-                      ...editingCandidateRole,
-                      [id]: value,
-                    } as CandidateRole)
-                  }
-                  options={field.options || []}
-                />
-              );
-            case "notes":
-              return (
-                <NotesInput
-                  key={field.id}
-                  value={editingCandidateRole?.candidate_role_notes || []}
-                  onChange={(notes: CandidateRoleNote[]) =>
-                    setEditingCandidateRole({
-                      ...editingCandidateRole,
-                      candidate_role_notes: notes,
-                    } as CandidateRole)
-                  }
-                  options={field.options || []}
-                />
-              );
-            case "criteriascores":
-              return (
-                <CriteriaScoresInput
-                  key={field.id}
-                  values={editingCandidateRole?.criteria_scores || []}
-                  onChange={(scores: CriteriaScoringItem[]) =>
-                    setEditingCandidateRole({
-                      ...editingCandidateRole,
-                      criteria_scores: scores,
-                    } as CandidateRole)
-                  }
-                />
-              );
-            default:
-              return null;
-          }
-        })}
-      </DialogForm>
+        open={formData.isOpen}
+        onOpenChange={(open) => setFormData({ ...formData, isOpen: open })}
+        isEditing={formData.isEditing}
+      />
     </div>
   );
 }

@@ -12,7 +12,6 @@ import { Label } from "../ui/label";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -25,7 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "../../lib/utils";
 import { CandidateRoleNote, CandidateRoleNoteType } from "../../lib/types";
 import { Edit, Plus, Trash2 } from "lucide-react";
@@ -44,7 +42,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
   className,
 }) => {
   const [currentNote, setCurrentNote] = useState<CandidateRoleNote>({
-    type: CandidateRoleNoteType.OTHER,
+    type: CandidateRoleNoteType.PHONE_SCREEN,
     notes: "",
   });
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -60,7 +58,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
       } else {
         onChange([...value, currentNote]);
       }
-      setCurrentNote({ type: CandidateRoleNoteType.OTHER, notes: "" });
+      setCurrentNote({ type: CandidateRoleNoteType.PHONE_SCREEN, notes: "" });
       setIsDialogOpen(false);
     }
   };
@@ -77,61 +75,49 @@ const NotesInput: React.FC<NotesInputProps> = ({
   };
 
   const openNewNoteDialog = () => {
-    setCurrentNote({ type: CandidateRoleNoteType.OTHER, notes: "" });
+    setCurrentNote({ type: CandidateRoleNoteType.PHONE_SCREEN, notes: "" });
     setEditingIndex(null);
     setIsDialogOpen(true);
   };
 
   return (
     <div className={cn("space-y-4", className)}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Candidate Notes</CardTitle>
-          <CardDescription>Manage notes for this candidate</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[300px] pr-4">
-            {value.map((note, index) => (
-              <Card key={index} className="mb-4">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {note.type}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {note.notes}
-                  </p>
-                </CardContent>
-                <CardFooter className="flex justify-end space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => editNote(index)}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteNote(index)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </ScrollArea>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={openNewNoteDialog}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Note
-          </Button>
-        </CardFooter>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {value.map((note, index) => (
+          <Card key={index} className="flex flex-col justify-between">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">{note.type}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500 dark:text-gray-400 overflow-hidden">
+                {note.notes}
+              </p>
+            </CardContent>
+            <CardFooter className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => editNote(index)}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => deleteNote(index)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+      <Button onClick={openNewNoteDialog}>
+        <Plus className="h-4 w-4 mr-2" />
+        Add New Note
+      </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl">
