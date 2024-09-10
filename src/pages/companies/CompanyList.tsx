@@ -15,7 +15,6 @@ import {
   updateCompanyCompaniesCompanyIdPut,
   deleteCompanyCompaniesCompanyIdDelete,
 } from "../../client/services.gen";
-
 function CompanyList() {
   const [companies, setCompanies] = useState<CompanyWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -66,8 +65,14 @@ function CompanyList() {
   };
 
   const addCompany = async (newCompany: Partial<CompanyWithId>) => {
+    const completeCompany: CompanyCreate = {
+      company_name: newCompany.company_name ?? "",
+      company_desc: newCompany.company_desc ?? "",
+      founders: newCompany.founders ?? [],
+    };
+
     const { error } = await createCompanyCompaniesPost({
-      body: newCompany as CompanyCreate,
+      body: completeCompany as CompanyCreate,
     });
     if (error) {
       console.error("Error adding company:", error);
@@ -77,8 +82,14 @@ function CompanyList() {
   };
 
   const updateCompany = async (editingCompany: CompanyWithId) => {
+    const completeCompany: CompanyUpdate = {
+      company_name: editingCompany.company_name ?? "",
+      company_desc: editingCompany.company_desc ?? "",
+      founders: editingCompany.founders ?? [],
+    };
+
     const { error } = await updateCompanyCompaniesCompanyIdPut({
-      body: editingCompany as CompanyUpdate,
+      body: completeCompany as CompanyUpdate,
       path: { company_id: editingCompany.company_id },
     });
     if (error) {

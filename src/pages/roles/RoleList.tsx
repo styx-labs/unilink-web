@@ -71,9 +71,15 @@ function RoleList() {
   };
 
   const addRole = async (newRole: Partial<RoleWithId>) => {
+    const completeRole: RoleCreate = {
+      role_name: newRole.role_name ?? "",
+      role_desc: newRole.role_desc ?? "",
+      role_requirements: newRole.role_requirements ?? "",
+      role_criteria: newRole.role_criteria ?? [],
+    };
     const { error } = await createRoleCompaniesCompanyIdRolesPost({
       path: { company_id: companyId || "" },
-      body: newRole as RoleCreate,
+      body: completeRole as RoleCreate,
     });
     if (error) {
       console.error("Error adding role:", error);
@@ -83,9 +89,15 @@ function RoleList() {
   };
 
   const updateRole = async (editingRole: RoleWithId) => {
+    const completeRole: RoleUpdate = {
+      role_name: editingRole.role_name ?? "",
+      role_desc: editingRole.role_desc ?? "",
+      role_requirements: editingRole.role_requirements ?? "",
+      role_criteria: editingRole.role_criteria ?? [],
+    };
     const { error } = await updateRoleCompaniesCompanyIdRolesRoleIdPut({
       path: { company_id: companyId || "", role_id: editingRole.role_id },
-      body: editingRole as RoleUpdate,
+      body: completeRole as RoleUpdate,
     });
     if (error) {
       console.error("Error updating role:", error);

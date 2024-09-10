@@ -142,10 +142,20 @@ function CandidateRoleList() {
   };
 
   const addCandidate = async (newCandidate: Partial<CandidateWithId>) => {
+    const completeCandidate: CandidateCreate = {
+      candidate_first_name: newCandidate.candidate_first_name ?? "",
+      candidate_last_name: newCandidate.candidate_last_name ?? "",
+      linkedin: newCandidate.linkedin ?? "",
+      email: newCandidate.email ?? "",
+      phone_number: newCandidate.phone_number ?? "",
+      github: newCandidate.github ?? "",
+      candidate_desc: newCandidate.candidate_desc ?? "",
+      resume: newCandidate.resume ?? "",
+    };
     const { error } =
       await createCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePost({
         path: { company_id: companyId || "", role_id: roleId || "" },
-        body: newCandidate as CandidateCreate,
+        body: completeCandidate as CandidateCreate,
       });
     if (error) {
       console.error("Error adding candidate:", error);

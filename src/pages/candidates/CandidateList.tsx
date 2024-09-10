@@ -14,7 +14,10 @@ import {
   updateCandidateCandidatesCandidateIdPut,
   deleteCandidateCandidatesCandidateIdDelete,
 } from "../../client/services.gen";
-
+import {
+  CandidateCreateSchema,
+  CandidateUpdateSchema,
+} from "../../client/schemas.gen";
 function CandidateList() {
   const [candidates, setCandidates] = useState<CandidateWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -54,8 +57,18 @@ function CandidateList() {
   };
 
   const addCandidate = async (candidate: Partial<CandidateWithId>) => {
+    const completeCandidate = Object.keys(
+      CandidateCreateSchema.properties
+    ).reduce((acc, key) => {
+      if (key !== "created_at" && key !== "updated_at") {
+        acc[key as keyof CandidateCreate] =
+          candidate[key as keyof CandidateCreate] ?? "";
+      }
+      return acc;
+    }, {} as Partial<CandidateCreate>);
+
     const { error } = await createCandidateCandidatesPost({
-      body: candidate as CandidateCreate,
+      body: completeCandidate as CandidateCreate,
     });
     if (error) {
       console.error("Error adding candidate:", error);
@@ -76,8 +89,17 @@ function CandidateList() {
   };
 
   const updateCandidate = async (candidate: CandidateWithId) => {
+    const completeCandidate = Object.keys(
+      CandidateUpdateSchema.properties
+    ).reduce((acc, key) => {
+      if (key !== "created_at" && key !== "updated_at") {
+        acc[key as keyof CandidateUpdate] =
+          candidate[key as keyof CandidateUpdate] ?? "";
+      }
+      return acc;
+    }, {} as Partial<CandidateUpdate>);
     const { error } = await updateCandidateCandidatesCandidateIdPut({
-      body: candidate as CandidateUpdate,
+      body: completeCandidate as CandidateUpdate,
       path: { candidate_id: candidate.candidate_id },
     });
     if (error) {
