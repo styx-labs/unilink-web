@@ -15,10 +15,11 @@ import {
   CandidateRoleNoteType,
   CandidateRoleNote,
   CriteriaScoringItem,
-} from "../../lib/types";
+} from "../../client/types.gen";
+import { generateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost } from "../../client/services.gen";
 import { Label } from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
-import api from "../../api/axiosConfig";
+
 import { Markdown } from "../../components/Markdown";
 import { ScrollArea } from "../../components/ui/scroll-area";
 
@@ -73,18 +74,23 @@ export function CandidateRoleForm({
   };
 
   const generateCandidateRoleDescription = async () => {
-    if (!candidateRole.candidate_id || !roleId) return;
-    try {
-      const response = await api.post(
-        `/companies/${companyId}/roles/${roleId}/candidates/${candidateRole.candidate_id}/generate_description`
+    const { data, error } =
+      await generateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
+        {
+          path: {
+            company_id: companyId,
+            role_id: roleId,
+            candidate_id: candidateRole.candidate_id || "",
+          },
+        }
       );
-      const generatedDescription = response.data;
+    if (error) {
+      console.error("Error generating description:", error);
+    } else {
       setFormData((prevData) => ({
         ...prevData,
-        candidate_role_generated_description: generatedDescription,
+        candidate_role_generated_description: data,
       }));
-    } catch (error) {
-      console.error("Error generating description:", error);
     }
   };
 

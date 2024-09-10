@@ -55,20 +55,22 @@ export type CandidateRoleNote = {
   created_at?: string;
 };
 
-export type CandidateRoleNoteType =
-  | "Generated"
-  | "Takehome Assignment"
-  | "Email"
-  | "Phone Screen"
-  | "Other";
+export enum CandidateRoleNoteType {
+  Generated = "Generated",
+  TakehomeAssignment = "Takehome Assignment",
+  Email = "Email",
+  PhoneScreen = "Phone Screen",
+  Other = "Other",
+}
 
-export type CandidateRoleStatus =
-  | "Outreach"
-  | "Screening"
-  | "Interview"
-  | "Offer"
-  | "Hired"
-  | "Rejected";
+export enum CandidateRoleStatus {
+  Outreach = "Outreach",
+  Screening = "Screening",
+  Interview = "Interview",
+  Offer = "Offer",
+  Hired = "Hired",
+  Rejected = "Rejected",
+}
 
 export type CandidateRoleUpdate = {
   candidate_id: string;

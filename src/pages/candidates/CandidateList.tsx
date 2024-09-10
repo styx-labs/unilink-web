@@ -2,26 +2,24 @@ import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import DataTable from "../../components/DataTable";
-import api from "../../api/axiosConfig";
-import { Candidate } from "../../lib/types";
 import { CandidateForm } from "./CandidateForm";
-
-const fields = [
-  { id: "candidate_first_name", label: "First Name", type: "input" as const },
-  { id: "candidate_last_name", label: "Last Name", type: "input" as const },
-  { id: "candidate_desc", label: "Description", type: "textarea" as const },
-  { id: "linkedin", label: "LinkedIn", type: "url" as const },
-  { id: "github", label: "Github", type: "url" as const },
-  { id: "resume", label: "Resume", type: "textarea" as const },
-  { id: "email", label: "Email", type: "email" as const },
-  { id: "phone_number", label: "Phone Number", type: "tel" as const },
-];
+import {
+  CandidateWithId,
+  CandidateCreate,
+  CandidateUpdate,
+} from "../../client/types.gen";
+import {
+  listCandidatesCandidatesGet,
+  createCandidateCandidatesPost,
+  updateCandidateCandidatesCandidateIdPut,
+  deleteCandidateCandidatesCandidateIdDelete,
+} from "../../client/services.gen";
 
 function CandidateList() {
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [candidates, setCandidates] = useState<CandidateWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [formData, setFormData] = useState<{
-    candidate: Partial<Candidate>;
+    candidate: Partial<CandidateWithId>;
     isOpen: boolean;
     isEditing: boolean;
   }>({
@@ -38,7 +36,7 @@ function CandidateList() {
     setFormData({ candidate: {}, isOpen: true, isEditing: false });
   };
 
-  const openEditForm = (candidate: Candidate) => {
+  const openEditForm = (candidate: CandidateWithId) => {
     setFormData({ candidate, isOpen: true, isEditing: true });
   };
 
@@ -46,63 +44,57 @@ function CandidateList() {
     setFormData({ candidate: {}, isOpen: false, isEditing: false });
   };
 
-  const handleSubmit = async (submittedCandidate: Partial<Candidate>) => {
+  const handleSubmit = async (submittedCandidate: Partial<CandidateWithId>) => {
     if (formData.isEditing) {
-      await updateCandidate(submittedCandidate as Candidate);
+      await updateCandidate(submittedCandidate as CandidateWithId);
     } else {
       await addCandidate(submittedCandidate);
     }
     closeForm();
   };
 
-  const addCandidate = async (candidate: Partial<Candidate>) => {
-    try {
-      const completeCandidate = fields.reduce((acc, field) => {
-        acc[field.id as keyof Candidate] =
-          candidate[field.id as keyof Candidate] ?? "";
-        return acc;
-      }, {} as Partial<Record<keyof Candidate, string | number>>);
-
-      await api.post(`/candidates`, completeCandidate);
-      fetchCandidates();
-    } catch (error) {
+  const addCandidate = async (candidate: Partial<CandidateWithId>) => {
+    const { error } = await createCandidateCandidatesPost({
+      body: candidate as CandidateCreate,
+    });
+    if (error) {
       console.error("Error adding candidate:", error);
+    } else {
+      fetchCandidates();
     }
   };
 
   const fetchCandidates = async () => {
     setLoading(true);
-    try {
-      const response = await api.get(`/candidates`);
-      setCandidates(response.data);
-    } catch (error) {
+    const { data, error } = await listCandidatesCandidatesGet();
+    if (error) {
       console.error("Error fetching candidates:", error);
-    } finally {
-      setLoading(false);
+    } else {
+      setCandidates(data!);
     }
+    setLoading(false);
   };
 
-  const updateCandidate = async (candidate: Candidate) => {
-    try {
-      await api.put(`/candidates/${candidate.candidate_id}`, candidate);
-      setCandidates(
-        candidates.map((c) =>
-          c.candidate_id === candidate.candidate_id ? candidate : c
-        )
-      );
-    } catch (error) {
+  const updateCandidate = async (candidate: CandidateWithId) => {
+    const { error } = await updateCandidateCandidatesCandidateIdPut({
+      body: candidate as CandidateUpdate,
+      path: { candidate_id: candidate.candidate_id },
+    });
+    if (error) {
       console.error("Error updating candidate:", error);
+    } else {
+      fetchCandidates();
     }
   };
 
   const deleteCandidate = async (id: string) => {
-    try {
-      await api.delete(`/candidates/${id}`);
-      setCandidates(
-        candidates.filter((candidate) => candidate.candidate_id !== id)
-      );
-    } catch (error) {
+    const { error } = await deleteCandidateCandidatesCandidateIdDelete({
+      path: { candidate_id: id },
+    });
+    if (error) {
       console.error("Error deleting candidate:", error);
+    } else {
+      fetchCandidates();
     }
   };
 

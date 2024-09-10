@@ -1,8 +1,8 @@
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { RoleCriteria } from "../../lib/types";
-import api from "../../api/axiosConfig";
+import { RoleCriteria } from "../../client/types.gen";
+import { generateCriteriaCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost } from "../../client/services.gen";
 
 export const RoleCriteriaInput = ({
   id,
@@ -39,15 +39,14 @@ export const RoleCriteriaInput = ({
   };
 
   const generateCriteria = async () => {
-    if (!roleId) return;
-    try {
-      const response = await api.post(
-        `/companies/${companyId}/roles/${roleId}/generate_criteria`
-      );
-      const generatedCriteria = response.data;
-      onGenerateCriteria(generatedCriteria);
-    } catch (error) {
+    const { data, error } =
+      await generateCriteriaCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost({
+        path: { company_id: companyId, role_id: roleId || "" },
+      });
+    if (error) {
       console.error("Error generating criteria:", error);
+    } else {
+      onGenerateCriteria(data);
     }
   };
 

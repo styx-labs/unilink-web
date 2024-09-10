@@ -3,32 +3,30 @@ import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
+import { CandidateRoleForm } from "./CandidateRoleForm";
+import { CandidateForm } from "./CandidateForm";
 import { useParams } from "react-router-dom";
-import api from "../../api/axiosConfig";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
 import {
   CandidateRole,
-  Candidate,
+  CandidateWithId,
   CandidateRoleNote,
   CriteriaScoringItem,
-} from "../../lib/types";
-import { CandidateRoleForm } from "./CandidateRoleForm";
-import { CandidateForm } from "./CandidateForm";
-
-const fields = [
-  { id: "candidate_first_name", label: "First Name", type: "input" as const },
-  { id: "candidate_last_name", label: "Last Name", type: "input" as const },
-  { id: "candidate_desc", label: "Description", type: "textarea" as const },
-  { id: "linkedin", label: "LinkedIn", type: "input" as const },
-  { id: "github", label: "Github", type: "input" as const },
-  { id: "resume", label: "Resume", type: "textarea" as const },
-  { id: "email", label: "Email", type: "input" as const },
-  { id: "phone_number", label: "Phone Number", type: "input" as const },
-];
+  CandidateRoleUpdate,
+  CandidateCreate,
+} from "../../client/types.gen";
+import {
+  listCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGet,
+  updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
+  deleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDelete,
+  createCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePost,
+  listCandidatesCandidatesGet,
+  addCandidateCompaniesCompanyIdRolesRoleIdCandidatesPost,
+} from "../../client/services.gen";
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
-  const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);
+  const [allCandidates, setAllCandidates] = useState<CandidateWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddExistingModalOpen, setIsAddExistingModalOpen] =
     useState<boolean>(false);
@@ -57,82 +55,85 @@ function CandidateRoleList() {
 
   const fetchCandidates = async () => {
     setLoading(true);
-    try {
-      const response = await api.get(
-        `/companies/${companyId}/roles/${roleId}/candidates`
-      );
-      setCandidates(response.data);
-    } catch (error) {
+    const { data, error } =
+      await listCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGet({
+        path: { company_id: companyId || "", role_id: roleId || "" },
+      });
+    if (error) {
       console.error("Error fetching candidates:", error);
-    } finally {
-      setLoading(false);
+    } else {
+      setCandidates(data || []);
     }
+    setLoading(false);
   };
 
   const fetchAllCandidates = async () => {
-    try {
-      const response = await api.get("/candidates");
-      const existingCandidateIds = new Set(
-        candidates.map((c) => c.candidate_id)
-      );
-      const filteredCandidates = response.data.filter(
-        (candidate: Candidate) =>
-          !existingCandidateIds.has(candidate.candidate_id)
-      );
-      setAllCandidates(filteredCandidates);
-    } catch (error) {
-      console.error("Error fetching all candidates:", error);
+    const { data, error } = await listCandidatesCandidatesGet();
+    if (error) {
+      console.error("Error fetching candidates:", error);
+    } else {
+      setAllCandidates(data || []);
     }
   };
 
   const deleteCandidate = async (id: string) => {
-    try {
-      await api.delete(
-        `/companies/${companyId}/roles/${roleId}/candidates/${id}`
+    const { error } =
+      await deleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDelete(
+        {
+          path: {
+            company_id: companyId || "",
+            role_id: roleId || "",
+            candidate_id: id,
+          },
+        }
       );
-      setCandidates(
-        candidates.filter((candidate) => candidate.candidate_id !== id)
-      );
-    } catch (error) {
+    if (error) {
       console.error("Error deleting candidate:", error);
+    } else {
+      fetchCandidates();
     }
   };
 
   const addExistingCandidates = async () => {
-    if (selectedCandidates.length === 0) return;
-    try {
-      await Promise.all(
-        selectedCandidates.map((candidateId) =>
-          api.post(`/companies/${companyId}/roles/${roleId}/candidates`, {
+    selectedCandidates.map(async (candidateId) => {
+      const { error } =
+        await addCandidateCompaniesCompanyIdRolesRoleIdCandidatesPost({
+          path: { company_id: companyId || "", role_id: roleId || "" },
+          body: {
             candidate_id: candidateId,
             candidate_role_notes: candidateNotes,
-          })
-        )
-      );
-      fetchCandidates();
-      setIsAddExistingModalOpen(false);
-      setSelectedCandidates([]);
-      setCandidateNotes([]);
-    } catch (error) {
-      console.error("Error adding existing candidates:", error);
-    }
+          },
+        });
+      if (error) {
+        console.error("Error adding existing candidates:", error);
+      } else {
+        fetchCandidates();
+        setIsAddExistingModalOpen(false);
+        setSelectedCandidates([]);
+        setCandidateNotes([]);
+      }
+    });
   };
 
   const updateCandidateRole = async (
     updatedCandidateRole: Partial<CandidateRole>
   ) => {
-    try {
-      await api.put(
-        `/companies/${companyId}/roles/${roleId}/candidates/${updatedCandidateRole.candidate_id}`,
+    const { error } =
+      await updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
         {
-          ...updatedCandidateRole,
-          criteria_scores: updatedCandidateRole.criteria_scores || [],
+          path: {
+            company_id: companyId || "",
+            role_id: roleId || "",
+            candidate_id: updatedCandidateRole.candidate_id || "",
+          },
+          body: updatedCandidateRole as CandidateRoleUpdate,
         }
       );
-      fetchCandidates();
-      setFormData({ candidateRole: {}, isOpen: false, isEditing: false });
-    } catch (error) {
+    if (error) {
       console.error("Error updating candidate role:", error);
+    } else {
+      setFormData({ ...formData, isOpen: false, isEditing: false });
+      fetchCandidates();
     }
   };
 
@@ -140,16 +141,17 @@ function CandidateRoleList() {
     setFormData({ candidateRole, isOpen: true, isEditing: true });
   };
 
-  const addCandidate = async (newCandidate: Partial<Candidate>) => {
-    try {
-      await api.post(
-        `/companies/${companyId}/roles/${roleId}/candidates/create`,
-        newCandidate
-      );
-      fetchCandidates();
-      setIsAddNewModalOpen(false);
-    } catch (error) {
+  const addCandidate = async (newCandidate: Partial<CandidateWithId>) => {
+    const { error } =
+      await createCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePost({
+        path: { company_id: companyId || "", role_id: roleId || "" },
+        body: newCandidate as CandidateCreate,
+      });
+    if (error) {
       console.error("Error adding candidate:", error);
+    } else {
+      setIsAddNewModalOpen(false);
+      fetchCandidates();
     }
   };
 
@@ -219,9 +221,9 @@ function CandidateRoleList() {
             ]}
             data={candidates.map((candidate) => ({
               ...candidate,
-              candidate_first_name: candidate.candidate.candidate_first_name,
-              candidate_last_name: candidate.candidate.candidate_last_name,
-              linkedin: candidate.candidate.linkedin,
+              candidate_first_name: candidate.candidate?.candidate_first_name,
+              candidate_last_name: candidate.candidate?.candidate_last_name,
+              linkedin: candidate.candidate?.linkedin,
               candidate_role_notes: candidate.candidate_role_notes,
               candidate_role_status: candidate.candidate_role_status,
               criteria_scores: candidate.criteria_scores,
@@ -251,7 +253,8 @@ function CandidateRoleList() {
         onSubmit={addCandidate}
         open={isAddNewModalOpen}
         onOpenChange={setIsAddNewModalOpen}
-        title="Add New Candidate"
+        title="Add New CandidateWithId
+    "
         description="Enter the details for the new candidate here."
       />
 

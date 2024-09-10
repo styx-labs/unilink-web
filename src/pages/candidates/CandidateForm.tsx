@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Candidate } from "../../lib/types";
+import { CandidateWithId } from "../../client/types.gen";
 import DialogForm from "../../components/DialogForm";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
@@ -15,14 +15,14 @@ export function CandidateForm({
   title,
   description,
 }: {
-  candidate: Partial<Candidate>;
-  onSubmit: (candidate: Partial<Candidate>) => void;
+  candidate: Partial<CandidateWithId>;
+  onSubmit: (candidate: Partial<CandidateWithId>) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   description: string;
 }) {
-  const [formData, setFormData] = useState<Partial<Candidate>>(candidate);
+  const [formData, setFormData] = useState<Partial<CandidateWithId>>(candidate);
 
   useEffect(() => {
     setFormData(candidate);

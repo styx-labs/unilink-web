@@ -25,7 +25,10 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { cn } from "../../lib/utils";
-import { CandidateRoleNote, CandidateRoleNoteType } from "../../lib/types";
+import {
+  CandidateRoleNote,
+  CandidateRoleNoteType,
+} from "../../client/types.gen";
 import { Edit, Plus, Trash2 } from "lucide-react";
 
 interface NotesInputProps {
@@ -42,7 +45,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
   className,
 }) => {
   const [currentNote, setCurrentNote] = useState<CandidateRoleNote>({
-    type: CandidateRoleNoteType.PHONE_SCREEN,
+    type: CandidateRoleNoteType.PhoneScreen,
     notes: "",
   });
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -58,7 +61,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
       } else {
         onChange([...value, currentNote]);
       }
-      setCurrentNote({ type: CandidateRoleNoteType.PHONE_SCREEN, notes: "" });
+      setCurrentNote({ type: CandidateRoleNoteType.PhoneScreen, notes: "" });
       setIsDialogOpen(false);
     }
   };
@@ -75,7 +78,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
   };
 
   const openNewNoteDialog = () => {
-    setCurrentNote({ type: CandidateRoleNoteType.PHONE_SCREEN, notes: "" });
+    setCurrentNote({ type: CandidateRoleNoteType.PhoneScreen, notes: "" });
     setEditingIndex(null);
     setIsDialogOpen(true);
   };

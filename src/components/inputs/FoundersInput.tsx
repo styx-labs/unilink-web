@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { cn } from "../../lib/utils";
-import { CompanyFounder } from "../../lib/types";
+import { CompanyFounder } from "../../client/types.gen";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import {
   Card,
