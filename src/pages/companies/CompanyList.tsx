@@ -2,15 +2,25 @@ import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import DataTable from "../../components/DataTable";
-import api from "../../api/axiosConfig";
-import { Company, CompanyFounder } from "../../lib/types";
 import { CompanyForm } from "./CompanyForm";
+import {
+  CompanyWithId,
+  CompanyFounder,
+  CompanyCreate,
+  CompanyUpdate,
+} from "../../client/types.gen";
+import {
+  listCompaniesCompaniesGet,
+  createCompanyCompaniesPost,
+  updateCompanyCompaniesCompanyIdPut,
+  deleteCompanyCompaniesCompanyIdDelete,
+} from "../../client/services.gen";
 
 function CompanyList() {
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companies, setCompanies] = useState<CompanyWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [formData, setFormData] = useState<{
-    company: Partial<Company>;
+    company: Partial<CompanyWithId>;
     isOpen: boolean;
     isEditing: boolean;
   }>({
@@ -19,27 +29,11 @@ function CompanyList() {
     isEditing: false,
   });
 
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
-
-  const fetchCompanies = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get<Company[]>("/companies");
-      setCompanies(response.data);
-    } catch (error) {
-      console.error("Error fetching companies:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const openAddForm = () => {
     setFormData({ company: {}, isOpen: true, isEditing: false });
   };
 
-  const openEditForm = (company: Company) => {
+  const openEditForm = (company: CompanyWithId) => {
     setFormData({ company, isOpen: true, isEditing: true });
   };
 
@@ -47,32 +41,49 @@ function CompanyList() {
     setFormData({ company: {}, isOpen: false, isEditing: false });
   };
 
-  const handleSubmit = async (submittedCompany: Partial<Company>) => {
+  const handleSubmit = async (submittedCompany: Partial<CompanyWithId>) => {
     if (formData.isEditing) {
-      await updateCompany(submittedCompany as Company);
+      await updateCompany(submittedCompany as CompanyWithId);
     } else {
       await addCompany(submittedCompany);
     }
     closeForm();
   };
 
-  const addCompany = async (newCompany: Partial<Company>) => {
-    try {
-      const completeCompany = {
-        company_name: newCompany.company_name || "",
-        company_desc: newCompany.company_desc || "",
-        founders: newCompany.founders || [],
-      };
-      await api.post("/companies", completeCompany);
-      fetchCompanies();
-    } catch (error) {
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
+
+  const fetchCompanies = async () => {
+    setLoading(true);
+    const { data, error } = await listCompaniesCompaniesGet();
+    if (error) {
+      console.error("Error fetching companies:", error);
+    } else {
+      setCompanies(data!);
+    }
+    setLoading(false);
+  };
+
+  const addCompany = async (newCompany: Partial<CompanyWithId>) => {
+    const { error } = await createCompanyCompaniesPost({
+      body: newCompany as CompanyCreate,
+    });
+    if (error) {
       console.error("Error adding company:", error);
+    } else {
+      fetchCompanies();
     }
   };
 
-  const updateCompany = async (editingCompany: Company) => {
-    try {
-      await api.put(`/companies/${editingCompany.company_id}`, editingCompany);
+  const updateCompany = async (editingCompany: CompanyWithId) => {
+    const { error } = await updateCompanyCompaniesCompanyIdPut({
+      body: editingCompany as CompanyUpdate,
+      path: { company_id: editingCompany.company_id },
+    });
+    if (error) {
+      console.error("Error updating company:", error);
+    } else {
       setCompanies(
         companies.map((company) =>
           company.company_id === editingCompany.company_id
@@ -80,17 +91,17 @@ function CompanyList() {
             : company
         )
       );
-    } catch (error) {
-      console.error("Error updating company:", error);
     }
   };
 
   const deleteCompany = async (id: string) => {
-    try {
-      await api.delete(`/companies/${id}`);
-      setCompanies(companies.filter((company) => company.company_id !== id));
-    } catch (error) {
+    const { error } = await deleteCompanyCompaniesCompanyIdDelete({
+      path: { company_id: id },
+    });
+    if (error) {
       console.error("Error deleting company:", error);
+    } else {
+      setCompanies(companies.filter((company) => company.company_id !== id));
     }
   };
 
@@ -119,7 +130,7 @@ function CompanyList() {
           data={companies}
           onEdit={openEditForm}
           onDelete={deleteCompany}
-          detailsPath={(company: Company) =>
+          detailsPath={(company: CompanyWithId) =>
             `/companies/${company.company_id}/roles`
           }
           idField="company_id"

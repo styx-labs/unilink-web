@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@hey-api/client-fetch": "^0.2.4",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -44,7 +45,7 @@
     "tsc:watch": "tsc -w",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "generate-client": "openapi-ts --input http://localhost:8000/openapi.json --output ./src/client --client axios"
+    "generate-client": "openapi-ts --input http://localhost:8000/openapi.json --output ./src/client --client @hey-api/client-fetch"
   },
   "eslintConfig": {
     "extends": [

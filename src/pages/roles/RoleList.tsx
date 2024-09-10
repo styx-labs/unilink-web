@@ -4,15 +4,25 @@ import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
-import api from "../../api/axiosConfig";
-import { Role, RoleCriteria } from "../../lib/types";
+import {
+  listRolesCompaniesCompanyIdRolesGet,
+  createRoleCompaniesCompanyIdRolesPost,
+  updateRoleCompaniesCompanyIdRolesRoleIdPut,
+  deleteRoleCompaniesCompanyIdRolesRoleIdDelete,
+} from "../../client/services.gen";
+import {
+  RoleWithId,
+  RoleCriteria,
+  RoleCreate,
+  RoleUpdate,
+} from "../../client/types.gen";
 import { RoleForm } from "./RoleForm";
 
 function RoleList() {
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<RoleWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [formData, setFormData] = useState<{
-    role: Partial<Role>;
+    role: Partial<RoleWithId>;
     isOpen: boolean;
     isEditing: boolean;
   }>({
@@ -22,27 +32,11 @@ function RoleList() {
   });
   const { companyId } = useParams();
 
-  useEffect(() => {
-    fetchRoles();
-  }, [companyId]);
-
-  const fetchRoles = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get(`/companies/${companyId}/roles`);
-      setRoles(response.data);
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const openAddForm = () => {
     setFormData({ role: {}, isOpen: true, isEditing: false });
   };
 
-  const openEditForm = (role: Role) => {
+  const openEditForm = (role: RoleWithId) => {
     setFormData({ role, isOpen: true, isEditing: true });
   };
 
@@ -50,46 +44,68 @@ function RoleList() {
     setFormData({ role: {}, isOpen: false, isEditing: false });
   };
 
-  const handleSubmit = async (submittedRole: Partial<Role>) => {
+  const handleSubmit = async (submittedRole: Partial<RoleWithId>) => {
     if (formData.isEditing) {
-      await updateRole(submittedRole as Role);
+      await updateRole(submittedRole as RoleWithId);
     } else {
       await addRole(submittedRole);
     }
     closeForm();
   };
 
-  const addRole = async (newRole: Partial<Role>) => {
-    try {
-      await api.post(`/companies/${companyId}/roles`, newRole);
-      fetchRoles();
-    } catch (error) {
+  useEffect(() => {
+    fetchRoles();
+  }, [companyId]);
+
+  const fetchRoles = async () => {
+    setLoading(true);
+    const { data, error } = await listRolesCompaniesCompanyIdRolesGet({
+      path: { company_id: companyId || "" },
+    });
+    if (error) {
+      console.error("Error fetching roles:", error);
+    } else {
+      setRoles(data!);
+    }
+    setLoading(false);
+  };
+
+  const addRole = async (newRole: Partial<RoleWithId>) => {
+    const { error } = await createRoleCompaniesCompanyIdRolesPost({
+      path: { company_id: companyId || "" },
+      body: newRole as RoleCreate,
+    });
+    if (error) {
       console.error("Error adding role:", error);
+    } else {
+      fetchRoles();
     }
   };
 
-  const updateRole = async (editingRole: Role) => {
-    try {
-      await api.put(
-        `/companies/${companyId}/roles/${editingRole.role_id}`,
-        editingRole
-      );
+  const updateRole = async (editingRole: RoleWithId) => {
+    const { error } = await updateRoleCompaniesCompanyIdRolesRoleIdPut({
+      path: { company_id: companyId || "", role_id: editingRole.role_id },
+      body: editingRole as RoleUpdate,
+    });
+    if (error) {
+      console.error("Error updating role:", error);
+    } else {
       setRoles(
         roles.map((role) =>
           role.role_id === editingRole.role_id ? editingRole : role
         )
       );
-    } catch (error) {
-      console.error("Error updating role:", error);
     }
   };
 
   const deleteRole = async (id: string) => {
-    try {
-      await api.delete(`/companies/${companyId}/roles/${id}`);
-      setRoles(roles.filter((role) => role.role_id !== id));
-    } catch (error) {
+    const { error } = await deleteRoleCompaniesCompanyIdRolesRoleIdDelete({
+      path: { company_id: companyId || "", role_id: id },
+    });
+    if (error) {
       console.error("Error deleting role:", error);
+    } else {
+      fetchRoles();
     }
   };
 

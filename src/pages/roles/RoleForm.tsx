@@ -4,7 +4,7 @@ import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { Label } from "../../components/ui/label";
 import { useParams } from "react-router-dom";
-import { Role, RoleStatus } from "../../lib/types";
+import { RoleWithId, RoleStatus } from "../../client/types.gen";
 import { RoleCriteriaInput } from "../../components/inputs/RoleCriteriaInput";
 import {
   Select,
@@ -22,14 +22,14 @@ export function RoleForm({
   title,
   description,
 }: {
-  role: Partial<Role>;
-  onSubmit: (role: Partial<Role>) => void;
+  role: Partial<RoleWithId>;
+  onSubmit: (role: Partial<RoleWithId>) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   description: string;
 }) {
-  const [formData, setFormData] = useState<Partial<Role>>(role);
+  const [formData, setFormData] = useState<Partial<RoleWithId>>(role);
   const { companyId } = useParams();
 
   useEffect(() => {
