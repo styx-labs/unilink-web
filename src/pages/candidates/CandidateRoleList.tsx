@@ -72,7 +72,14 @@ function CandidateRoleList() {
     if (error) {
       console.error("Error fetching candidates:", error);
     } else {
-      setAllCandidates(data || []);
+      const existingCandidateIds = candidates.map(
+        (candidate) => candidate.candidate_id
+      );
+      setAllCandidates(
+        data?.filter(
+          (candidate) => !existingCandidateIds.includes(candidate.candidate_id)
+        ) || []
+      );
     }
   };
 
