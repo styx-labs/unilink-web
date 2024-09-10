@@ -16,11 +16,11 @@ import {
 } from "../../components/ui/table";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
-import { Candidate } from "../../lib/types";
+import { CandidateWithId } from "../../client/types.gen";
 interface AddExistingCandidatesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  allCandidates: Candidate[];
+  allCandidates: CandidateWithId[];
   selectedCandidates: string[];
   toggleCandidateSelection: (candidateId: string) => void;
   addExistingCandidates: () => void;

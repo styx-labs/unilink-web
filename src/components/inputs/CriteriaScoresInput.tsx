@@ -1,7 +1,6 @@
-'use client'
+"use client";
 
-import React from "react";
-import { CriteriaScoringItem } from "../../lib/types";
+import { CriteriaScoringItem } from "../../client/types.gen";
 import { Label } from "../ui/label";
 import { Star } from "lucide-react";
 import { cn } from "../../lib/utils";
@@ -37,7 +36,7 @@ export function CriteriaScoresInput({
                 )}
                 onClick={() => handleItemChange(index, star)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     handleItemChange(index, star);
                   }
                 }}
@@ -49,7 +48,7 @@ export function CriteriaScoresInput({
                   )}
                 />
                 <span className="sr-only">
-                  {star} {star === 1 ? 'star' : 'stars'}
+                  {star} {star === 1 ? "star" : "stars"}
                 </span>
               </button>
             ))}

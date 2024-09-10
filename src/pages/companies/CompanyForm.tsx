@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Company, CompanyFounder } from "../../lib/types";
+import { Company, CompanyFounder } from "../../client/types.gen";
 import DialogForm from "../../components/DialogForm";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";

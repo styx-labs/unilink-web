@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import {
@@ -19,38 +19,29 @@ import {
 } from "lucide-react";
 
 import BreadCrumbs from "../../components/breadcrumbs";
-import api from "../../api/axiosConfig";
 import { Skeleton } from "../../components/ui/skeleton";
-
-interface Candidate {
-  candidate_id: string;
-  candidate_first_name: string;
-  candidate_last_name: string;
-  candidate_desc: string;
-  email: string;
-  phone_number: string;
-  linkedin: string;
-  github: string;
-  resume: string;
-  generated_desc: string;
-  generated_score: number;
-}
+import { getCandidateCandidatesCandidateIdGet } from "../../client/services.gen";
+import { Candidate } from "../../client/types.gen";
 
 const CandidatePage: React.FC = () => {
   const { candidateId } = useParams();
   const navigate = useNavigate();
-  const [candidate, setCandidate] = React.useState<Candidate | null>(null);
+  const [candidate, setCandidate] = useState<Candidate | null>(null);
 
-  React.useEffect(() => {
-    const fetchCandidate = async () => {
-      try {
-        const response = await api.get(`/candidates/${candidateId}`);
-        setCandidate(response.data);
-      } catch (error) {
-        console.error("Error fetching candidate:", error);
-      }
-    };
+  const fetchCandidate = async () => {
+    const { data, error } = await getCandidateCandidatesCandidateIdGet({
+      path: {
+        candidate_id: candidateId || "",
+      },
+    });
+    if (error) {
+      console.error("Error fetching candidate:", error);
+    } else {
+      setCandidate(data!);
+    }
+  };
 
+  useEffect(() => {
     fetchCandidate();
   }, [candidateId]);
 
@@ -181,7 +172,7 @@ const CandidatePage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="md:col-span-2">
+          {/* <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>Generated Information</CardTitle>
               <CardDescription>
@@ -213,7 +204,7 @@ const CandidatePage: React.FC = () => {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </div>

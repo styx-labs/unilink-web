@@ -18,6 +18,19 @@ import UserMenu from "./components/UserMenu";
 import Sidebar from "./components/Sidebar";
 import { Link } from "react-router-dom";
 import "./styles/global.css";
+import { client } from "./client/services.gen";
+import { appCheck } from "./firebase/firebase";
+import { getToken } from "firebase/app-check";
+
+client.setConfig({
+  baseUrl: process.env.REACT_APP_API_BASE_URL,
+});
+
+client.interceptors.request.use(async (request) => {
+  const token = await getToken(appCheck, /* forceRefresh */ false);
+  request.headers.set("X-Firebase-AppCheck", token.token);
+  return request;
+});
 
 const App: React.FC = () => {
   const [user, loading] = useAuthState(auth);
