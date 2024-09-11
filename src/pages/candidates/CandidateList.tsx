@@ -140,7 +140,15 @@ function CandidateList() {
             { key: "candidate_desc", label: "Description" },
             { key: "linkedin", label: "LinkedIn" },
             { key: "github", label: "Github" },
-            { key: "resume", label: "Resume" },
+            { 
+              key: "resume", 
+              label: "Resume",
+              render: (value) => value ? (
+                <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  View Resume
+                </a>
+              ) : ''
+            },
             { key: "email", label: "Email" },
             { key: "phone_number", label: "Phone Number" },
           ]}

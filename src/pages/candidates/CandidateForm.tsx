@@ -6,6 +6,9 @@ import { Textarea } from "../../components/ui/textarea";
 import { Label } from "../../components/ui/label";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { storage } from "../../firebase/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 
 export function CandidateForm({
   candidate,
@@ -23,13 +26,21 @@ export function CandidateForm({
   description: string;
 }) {
   const [formData, setFormData] = useState<Partial<CandidateWithId>>(candidate);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
     setFormData(candidate);
   }, [candidate]);
 
-  const handleSubmit = () => {
-    onSubmit(formData);
+  const handleSubmit = async () => {
+    let updatedFormData = { ...formData };
+    if (resumeFile) {
+      const storageRef = ref(storage, `resumes/${formData.candidate_first_name}_${formData.candidate_last_name}_${Date.now()}.pdf`);
+      await uploadBytes(storageRef, resumeFile);
+      const downloadURL = await getDownloadURL(storageRef);
+      updatedFormData = { ...updatedFormData, resume: downloadURL };
+    }
+    onSubmit(updatedFormData);
   };
 
   return (
@@ -95,13 +106,17 @@ export function CandidateForm({
         </div>
         <div>
           <Label htmlFor="resume">Resume</Label>
-          <Textarea
+          <Input
             id="resume"
-            value={formData.resume || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, resume: e.target.value })
-            }
+            type="file"
+            accept=".pdf"
+            onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
           />
+          {formData.resume && (
+            <a href={formData.resume} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500">
+              View current resume
+            </a>
+          )}
         </div>
         <div>
           <Label htmlFor="email">Email</Label>
