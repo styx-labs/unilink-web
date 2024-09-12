@@ -1,9 +1,10 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useState, useEffect, createContext, useContext } from "react";
+import { User } from "firebase/auth";
 
 const AuthContext = createContext<{
-  currentUser: any;
+  currentUser: User | null;
   userLoggedIn: boolean;
   loading: boolean;
   isAuthorizedDomain: (email: string) => boolean;
@@ -19,7 +20,7 @@ export function useAuth() {
 }
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -28,9 +29,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return unsubscribe;
   }, []);
 
-  const initializeUser = (user: any) => {
+  const initializeUser = (user: User | null) => {
     if (user) {
-      setCurrentUser({ ...user });
+      setCurrentUser(user);
       setUserLoggedIn(true);
     } else {
       setCurrentUser(null);

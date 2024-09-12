@@ -18,7 +18,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!currentUser || !isAuthorizedDomain(currentUser.email)) {
+  if (!currentUser || !isAuthorizedDomain(currentUser.email!)) {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
 
