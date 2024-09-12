@@ -27,7 +27,7 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 // Initialize App Check
-if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development") {
   window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 

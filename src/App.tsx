@@ -21,6 +21,9 @@ import "./styles/global.css";
 import { client } from "./client/services.gen";
 import { appCheck } from "./firebase/firebase";
 import { getToken } from "firebase/app-check";
+import { AuthProvider } from "./contexts/authContext";
+import UnauthorizedPage from "./pages/login/UnauthorizedLogin";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 client.setConfig({
   baseUrl: process.env.REACT_APP_API_BASE_URL,
@@ -40,53 +43,66 @@ const App: React.FC = () => {
   }
 
   return (
-    <Router>
-      <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-        {user && <Sidebar />}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <header className="bg-white dark:bg-gray-800 p-4 flex justify-between items-center">
-            <Link to="/">
-              <h1 className="text-3xl font-bold text-primary">UniLink</h1>
-            </Link>
-            {user && <UserMenu user={user} />}
-          </header>
-          <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              {user ? (
-                <>
+    <AuthProvider>
+      <Router>
+        <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+          {user && <Sidebar />}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <header className="bg-white dark:bg-gray-800 p-4 flex justify-between items-center">
+              <Link to="/">
+                <h1 className="text-3xl font-bold text-primary">UniLink</h1>
+              </Link>
+              {user && <UserMenu user={user} />}
+            </header>
+            <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                {user ? (
                   <Route
-                    path="/"
-                    element={<Navigate replace to="/companies" />}
+                    path="/*"
+                    element={
+                      <ProtectedRoute>
+                        <Routes>
+                          <Route
+                            path="/"
+                            element={<Navigate replace to="/companies" />}
+                          />
+                          <Route path="/companies" element={<CompanyList />} />
+                          <Route
+                            path="/companies/:companyId/roles"
+                            element={<RoleList />}
+                          />
+                          <Route
+                            path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
+                            element={<CandidatePage />}
+                          />
+                          <Route
+                            path="/companies/:companyId/roles/:roleId/candidates"
+                            element={<CandidateRoleList />}
+                          />
+                          <Route
+                            path="/candidates"
+                            element={<CandidateList />}
+                          />
+                          <Route
+                            path="/candidates/:candidateId"
+                            element={<CandidatePage />}
+                          />
+                          <Route path="/roles" element={<RoleList />} />
+                        </Routes>
+                      </ProtectedRoute>
+                    }
                   />
-                  <Route path="/companies" element={<CompanyList />} />
-                  <Route
-                    path="/companies/:companyId/roles"
-                    element={<RoleList />}
-                  />
-                  <Route
-                    path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
-                    element={<CandidatePage />}
-                  />
-                  <Route
-                    path="/companies/:companyId/roles/:roleId/candidates"
-                    element={<CandidateRoleList />}
-                  />
-                  <Route path="/candidates" element={<CandidateList />} />
-                  <Route
-                    path="/candidates/:candidateId"
-                    element={<CandidatePage />}
-                  />
-                  <Route path="/roles" element={<RoleList />} />
-                </>
-              ) : (
-                <Route path="*" element={<Navigate replace to="/login" />} />
-              )}
-            </Routes>
-          </main>
+                ) : (
+                  <Route path="*" element={<Navigate replace to="/login" />} />
+                )}
+              </Routes>
+            </main>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 };
 

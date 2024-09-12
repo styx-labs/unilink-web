@@ -14,6 +14,7 @@ RUN npm install
 COPY . .
 
 ENV REACT_APP_API_BASE_URL="https://unilink-app-zzkox64kyq-uc.a.run.app"
+ENV REACT_APP_NODE_ENV="production"
 
 # Build the application
 RUN npm run build

@@ -6,10 +6,12 @@ const AuthContext = createContext<{
   currentUser: any;
   userLoggedIn: boolean;
   loading: boolean;
+  isAuthorizedDomain: (email: string) => boolean;
 }>({
   currentUser: null,
   userLoggedIn: false,
   loading: true,
+  isAuthorizedDomain: () => false,
 });
 
 export function useAuth() {
@@ -37,10 +39,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(false);
   };
 
+  const isAuthorized = (email: string) => {
+    // This is a temporary solution to allow access to the app for testing purposes. In the future, we should use custom claims to manage access to the app and features.
+    const whitelistedEmails = ["jasonhe.md@gmail.com"];
+    return (
+      whitelistedEmails.includes(email) || email.endsWith("@joinunilink.com")
+    );
+  };
+
   const value = {
     currentUser,
     userLoggedIn,
     loading,
+    isAuthorizedDomain: isAuthorized,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
