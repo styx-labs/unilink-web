@@ -12,7 +12,7 @@ import CandidateRoleList from "./pages/candidates/CandidateRoleList";
 import CandidatePage from "./pages/candidates/CandidatePage";
 import CompanyList from "./pages/companies/CompanyList";
 import LoginPage from "./pages/login/LoginPage";
-import { LoadingSpinner } from "./components/ui/loader";
+import { Loader } from "./components/ui/loader";
 import RoleList from "./pages/roles/RoleList";
 import UserMenu from "./components/UserMenu";
 import Sidebar from "./components/Sidebar";
@@ -39,7 +39,11 @@ const App: React.FC = () => {
   const [user, loading] = useAuthState(auth);
 
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="flex items-center justify-center h-screen w-screen">
+        <Loader />
+      </div>
+    );
   }
 
   return (
