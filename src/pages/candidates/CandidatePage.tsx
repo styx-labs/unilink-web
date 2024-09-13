@@ -172,12 +172,9 @@ const CandidatePage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-          {/* <Card className="md:col-span-2">
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>Generated Information</CardTitle>
-              <CardDescription>
-                AI-generated description and score based on candidate's profile
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -188,23 +185,9 @@ const CandidatePage: React.FC = () => {
                       "No generated description available."}
                   </div>
                 </div>
-                <div>
-                  <Label>Generated Score</Label>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                      <div
-                        className="bg-primary h-2.5 rounded-full"
-                        style={{ width: `${candidate.generated_score}%` }}
-                      ></div>
-                    </div>
-                    <span className="font-medium">
-                      {candidate.generated_score}%
-                    </span>
-                  </div>
-                </div>
               </div>
             </CardContent>
-          </Card> */}
+          </Card>
         </div>
       </div>
     </div>
