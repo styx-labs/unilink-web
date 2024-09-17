@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Building2, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+
 const Sidebar: React.FC = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const stored = localStorage.getItem("sidebarCollapsed");
+    return stored ? JSON.parse(stored) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
 
   return (
     <aside
