@@ -45,7 +45,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
   className,
 }) => {
   const [currentNote, setCurrentNote] = useState<CandidateRoleNote>({
-    type: CandidateRoleNoteType.PhoneScreen,
+    type: CandidateRoleNoteType.PHONE_SCREEN,
     notes: "",
   });
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -61,7 +61,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
       } else {
         onChange([...value, currentNote]);
       }
-      setCurrentNote({ type: CandidateRoleNoteType.PhoneScreen, notes: "" });
+      setCurrentNote({ type: CandidateRoleNoteType.PHONE_SCREEN, notes: "" });
       setIsDialogOpen(false);
     }
   };
@@ -78,7 +78,7 @@ const NotesInput: React.FC<NotesInputProps> = ({
   };
 
   const openNewNoteDialog = () => {
-    setCurrentNote({ type: CandidateRoleNoteType.PhoneScreen, notes: "" });
+    setCurrentNote({ type: CandidateRoleNoteType.PHONE_SCREEN, notes: "" });
     setEditingIndex(null);
     setIsDialogOpen(true);
   };

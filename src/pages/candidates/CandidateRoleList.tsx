@@ -158,6 +158,8 @@ function CandidateRoleList() {
       github: newCandidate.github ?? "",
       candidate_desc: newCandidate.candidate_desc ?? "",
       resume: newCandidate.resume ?? "",
+      grad_year: newCandidate.grad_year ?? "",
+      grad_month: newCandidate.grad_month ?? "",
     };
     const { error } =
       await createCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePost({
