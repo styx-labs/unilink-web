@@ -34,6 +34,17 @@ export const CandidateSchema = {
             type: 'string',
             title: 'Phone Number'
         },
+        github_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Github Rating'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -87,6 +98,17 @@ export const CandidateCreateSchema = {
         phone_number: {
             type: 'string',
             title: 'Phone Number'
+        },
+        github_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Github Rating'
         },
         created_at: {
             type: 'string',
@@ -388,6 +410,17 @@ export const CandidateUpdateSchema = {
             type: 'string',
             title: 'Phone Number'
         },
+        github_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Github Rating'
+        },
         updated_at: {
             type: 'string',
             format: 'date-time',
@@ -433,6 +466,17 @@ export const CandidateWithIdSchema = {
             type: 'string',
             title: 'Phone Number'
         },
+        github_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Github Rating'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -459,6 +503,14 @@ export const CandidateWithIdSchema = {
 
 export const CompanySchema = {
     properties: {
+        status: {
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/CompanyStatus'
+                }
+            ],
+            default: 'Active'
+        },
         company_name: {
             type: 'string',
             title: 'Company Name'
@@ -474,6 +526,10 @@ export const CompanySchema = {
             type: 'array',
             title: 'Founders'
         },
+        contract_size: {
+            type: 'string',
+            title: 'Contract Size'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -486,12 +542,20 @@ export const CompanySchema = {
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders', 'created_at', 'updated_at'],
+    required: ['company_name', 'company_desc', 'founders', 'contract_size', 'created_at', 'updated_at'],
     title: 'Company'
 } as const;
 
 export const CompanyCreateSchema = {
     properties: {
+        status: {
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/CompanyStatus'
+                }
+            ],
+            default: 'Active'
+        },
         company_name: {
             type: 'string',
             title: 'Company Name'
@@ -507,6 +571,10 @@ export const CompanyCreateSchema = {
             type: 'array',
             title: 'Founders'
         },
+        contract_size: {
+            type: 'string',
+            title: 'Contract Size'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -519,7 +587,7 @@ export const CompanyCreateSchema = {
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders'],
+    required: ['company_name', 'company_desc', 'founders', 'contract_size'],
     title: 'CompanyCreate'
 } as const;
 
@@ -551,8 +619,22 @@ export const CompanyFounderSchema = {
     title: 'CompanyFounder'
 } as const;
 
+export const CompanyStatusSchema = {
+    type: 'string',
+    enum: ['Active', 'Inactive', 'Pending'],
+    title: 'CompanyStatus'
+} as const;
+
 export const CompanyUpdateSchema = {
     properties: {
+        status: {
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/CompanyStatus'
+                }
+            ],
+            default: 'Active'
+        },
         company_name: {
             type: 'string',
             title: 'Company Name'
@@ -567,6 +649,10 @@ export const CompanyUpdateSchema = {
             },
             type: 'array',
             title: 'Founders'
+        },
+        contract_size: {
+            type: 'string',
+            title: 'Contract Size'
         },
         updated_at: {
             type: 'string',
@@ -575,12 +661,20 @@ export const CompanyUpdateSchema = {
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders'],
+    required: ['company_name', 'company_desc', 'founders', 'contract_size'],
     title: 'CompanyUpdate'
 } as const;
 
 export const CompanyWithIdSchema = {
     properties: {
+        status: {
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/CompanyStatus'
+                }
+            ],
+            default: 'Active'
+        },
         company_name: {
             type: 'string',
             title: 'Company Name'
@@ -595,6 +689,10 @@ export const CompanyWithIdSchema = {
             },
             type: 'array',
             title: 'Founders'
+        },
+        contract_size: {
+            type: 'string',
+            title: 'Contract Size'
         },
         created_at: {
             type: 'string',
@@ -612,7 +710,7 @@ export const CompanyWithIdSchema = {
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders', 'created_at', 'updated_at', 'company_id'],
+    required: ['company_name', 'company_desc', 'founders', 'contract_size', 'created_at', 'updated_at', 'company_id'],
     title: 'CompanyWithId'
 } as const;
 

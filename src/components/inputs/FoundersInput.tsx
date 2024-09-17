@@ -96,7 +96,7 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
 
   return (
     <div className={cn("space-y-4", className)}>
-      <Label>Company Founders</Label>
+      <Label>Company Point of Contact</Label>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {value.map((founder, index) => (
           <Card key={index} className="flex flex-col justify-between">
@@ -160,19 +160,21 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
       </div>
       <Button onClick={openNewFounderDialog}>
         <Plus className="h-4 w-4 mr-2" />
-        Add New Founder
+        Add New Point of Contact
       </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>
-              {editingIndex !== null ? "Edit Founder" : "Add New Founder"}
+              {editingIndex !== null
+                ? "Edit Point of Contact"
+                : "Add New Point of Contact"}
             </DialogTitle>
             <DialogDescription>
               {editingIndex !== null
-                ? "Make changes to the existing founder."
-                : "Enter details for the new founder."}
+                ? "Make changes to the existing point of contact."
+                : "Enter details for the new point of contact."}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">
@@ -248,7 +250,9 @@ const FoundersInput: React.FC<FoundersInputProps> = ({
           </div>
           <DialogFooter>
             <Button onClick={addOrUpdateFounder}>
-              {editingIndex !== null ? "Update Founder" : "Add Founder"}
+              {editingIndex !== null
+                ? "Update Point of Contact"
+                : "Add Point of Contact"}
             </Button>
           </DialogFooter>
         </DialogContent>

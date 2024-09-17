@@ -140,8 +140,8 @@ function RoleList() {
         </div>
         <DataTable
           columns={[
-            { key: "role_name", label: "Title" },
             { key: "role_status", label: "Status" },
+            { key: "role_name", label: "Title" },
             { key: "role_desc", label: "Description" },
             { key: "role_requirements", label: "Requirements" },
             {

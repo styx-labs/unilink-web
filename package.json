@@ -45,7 +45,7 @@
     "tsc:watch": "tsc -w",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "generate-client": "openapi-ts --input http://localhost:8000/openapi.json --output ./src/client --client @hey-api/client-fetch"
+    "generate-client": "openapi-ts"
   },
   "eslintConfig": {
     "extends": [

@@ -10,6 +10,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import CandidateList from "./pages/candidates/CandidateList";
 import CandidateRoleList from "./pages/candidates/CandidateRoleList";
 import CandidatePage from "./pages/candidates/CandidatePage";
+import CandidateRolePage from "./pages/candidates/CandidateRolePage";
 import CompanyList from "./pages/companies/CompanyList";
 import LoginPage from "./pages/login/LoginPage";
 import { Loader } from "./components/ui/loader";
@@ -78,12 +79,12 @@ const App: React.FC = () => {
                             element={<RoleList />}
                           />
                           <Route
-                            path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
-                            element={<CandidatePage />}
-                          />
-                          <Route
                             path="/companies/:companyId/roles/:roleId/candidates"
                             element={<CandidateRoleList />}
+                          />
+                          <Route
+                            path="/companies/:companyId/roles/:roleId/candidates/:candidateId"
+                            element={<CandidateRolePage />}
                           />
                           <Route
                             path="/candidates"

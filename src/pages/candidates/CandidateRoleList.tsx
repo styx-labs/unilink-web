@@ -6,6 +6,7 @@ import DataTable from "../../components/DataTable";
 import { CandidateRoleForm } from "./CandidateRoleForm";
 import { CandidateForm } from "./CandidateForm";
 import { useParams } from "react-router-dom";
+import { Markdown } from "../../components/Markdown";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
 import {
   CandidateRole,
@@ -223,8 +224,13 @@ function CandidateRoleList() {
               {
                 key: "candidate_role_generated_description",
                 label: "Generated Description",
+                render: (value: string | null) =>
+                  value ? (
+                    <Markdown content={value} />
+                  ) : (
+                    "No description generated"
+                  ),
               },
-              { key: "candidate_role_notes", label: "Notes" },
               {
                 key: "criteria_scores",
                 label: "Criteria Scores",
@@ -249,7 +255,9 @@ function CandidateRoleList() {
             }))}
             onDelete={deleteCandidate}
             onEdit={(candidate) => openEditForm(candidate)}
-            detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
+            detailsPath={(candidate) =>
+              `/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`
+            }
             idField="candidate_id"
             isLoading={loading}
           />
