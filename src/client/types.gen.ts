@@ -167,6 +167,7 @@ export type CriteriaScoringItem = {
 
 export type FindCandidatesBody = {
     n: number;
+    grad_years?: (Array<(string)> | null);
 };
 
 export type HTTPValidationError = {

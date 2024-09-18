@@ -669,6 +669,20 @@ export const FindCandidatesBodySchema = {
         n: {
             type: 'integer',
             title: 'N'
+        },
+        grad_years: {
+            anyOf: [
+                {
+                    items: {
+                        type: 'string'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Grad Years'
         }
     },
     type: 'object',
