@@ -143,6 +143,7 @@ function CompanyList() {
               render: (founders: CompanyFounder[]) =>
                 founders.map((f) => f.founder_name).join(", "),
             },
+            { key: "roles_count", label: "Number of Roles" },
           ]}
           data={companies}
           onEdit={openEditForm}

@@ -15,6 +15,7 @@ import {
   RoleCriteria,
   RoleCreate,
   RoleUpdate,
+  RoleStatus,
 } from "../../client/types.gen";
 import { RoleForm } from "./RoleForm";
 
@@ -76,6 +77,7 @@ function RoleList() {
       role_desc: newRole.role_desc ?? "",
       role_requirements: newRole.role_requirements ?? "",
       role_criteria: newRole.role_criteria ?? [],
+      role_status: newRole.role_status ?? RoleStatus.OPEN,
     };
     const { error } = await createRoleCompaniesCompanyIdRolesPost({
       path: { company_id: companyId || "" },
@@ -94,6 +96,7 @@ function RoleList() {
       role_desc: editingRole.role_desc ?? "",
       role_requirements: editingRole.role_requirements ?? "",
       role_criteria: editingRole.role_criteria ?? [],
+      role_status: editingRole.role_status ?? RoleStatus.OPEN,
     };
     const { error } = await updateRoleCompaniesCompanyIdRolesRoleIdPut({
       path: { company_id: companyId || "", role_id: editingRole.role_id },
@@ -142,14 +145,11 @@ function RoleList() {
           columns={[
             { key: "role_status", label: "Status" },
             { key: "role_name", label: "Title" },
-            { key: "role_desc", label: "Description" },
-            { key: "role_requirements", label: "Requirements" },
             {
-              key: "role_criteria",
-              label: "Criteria",
-              render: (criteria: RoleCriteria[]) =>
-                criteria.map((c) => c.criteria_name).join(", "),
+              key: "candidates_interview_count",
+              label: "Candidates Interviewed",
             },
+            { key: "candidates_sent_count", label: "Candidates Sent" },
           ]}
           data={roles}
           onEdit={openEditForm}

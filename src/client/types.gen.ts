@@ -71,11 +71,12 @@ export const CandidateRoleNoteType = {
     OTHER: 'Other'
 } as const;
 
-export type CandidateRoleStatus = 'Outreach' | 'Screening' | 'Interview' | 'Offer' | 'Hired' | 'Rejected';
+export type CandidateRoleStatus = 'Outreach' | 'Screening' | 'Sent' | 'Interview' | 'Offer' | 'Hired' | 'Rejected';
 
 export const CandidateRoleStatus = {
     OUTREACH: 'Outreach',
     SCREENING: 'Screening',
+    SENT: 'Sent',
     INTERVIEW: 'Interview',
     OFFER: 'Offer',
     HIRED: 'Hired',
@@ -129,7 +130,7 @@ export type Company = {
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
-    contract_size: string;
+    contract_size?: (string | null);
     created_at: string;
     updated_at: string;
 };
@@ -139,7 +140,7 @@ export type CompanyCreate = {
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
-    contract_size: string;
+    contract_size?: (string | null);
     created_at?: string;
     updated_at?: string;
 };
@@ -165,7 +166,7 @@ export type CompanyUpdate = {
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
-    contract_size: string;
+    contract_size?: (string | null);
     updated_at?: string;
 };
 
@@ -174,10 +175,11 @@ export type CompanyWithId = {
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
-    contract_size: string;
+    contract_size?: (string | null);
     created_at: string;
     updated_at: string;
     company_id: string;
+    roles_count?: (number | null);
 };
 
 export type CriteriaScoringItem = {
@@ -242,6 +244,8 @@ export type RoleWithId = {
     created_at: string;
     updated_at: string;
     role_id: string;
+    candidates_interview_count: number;
+    candidates_sent_count: number;
 };
 
 export type ValidationError = {

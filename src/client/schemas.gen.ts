@@ -308,7 +308,7 @@ export const CandidateRoleNoteTypeSchema = {
 
 export const CandidateRoleStatusSchema = {
     type: 'string',
-    enum: ['Outreach', 'Screening', 'Interview', 'Offer', 'Hired', 'Rejected'],
+    enum: ['Outreach', 'Screening', 'Sent', 'Interview', 'Offer', 'Hired', 'Rejected'],
     title: 'CandidateRoleStatus'
 } as const;
 
@@ -527,7 +527,14 @@ export const CompanySchema = {
             title: 'Founders'
         },
         contract_size: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Contract Size'
         },
         created_at: {
@@ -542,7 +549,7 @@ export const CompanySchema = {
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders', 'contract_size', 'created_at', 'updated_at'],
+    required: ['company_name', 'company_desc', 'founders', 'created_at', 'updated_at'],
     title: 'Company'
 } as const;
 
@@ -572,7 +579,14 @@ export const CompanyCreateSchema = {
             title: 'Founders'
         },
         contract_size: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Contract Size'
         },
         created_at: {
@@ -587,7 +601,7 @@ export const CompanyCreateSchema = {
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders', 'contract_size'],
+    required: ['company_name', 'company_desc', 'founders'],
     title: 'CompanyCreate'
 } as const;
 
@@ -651,7 +665,14 @@ export const CompanyUpdateSchema = {
             title: 'Founders'
         },
         contract_size: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Contract Size'
         },
         updated_at: {
@@ -661,7 +682,7 @@ export const CompanyUpdateSchema = {
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders', 'contract_size'],
+    required: ['company_name', 'company_desc', 'founders'],
     title: 'CompanyUpdate'
 } as const;
 
@@ -691,7 +712,14 @@ export const CompanyWithIdSchema = {
             title: 'Founders'
         },
         contract_size: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Contract Size'
         },
         created_at: {
@@ -707,10 +735,21 @@ export const CompanyWithIdSchema = {
         company_id: {
             type: 'string',
             title: 'Company Id'
+        },
+        roles_count: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Roles Count'
         }
     },
     type: 'object',
-    required: ['company_name', 'company_desc', 'founders', 'contract_size', 'created_at', 'updated_at', 'company_id'],
+    required: ['company_name', 'company_desc', 'founders', 'created_at', 'updated_at', 'company_id'],
     title: 'CompanyWithId'
 } as const;
 
@@ -967,10 +1006,18 @@ export const RoleWithIdSchema = {
         role_id: {
             type: 'string',
             title: 'Role Id'
+        },
+        candidates_interview_count: {
+            type: 'integer',
+            title: 'Candidates Interview Count'
+        },
+        candidates_sent_count: {
+            type: 'integer',
+            title: 'Candidates Sent Count'
         }
     },
     type: 'object',
-    required: ['role_name', 'role_desc', 'created_at', 'updated_at', 'role_id'],
+    required: ['role_name', 'role_desc', 'created_at', 'updated_at', 'role_id', 'candidates_interview_count', 'candidates_sent_count'],
     title: 'RoleWithId'
 } as const;
 

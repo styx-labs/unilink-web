@@ -231,16 +231,6 @@ function CandidateRoleList() {
                     "No description generated"
                   ),
               },
-              {
-                key: "criteria_scores",
-                label: "Criteria Scores",
-                render: (scores: CriteriaScoringItem[]) =>
-                  scores
-                    ? scores
-                        .map((s) => `${s.criteria_name}: ${s.score}`)
-                        .join(", ")
-                    : "",
-              },
             ]}
             data={candidates.map((candidate) => ({
               ...candidate,
