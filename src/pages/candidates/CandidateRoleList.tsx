@@ -7,7 +7,7 @@ import { CandidateRoleForm } from "./CandidateRoleForm";
 import { CandidateForm } from "./CandidateForm";
 import { useParams } from "react-router-dom";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
-import { FindCandidatesDialog } from "./FindCandidatesDialog"; // Add this import
+import { FindCandidatesDialog } from "./FindCandidatesDialog";
 import {
   CandidateRole,
   CandidateWithId,
