@@ -664,6 +664,18 @@ export const CriteriaScoringItemSchema = {
     title: 'CriteriaScoringItem'
 } as const;
 
+export const FindCandidatesBodySchema = {
+    properties: {
+        n: {
+            type: 'integer',
+            title: 'N'
+        }
+    },
+    type: 'object',
+    required: ['n'],
+    title: 'FindCandidatesBody'
+} as const;
+
 export const HTTPValidationErrorSchema = {
     properties: {
         detail: {

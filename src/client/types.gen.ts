@@ -165,6 +165,10 @@ export type CriteriaScoringItem = {
     score: number;
 };
 
+export type FindCandidatesBody = {
+    n: number;
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -379,6 +383,18 @@ export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetData = {
 export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetResponse = (Array<CandidateRole>);
 
 export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetError = (HTTPValidationError);
+
+export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostData = {
+    body: FindCandidatesBody;
+    path: {
+        company_id: string;
+        role_id: string;
+    };
+};
+
+export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostResponse = ((Array<CandidateRole> | null));
+
+export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostError = (HTTPValidationError);
 
 export type UpdateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutData = {
     body: CandidateRoleUpdate;

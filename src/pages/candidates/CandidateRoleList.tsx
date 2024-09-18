@@ -7,6 +7,7 @@ import { CandidateRoleForm } from "./CandidateRoleForm";
 import { CandidateForm } from "./CandidateForm";
 import { useParams } from "react-router-dom";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
+import { FindCandidatesDialog } from "./FindCandidatesDialog"; // Add this import
 import {
   CandidateRole,
   CandidateWithId,
@@ -14,6 +15,7 @@ import {
   CriteriaScoringItem,
   CandidateRoleUpdate,
   CandidateCreate,
+  FindCandidatesBody,
 } from "../../client/types.gen";
 import {
   listCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGet,
@@ -22,15 +24,17 @@ import {
   createCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePost,
   listCandidatesCandidatesGet,
   addCandidateCompaniesCompanyIdRolesRoleIdCandidatesPost,
+  findCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPost,
 } from "../../client/services.gen";
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
   const [allCandidates, setAllCandidates] = useState<CandidateWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isAddExistingModalOpen, setIsAddExistingModalOpen] =
+  const [isAddExistingDialogOpen, setIsAddExistingDialogOpen] =
     useState<boolean>(false);
   const [isAddNewModalOpen, setIsAddNewModalOpen] = useState<boolean>(false);
+  const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] = useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
   const [formData, setFormData] = useState<{
@@ -115,11 +119,26 @@ function CandidateRoleList() {
         console.error("Error adding existing candidates:", error);
       } else {
         fetchCandidates();
-        setIsAddExistingModalOpen(false);
+        setIsAddExistingDialogOpen(false);
         setSelectedCandidates([]);
         setCandidateNotes([]);
       }
     });
+  };
+
+  const findCandidates = async (
+    findCandidatesBody: FindCandidatesBody
+  ) => {
+    const { data, error } = await findCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPost({
+      path: { company_id: companyId || "", role_id: roleId || "" },
+      body: findCandidatesBody,
+    });
+  
+    if (error) {
+      console.error("Error finding candidates:", error);
+    } else {
+      fetchCandidates();
+    }
   };
 
   const updateCandidateRole = async (
@@ -200,7 +219,10 @@ function CandidateRoleList() {
             Candidates
           </h2>
           <div className="flex space-x-2">
-            <Button onClick={() => setIsAddExistingModalOpen(true)}>
+            <Button onClick={() => setIsFindCandidatesModalOpen(true)}>
+              Find Candidates
+            </Button>
+            <Button onClick={() => setIsAddExistingDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
             <Button onClick={() => setIsAddNewModalOpen(true)}>
@@ -259,12 +281,18 @@ function CandidateRoleList() {
       </div>
 
       <AddExistingCandidatesDialog
-        open={isAddExistingModalOpen}
-        onOpenChange={setIsAddExistingModalOpen}
+        open={isAddExistingDialogOpen}
+        onOpenChange={setIsAddExistingDialogOpen}
         allCandidates={allCandidates}
         selectedCandidates={selectedCandidates}
         toggleCandidateSelection={toggleCandidateSelection}
         addExistingCandidates={addExistingCandidates}
+      />
+
+      <FindCandidatesDialog
+        open={isFindCandidatesModalOpen}
+        onOpenChange={setIsFindCandidatesModalOpen}
+        onSubmit={findCandidates}
       />
 
       <CandidateForm
