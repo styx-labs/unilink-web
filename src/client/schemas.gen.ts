@@ -45,6 +45,14 @@ export const CandidateSchema = {
             ],
             title: 'Github Rating'
         },
+        grad_year: {
+            type: 'string',
+            title: 'Grad Year'
+        },
+        grad_month: {
+            type: 'string',
+            title: 'Grad Month'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -61,7 +69,7 @@ export const CandidateSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'created_at', 'updated_at', 'generated_desc'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month', 'created_at', 'updated_at', 'generated_desc'],
     title: 'Candidate'
 } as const;
 
@@ -110,6 +118,14 @@ export const CandidateCreateSchema = {
             ],
             title: 'Github Rating'
         },
+        grad_year: {
+            type: 'string',
+            title: 'Grad Year'
+        },
+        grad_month: {
+            type: 'string',
+            title: 'Grad Month'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -127,7 +143,7 @@ export const CandidateCreateSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month'],
     title: 'CandidateCreate'
 } as const;
 
@@ -421,6 +437,14 @@ export const CandidateUpdateSchema = {
             ],
             title: 'Github Rating'
         },
+        grad_year: {
+            type: 'string',
+            title: 'Grad Year'
+        },
+        grad_month: {
+            type: 'string',
+            title: 'Grad Month'
+        },
         updated_at: {
             type: 'string',
             format: 'date-time',
@@ -428,7 +452,7 @@ export const CandidateUpdateSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month'],
     title: 'CandidateUpdate'
 } as const;
 
@@ -477,6 +501,14 @@ export const CandidateWithIdSchema = {
             ],
             title: 'Github Rating'
         },
+        grad_year: {
+            type: 'string',
+            title: 'Grad Year'
+        },
+        grad_month: {
+            type: 'string',
+            title: 'Grad Month'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -497,7 +529,7 @@ export const CandidateWithIdSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'created_at', 'updated_at', 'generated_desc', 'candidate_id'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month', 'created_at', 'updated_at', 'generated_desc', 'candidate_id'],
     title: 'CandidateWithId'
 } as const;
 
@@ -767,6 +799,32 @@ export const CriteriaScoringItemSchema = {
     type: 'object',
     required: ['criteria_name', 'score'],
     title: 'CriteriaScoringItem'
+} as const;
+
+export const FindCandidatesBodySchema = {
+    properties: {
+        n: {
+            type: 'integer',
+            title: 'N'
+        },
+        grad_years: {
+            anyOf: [
+                {
+                    items: {
+                        type: 'string'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Grad Years'
+        }
+    },
+    type: 'object',
+    required: ['n'],
+    title: 'FindCandidatesBody'
 } as const;
 
 export const HTTPValidationErrorSchema = {

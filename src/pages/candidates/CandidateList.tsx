@@ -145,7 +145,6 @@ function CandidateList() {
           columns={[
             { key: "candidate_first_name", label: "First Name" },
             { key: "candidate_last_name", label: "Last Name" },
-            { key: "candidate_desc", label: "Description" },
             { key: "linkedin", label: "LinkedIn" },
             { key: "github", label: "Github" },
             {

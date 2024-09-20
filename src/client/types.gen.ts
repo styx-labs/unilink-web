@@ -12,6 +12,8 @@ export type Candidate = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
+    grad_year: string;
+    grad_month: string;
     created_at: string;
     updated_at: string;
     generated_desc: string;
@@ -29,6 +31,8 @@ export type CandidateCreate = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
+    grad_year: string;
+    grad_month: string;
     created_at?: string;
     updated_at?: string;
     generated_desc?: string;
@@ -104,6 +108,8 @@ export type CandidateUpdate = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
+    grad_year: string;
+    grad_month: string;
     updated_at?: string;
 };
 
@@ -119,6 +125,8 @@ export type CandidateWithId = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
+    grad_year: string;
+    grad_month: string;
     created_at: string;
     updated_at: string;
     generated_desc: string;
@@ -185,6 +193,11 @@ export type CompanyWithId = {
 export type CriteriaScoringItem = {
     criteria_name: string;
     score: number;
+};
+
+export type FindCandidatesBody = {
+    n: number;
+    grad_years?: (Array<(string)> | null);
 };
 
 export type HTTPValidationError = {
@@ -403,6 +416,18 @@ export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetData = {
 export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetResponse = (Array<CandidateRole>);
 
 export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetError = (HTTPValidationError);
+
+export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostData = {
+    body: FindCandidatesBody;
+    path: {
+        company_id: string;
+        role_id: string;
+    };
+};
+
+export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostResponse = ((Array<CandidateRole> | null));
+
+export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostError = (HTTPValidationError);
 
 export type UpdateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutData = {
     body: CandidateRoleUpdate;

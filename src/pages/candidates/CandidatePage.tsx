@@ -223,6 +223,22 @@ const CandidatePage: React.FC = () => {
               </CardContent>
             </Card>
           )}
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Generated Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label>Generated Description</Label>
+                  <div className="font-medium mt-1">
+                    {candidate.generated_desc ||
+                      "No generated description available."}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

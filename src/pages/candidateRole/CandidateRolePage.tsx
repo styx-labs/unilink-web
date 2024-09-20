@@ -26,9 +26,13 @@ import BreadCrumbs from "../../components/breadcrumbs";
 import {
   getCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet,
   generateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost,
-  // Add API functions for adding notes and updating rating
+  updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
 } from "../../client/services.gen";
-import { CandidateRole, CandidateRoleNote } from "../../client/types.gen";
+import {
+  CandidateRole,
+  CandidateRoleNote,
+  CandidateRoleUpdate,
+} from "../../client/types.gen";
 import {
   Tabs,
   TabsContent,
@@ -55,7 +59,9 @@ const CandidateRolePage: React.FC = () => {
   const [newNote, setNewNote] = useState("");
   const [rating, setRating] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("view");
-  const [newNoteType, setNewNoteType] = useState<CandidateRoleNoteType>(CandidateRoleNoteType.OTHER);
+  const [newNoteType, setNewNoteType] = useState<CandidateRoleNoteType>(
+    CandidateRoleNoteType.OTHER
+  );
 
   const fetchCandidateRole = async () => {
     const { data, error } =
@@ -101,12 +107,43 @@ const CandidateRolePage: React.FC = () => {
     setIsLoading(false);
   };
 
+  const updateCandidateRole = async (
+    updatedCandidateRole: Partial<CandidateRole>
+  ) => {
+    const { data, error } =
+      await updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
+        {
+          path: {
+            company_id: companyId || "",
+            role_id: roleId || "",
+            candidate_id: candidateId || "",
+          },
+          body: updatedCandidateRole as CandidateRoleUpdate,
+        }
+      );
+    if (error) {
+      console.error("Error updating candidate role:", error);
+    } else {
+      setCandidateRole(data!);
+    }
+  };
+
   const handleAddNote = async () => {
     if (newNote.trim() && candidateRole) {
-      // Implement API call to add a new note
-      // Update candidateRole state with new note
+      const updatedCandidateRole = {
+        ...candidateRole,
+        candidate_role_notes: [
+          ...(candidateRole.candidate_role_notes || []),
+          {
+            type: newNoteType,
+            notes: newNote,
+            created_at: new Date().toISOString(),
+          },
+        ],
+      };
+      await updateCandidateRole(updatedCandidateRole);
       setNewNote("");
-      setActiveTab("view"); // Switch to view tab after adding a note
+      setActiveTab("view");
     }
   };
 
@@ -302,7 +339,9 @@ const CandidateRolePage: React.FC = () => {
                   <Label htmlFor="note-type">Note Type</Label>
                   <Select
                     value={newNoteType}
-                    onValueChange={(value) => setNewNoteType(value as CandidateRoleNoteType)}
+                    onValueChange={(value) =>
+                      setNewNoteType(value as CandidateRoleNoteType)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select note type" />
