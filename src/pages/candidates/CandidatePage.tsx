@@ -82,7 +82,9 @@ const PersonalInformationCard: React.FC<{ candidate: Candidate }> = ({
         {candidate.candidate_desc && (
           <div>
             <Label>Description</Label>
-            <div className="font-medium">{candidate.candidate_desc}</div>
+            <div className="font-normal whitespace-pre-wrap">
+              {candidate.candidate_desc}
+            </div>
           </div>
         )}
         {candidate.email && (
@@ -362,7 +364,11 @@ const CandidatePage: React.FC = () => {
 
   const breadcrumbItems = [
     { label: "Candidates", path: "/candidates" },
-    { label: candidate.candidate_first_name, path: "" },
+    {
+      label:
+        candidate.candidate_first_name + " " + candidate.candidate_last_name,
+      path: "",
+    },
   ];
 
   return (
