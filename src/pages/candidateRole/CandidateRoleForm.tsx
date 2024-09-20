@@ -16,7 +16,7 @@ import {
   CandidateRoleNote,
   CriteriaScoringItem,
 } from "../../client/types.gen";
-import { generateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost } from "../../client/services.gen";
+import { generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost } from "../../client/services.gen";
 import { Label } from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 
@@ -75,7 +75,7 @@ export function CandidateRoleForm({
 
   const generateCandidateRoleDescription = async () => {
     const { data, error } =
-      await generateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
+      await generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
         {
           path: {
             company_id: companyId,

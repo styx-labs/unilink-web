@@ -12,8 +12,8 @@ export type Candidate = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
-    grad_year: string;
-    grad_month: string;
+    grad_year?: (string | null);
+    grad_month?: (string | null);
     created_at: string;
     updated_at: string;
     generated_desc: string;
@@ -31,8 +31,8 @@ export type CandidateCreate = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
-    grad_year: string;
-    grad_month: string;
+    grad_year?: (string | null);
+    grad_month?: (string | null);
     created_at?: string;
     updated_at?: string;
     generated_desc?: string;
@@ -65,10 +65,9 @@ export type CandidateRoleNote = {
     created_at?: string;
 };
 
-export type CandidateRoleNoteType = 'Generated' | 'Takehome Assignment' | 'Email' | 'Phone Screen' | 'Other';
+export type CandidateRoleNoteType = 'Takehome Assignment' | 'Email' | 'Phone Screen' | 'Other';
 
 export const CandidateRoleNoteType = {
-    GENERATED: 'Generated',
     TAKEHOME_ASSIGNMENT: 'Takehome Assignment',
     EMAIL: 'Email',
     PHONE_SCREEN: 'Phone Screen',
@@ -108,8 +107,8 @@ export type CandidateUpdate = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
-    grad_year: string;
-    grad_month: string;
+    grad_year?: (string | null);
+    grad_month?: (string | null);
     updated_at?: string;
 };
 
@@ -125,8 +124,8 @@ export type CandidateWithId = {
     github_rating?: ({
     [key: string]: unknown;
 } | null);
-    grad_year: string;
-    grad_month: string;
+    grad_year?: (string | null);
+    grad_month?: (string | null);
     created_at: string;
     updated_at: string;
     generated_desc: string;
@@ -273,82 +272,82 @@ export type HealthcheckHealthcheckGetResponse = ({
 
 export type HealthcheckHealthcheckGetError = unknown;
 
-export type ListCompaniesCompaniesGetResponse = (Array<CompanyWithId>);
+export type ListCompaniesEndpointCompaniesGetResponse = (Array<CompanyWithId>);
 
-export type ListCompaniesCompaniesGetError = unknown;
+export type ListCompaniesEndpointCompaniesGetError = unknown;
 
-export type CreateCompanyCompaniesPostData = {
+export type CreateCompanyEndpointCompaniesPostData = {
     body: CompanyCreate;
 };
 
-export type CreateCompanyCompaniesPostResponse = (string);
+export type CreateCompanyEndpointCompaniesPostResponse = (string);
 
-export type CreateCompanyCompaniesPostError = (HTTPValidationError);
+export type CreateCompanyEndpointCompaniesPostError = (HTTPValidationError);
 
-export type GetCompanyCompaniesCompanyIdGetData = {
+export type GetCompanyEndpointCompaniesCompanyIdGetData = {
     path: {
         company_id: string;
     };
 };
 
-export type GetCompanyCompaniesCompanyIdGetResponse = ((Company | null));
+export type GetCompanyEndpointCompaniesCompanyIdGetResponse = ((Company | null));
 
-export type GetCompanyCompaniesCompanyIdGetError = (HTTPValidationError);
+export type GetCompanyEndpointCompaniesCompanyIdGetError = (HTTPValidationError);
 
-export type UpdateCompanyCompaniesCompanyIdPutData = {
+export type UpdateCompanyEndpointCompaniesCompanyIdPutData = {
     body: CompanyUpdate;
     path: {
         company_id: string;
     };
 };
 
-export type UpdateCompanyCompaniesCompanyIdPutResponse = (Company);
+export type UpdateCompanyEndpointCompaniesCompanyIdPutResponse = (Company);
 
-export type UpdateCompanyCompaniesCompanyIdPutError = (HTTPValidationError);
+export type UpdateCompanyEndpointCompaniesCompanyIdPutError = (HTTPValidationError);
 
-export type DeleteCompanyCompaniesCompanyIdDeleteData = {
+export type DeleteCompanyEndpointCompaniesCompanyIdDeleteData = {
     path: {
         company_id: string;
     };
 };
 
-export type DeleteCompanyCompaniesCompanyIdDeleteResponse = (Company);
+export type DeleteCompanyEndpointCompaniesCompanyIdDeleteResponse = (Company);
 
-export type DeleteCompanyCompaniesCompanyIdDeleteError = (HTTPValidationError);
+export type DeleteCompanyEndpointCompaniesCompanyIdDeleteError = (HTTPValidationError);
 
-export type CreateRoleCompaniesCompanyIdRolesPostData = {
+export type CreateRoleEndpointCompaniesCompanyIdRolesPostData = {
     body: RoleCreate;
     path: {
         company_id: string;
     };
 };
 
-export type CreateRoleCompaniesCompanyIdRolesPostResponse = (string);
+export type CreateRoleEndpointCompaniesCompanyIdRolesPostResponse = (string);
 
-export type CreateRoleCompaniesCompanyIdRolesPostError = (HTTPValidationError);
+export type CreateRoleEndpointCompaniesCompanyIdRolesPostError = (HTTPValidationError);
 
-export type ListRolesCompaniesCompanyIdRolesGetData = {
+export type ListRolesEndpointCompaniesCompanyIdRolesGetData = {
     path: {
         company_id: string;
     };
 };
 
-export type ListRolesCompaniesCompanyIdRolesGetResponse = (Array<RoleWithId>);
+export type ListRolesEndpointCompaniesCompanyIdRolesGetResponse = (Array<RoleWithId>);
 
-export type ListRolesCompaniesCompanyIdRolesGetError = (HTTPValidationError);
+export type ListRolesEndpointCompaniesCompanyIdRolesGetError = (HTTPValidationError);
 
-export type GetRoleCompaniesCompanyIdRolesRoleIdGetData = {
+export type GetRoleEndpointCompaniesCompanyIdRolesRoleIdGetData = {
     path: {
         company_id: string;
         role_id: string;
     };
 };
 
-export type GetRoleCompaniesCompanyIdRolesRoleIdGetResponse = ((Role | null));
+export type GetRoleEndpointCompaniesCompanyIdRolesRoleIdGetResponse = ((Role | null));
 
-export type GetRoleCompaniesCompanyIdRolesRoleIdGetError = (HTTPValidationError);
+export type GetRoleEndpointCompaniesCompanyIdRolesRoleIdGetError = (HTTPValidationError);
 
-export type UpdateRoleCompaniesCompanyIdRolesRoleIdPutData = {
+export type UpdateRoleEndpointCompaniesCompanyIdRolesRoleIdPutData = {
     body: RoleUpdate;
     path: {
         company_id: string;
@@ -356,33 +355,86 @@ export type UpdateRoleCompaniesCompanyIdRolesRoleIdPutData = {
     };
 };
 
-export type UpdateRoleCompaniesCompanyIdRolesRoleIdPutResponse = ((Role | null));
+export type UpdateRoleEndpointCompaniesCompanyIdRolesRoleIdPutResponse = ((Role | null));
 
-export type UpdateRoleCompaniesCompanyIdRolesRoleIdPutError = (HTTPValidationError);
+export type UpdateRoleEndpointCompaniesCompanyIdRolesRoleIdPutError = (HTTPValidationError);
 
-export type DeleteRoleCompaniesCompanyIdRolesRoleIdDeleteData = {
+export type DeleteRoleEndpointCompaniesCompanyIdRolesRoleIdDeleteData = {
     path: {
         company_id: string;
         role_id: string;
     };
 };
 
-export type DeleteRoleCompaniesCompanyIdRolesRoleIdDeleteResponse = (Role);
+export type DeleteRoleEndpointCompaniesCompanyIdRolesRoleIdDeleteResponse = (Role);
 
-export type DeleteRoleCompaniesCompanyIdRolesRoleIdDeleteError = (HTTPValidationError);
+export type DeleteRoleEndpointCompaniesCompanyIdRolesRoleIdDeleteError = (HTTPValidationError);
 
-export type GenerateCriteriaCompaniesCompanyIdRolesRoleIdGenerateCriteriaPostData = {
+export type GenerateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPostData = {
     path: {
         company_id: string;
         role_id: string;
     };
 };
 
-export type GenerateCriteriaCompaniesCompanyIdRolesRoleIdGenerateCriteriaPostResponse = (Array<RoleCriteria>);
+export type GenerateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPostResponse = (Array<RoleCriteria>);
 
-export type GenerateCriteriaCompaniesCompanyIdRolesRoleIdGenerateCriteriaPostError = (HTTPValidationError);
+export type GenerateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPostError = (HTTPValidationError);
 
-export type CreateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePostData = {
+export type ListCandidatesEndpointCandidatesGetResponse = (Array<CandidateWithId>);
+
+export type ListCandidatesEndpointCandidatesGetError = unknown;
+
+export type CreateCandidateEndpointCandidatesPostData = {
+    body: CandidateCreate;
+};
+
+export type CreateCandidateEndpointCandidatesPostResponse = (string);
+
+export type CreateCandidateEndpointCandidatesPostError = (HTTPValidationError);
+
+export type GetCandidateEndpointCandidatesCandidateIdGetData = {
+    path: {
+        candidate_id: string;
+    };
+};
+
+export type GetCandidateEndpointCandidatesCandidateIdGetResponse = ((Candidate | null));
+
+export type GetCandidateEndpointCandidatesCandidateIdGetError = (HTTPValidationError);
+
+export type UpdateCandidateEndpointCandidatesCandidateIdPutData = {
+    body: CandidateUpdate;
+    path: {
+        candidate_id: string;
+    };
+};
+
+export type UpdateCandidateEndpointCandidatesCandidateIdPutResponse = (Candidate);
+
+export type UpdateCandidateEndpointCandidatesCandidateIdPutError = (HTTPValidationError);
+
+export type DeleteCandidateEndpointCandidatesCandidateIdDeleteData = {
+    path: {
+        candidate_id: string;
+    };
+};
+
+export type DeleteCandidateEndpointCandidatesCandidateIdDeleteResponse = (Candidate);
+
+export type DeleteCandidateEndpointCandidatesCandidateIdDeleteError = (HTTPValidationError);
+
+export type RateCandidateGithubEndpointCandidatesCandidateIdGithubGetData = {
+    path: {
+        candidate_id: string;
+    };
+};
+
+export type RateCandidateGithubEndpointCandidatesCandidateIdGithubGetResponse = (Candidate);
+
+export type RateCandidateGithubEndpointCandidatesCandidateIdGithubGetError = (HTTPValidationError);
+
+export type CreateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePostData = {
     body: CandidateCreate;
     path: {
         company_id: string;
@@ -390,11 +442,11 @@ export type CreateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePostData
     };
 };
 
-export type CreateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePostResponse = (CandidateRole);
+export type CreateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePostResponse = (CandidateRole);
 
-export type CreateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePostError = (HTTPValidationError);
+export type CreateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePostError = (HTTPValidationError);
 
-export type AddCandidateCompaniesCompanyIdRolesRoleIdCandidatesPostData = {
+export type AddCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPostData = {
     body: CandidateRoleCreate;
     path: {
         company_id: string;
@@ -402,34 +454,34 @@ export type AddCandidateCompaniesCompanyIdRolesRoleIdCandidatesPostData = {
     };
 };
 
-export type AddCandidateCompaniesCompanyIdRolesRoleIdCandidatesPostResponse = ((CandidateRole | null));
+export type AddCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPostResponse = ((CandidateRole | null));
 
-export type AddCandidateCompaniesCompanyIdRolesRoleIdCandidatesPostError = (HTTPValidationError);
+export type AddCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPostError = (HTTPValidationError);
 
-export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetData = {
+export type ListCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGetData = {
     path: {
         company_id: string;
         role_id: string;
     };
 };
 
-export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetResponse = (Array<CandidateRole>);
+export type ListCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGetResponse = (Array<CandidateRole>);
 
-export type ListCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGetError = (HTTPValidationError);
+export type ListCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGetError = (HTTPValidationError);
 
-export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostData = {
-    body: FindCandidatesBody;
+export type GetCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGetData = {
     path: {
+        candidate_id: string;
         company_id: string;
         role_id: string;
     };
 };
 
-export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostResponse = ((Array<CandidateRole> | null));
+export type GetCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGetResponse = ((CandidateRole | null));
 
-export type FindCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPostError = (HTTPValidationError);
+export type GetCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGetError = (HTTPValidationError);
 
-export type UpdateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutData = {
+export type UpdateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutData = {
     body: CandidateRoleUpdate;
     path: {
         candidate_id: string;
@@ -438,11 +490,11 @@ export type UpdateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut
     };
 };
 
-export type UpdateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutResponse = ((CandidateRole | null));
+export type UpdateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutResponse = ((CandidateRole | null));
 
-export type UpdateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutError = (HTTPValidationError);
+export type UpdateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutError = (HTTPValidationError);
 
-export type GetCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGetData = {
+export type DeleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDeleteData = {
     path: {
         candidate_id: string;
         company_id: string;
@@ -450,11 +502,23 @@ export type GetCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGetDat
     };
 };
 
-export type GetCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGetResponse = ((CandidateRole | null));
+export type DeleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDeleteResponse = (CandidateRole);
 
-export type GetCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGetError = (HTTPValidationError);
+export type DeleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDeleteError = (HTTPValidationError);
 
-export type DeleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDeleteData = {
+export type FindCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPostData = {
+    body: FindCandidatesBody;
+    path: {
+        company_id: string;
+        role_id: string;
+    };
+};
+
+export type FindCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPostResponse = ((Array<CandidateRole> | null));
+
+export type FindCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPostError = (HTTPValidationError);
+
+export type GenerateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPostData = {
     path: {
         candidate_id: string;
         company_id: string;
@@ -462,71 +526,6 @@ export type DeleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDel
     };
 };
 
-export type DeleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDeleteResponse = (CandidateRole);
+export type GenerateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPostResponse = ((string | null));
 
-export type DeleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDeleteError = (HTTPValidationError);
-
-export type GenerateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPostData = {
-    path: {
-        candidate_id: string;
-        company_id: string;
-        role_id: string;
-    };
-};
-
-export type GenerateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPostResponse = ((string | null));
-
-export type GenerateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPostError = (HTTPValidationError);
-
-export type ListCandidatesCandidatesGetResponse = (Array<CandidateWithId>);
-
-export type ListCandidatesCandidatesGetError = unknown;
-
-export type CreateCandidateCandidatesPostData = {
-    body: CandidateCreate;
-};
-
-export type CreateCandidateCandidatesPostResponse = (string);
-
-export type CreateCandidateCandidatesPostError = (HTTPValidationError);
-
-export type GetCandidateCandidatesCandidateIdGetData = {
-    path: {
-        candidate_id: string;
-    };
-};
-
-export type GetCandidateCandidatesCandidateIdGetResponse = ((Candidate | null));
-
-export type GetCandidateCandidatesCandidateIdGetError = (HTTPValidationError);
-
-export type UpdateCandidateCandidatesCandidateIdPutData = {
-    body: CandidateUpdate;
-    path: {
-        candidate_id: string;
-    };
-};
-
-export type UpdateCandidateCandidatesCandidateIdPutResponse = (Candidate);
-
-export type UpdateCandidateCandidatesCandidateIdPutError = (HTTPValidationError);
-
-export type DeleteCandidateCandidatesCandidateIdDeleteData = {
-    path: {
-        candidate_id: string;
-    };
-};
-
-export type DeleteCandidateCandidatesCandidateIdDeleteResponse = (Candidate);
-
-export type DeleteCandidateCandidatesCandidateIdDeleteError = (HTTPValidationError);
-
-export type RateCandidateGithubCandidatesCandidateIdGithubGetData = {
-    path: {
-        candidate_id: string;
-    };
-};
-
-export type RateCandidateGithubCandidatesCandidateIdGithubGetResponse = (Candidate);
-
-export type RateCandidateGithubCandidatesCandidateIdGithubGetError = (HTTPValidationError);
+export type GenerateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPostError = (HTTPValidationError);

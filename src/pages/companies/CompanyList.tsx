@@ -11,10 +11,10 @@ import {
   CompanyStatus,
 } from "../../client/types.gen";
 import {
-  listCompaniesCompaniesGet,
-  createCompanyCompaniesPost,
-  updateCompanyCompaniesCompanyIdPut,
-  deleteCompanyCompaniesCompanyIdDelete,
+  listCompaniesEndpointCompaniesGet,
+  createCompanyEndpointCompaniesPost,
+  updateCompanyEndpointCompaniesCompanyIdPut,
+  deleteCompanyEndpointCompaniesCompanyIdDelete,
 } from "../../client/services.gen";
 function CompanyList() {
   const [companies, setCompanies] = useState<CompanyWithId[]>([]);
@@ -56,7 +56,7 @@ function CompanyList() {
 
   const fetchCompanies = async () => {
     setLoading(true);
-    const { data, error } = await listCompaniesCompaniesGet();
+    const { data, error } = await listCompaniesEndpointCompaniesGet();
     if (error) {
       console.error("Error fetching companies:", error);
     } else {
@@ -74,7 +74,7 @@ function CompanyList() {
       status: newCompany.status ?? CompanyStatus.PENDING,
     };
 
-    const { error } = await createCompanyCompaniesPost({
+    const { error } = await createCompanyEndpointCompaniesPost({
       body: completeCompany as CompanyCreate,
     });
     if (error) {
@@ -93,7 +93,7 @@ function CompanyList() {
       status: editingCompany.status ?? CompanyStatus.PENDING,
     };
 
-    const { error } = await updateCompanyCompaniesCompanyIdPut({
+    const { error } = await updateCompanyEndpointCompaniesCompanyIdPut({
       body: completeCompany as CompanyUpdate,
       path: { company_id: editingCompany.company_id },
     });
@@ -111,7 +111,7 @@ function CompanyList() {
   };
 
   const deleteCompany = async (id: string) => {
-    const { error } = await deleteCompanyCompaniesCompanyIdDelete({
+    const { error } = await deleteCompanyEndpointCompaniesCompanyIdDelete({
       path: { company_id: id },
     });
     if (error) {

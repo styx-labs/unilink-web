@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { RoleCriteria } from "../../client/types.gen";
-import { generateCriteriaCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost } from "../../client/services.gen";
+import { generateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost } from "../../client/services.gen";
 
 export const RoleCriteriaInput = ({
   id,
@@ -40,9 +40,11 @@ export const RoleCriteriaInput = ({
 
   const generateCriteria = async () => {
     const { data, error } =
-      await generateCriteriaCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost({
-        path: { company_id: companyId, role_id: roleId || "" },
-      });
+      await generateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost(
+        {
+          path: { company_id: companyId, role_id: roleId || "" },
+        }
+      );
     if (error) {
       console.error("Error generating criteria:", error);
     } else {

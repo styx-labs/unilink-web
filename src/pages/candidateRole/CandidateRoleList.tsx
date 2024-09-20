@@ -13,19 +13,18 @@ import {
   CandidateRole,
   CandidateWithId,
   CandidateRoleNote,
-  CriteriaScoringItem,
   CandidateRoleUpdate,
   CandidateCreate,
   FindCandidatesBody,
 } from "../../client/types.gen";
 import {
-  listCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGet,
-  updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
-  deleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDelete,
-  createCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePost,
-  listCandidatesCandidatesGet,
-  addCandidateCompaniesCompanyIdRolesRoleIdCandidatesPost,
-  findCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPost,
+  listCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGet,
+  updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
+  deleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDelete,
+  createCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePost,
+  listCandidatesEndpointCandidatesGet,
+  addCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPost,
+  findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost,
 } from "../../client/services.gen";
 
 function CandidateRoleList() {
@@ -62,7 +61,7 @@ function CandidateRoleList() {
   const fetchCandidates = async () => {
     setLoading(true);
     const { data, error } =
-      await listCandidatesCompaniesCompanyIdRolesRoleIdCandidatesGet({
+      await listCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGet({
         path: { company_id: companyId || "", role_id: roleId || "" },
       });
     if (error) {
@@ -74,7 +73,7 @@ function CandidateRoleList() {
   };
 
   const fetchAllCandidates = async () => {
-    const { data, error } = await listCandidatesCandidatesGet();
+    const { data, error } = await listCandidatesEndpointCandidatesGet();
     if (error) {
       console.error("Error fetching candidates:", error);
     } else {
@@ -91,7 +90,7 @@ function CandidateRoleList() {
 
   const deleteCandidate = async (id: string) => {
     const { error } =
-      await deleteCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDelete(
+      await deleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDelete(
         {
           path: {
             company_id: companyId || "",
@@ -110,7 +109,7 @@ function CandidateRoleList() {
   const addExistingCandidates = async () => {
     selectedCandidates.map(async (candidateId) => {
       const { error } =
-        await addCandidateCompaniesCompanyIdRolesRoleIdCandidatesPost({
+        await addCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPost({
           path: { company_id: companyId || "", role_id: roleId || "" },
           body: {
             candidate_id: candidateId,
@@ -130,10 +129,12 @@ function CandidateRoleList() {
 
   const findCandidates = async (findCandidatesBody: FindCandidatesBody) => {
     const { data, error } =
-      await findCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPost({
-        path: { company_id: companyId || "", role_id: roleId || "" },
-        body: findCandidatesBody,
-      });
+      await findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost(
+        {
+          path: { company_id: companyId || "", role_id: roleId || "" },
+          body: findCandidatesBody,
+        }
+      );
 
     if (error) {
       console.error("Error finding candidates:", error);
@@ -146,7 +147,7 @@ function CandidateRoleList() {
     updatedCandidateRole: Partial<CandidateRole>
   ) => {
     const { error } =
-      await updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
+      await updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
         {
           path: {
             company_id: companyId || "",
@@ -182,10 +183,12 @@ function CandidateRoleList() {
       grad_month: newCandidate.grad_month ?? "",
     };
     const { error } =
-      await createCandidateCompaniesCompanyIdRolesRoleIdCandidatesCreatePost({
-        path: { company_id: companyId || "", role_id: roleId || "" },
-        body: completeCandidate as CandidateCreate,
-      });
+      await createCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePost(
+        {
+          path: { company_id: companyId || "", role_id: roleId || "" },
+          body: completeCandidate as CandidateCreate,
+        }
+      );
     if (error) {
       console.error("Error adding candidate:", error);
     } else {

@@ -24,9 +24,9 @@ import {
 import { Markdown } from "../../components/Markdown";
 import BreadCrumbs from "../../components/breadcrumbs";
 import {
-  getCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet,
-  generateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost,
-  updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
+  getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet,
+  generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost,
+  updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
 } from "../../client/services.gen";
 import {
   CandidateRole,
@@ -65,7 +65,7 @@ const CandidateRolePage: React.FC = () => {
 
   const fetchCandidateRole = async () => {
     const { data, error } =
-      await getCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet({
+      await getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet({
         path: {
           company_id: companyId || "",
           role_id: roleId || "",
@@ -87,7 +87,7 @@ const CandidateRolePage: React.FC = () => {
     if (!candidateRole) return;
     setIsLoading(true);
     const { data, error } =
-      await generateCandidateRoleDescriptionCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
+      await generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
         {
           path: {
             company_id: companyId || "",
@@ -111,7 +111,7 @@ const CandidateRolePage: React.FC = () => {
     updatedCandidateRole: Partial<CandidateRole>
   ) => {
     const { data, error } =
-      await updateCandidateCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
+      await updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
         {
           path: {
             company_id: companyId || "",
