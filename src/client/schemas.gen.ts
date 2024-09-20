@@ -18,10 +18,6 @@ export const CandidateSchema = {
             type: 'string',
             title: 'Linkedin'
         },
-        github: {
-            type: 'string',
-            title: 'Github'
-        },
         resume: {
             type: 'string',
             title: 'Resume'
@@ -34,6 +30,10 @@ export const CandidateSchema = {
             type: 'string',
             title: 'Phone Number'
         },
+        github: {
+            type: 'string',
+            title: 'Github'
+        },
         github_rating: {
             anyOf: [
                 {
@@ -45,12 +45,48 @@ export const CandidateSchema = {
             ],
             title: 'Github Rating'
         },
+        portfolio: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio'
+        },
+        portfolio_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio Rating'
+        },
         grad_year: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Year'
         },
         grad_month: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Month'
         },
         created_at: {
@@ -69,7 +105,7 @@ export const CandidateSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month', 'created_at', 'updated_at', 'generated_desc'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'resume', 'email', 'phone_number', 'github', 'created_at', 'updated_at', 'generated_desc'],
     title: 'Candidate'
 } as const;
 
@@ -91,10 +127,6 @@ export const CandidateCreateSchema = {
             type: 'string',
             title: 'Linkedin'
         },
-        github: {
-            type: 'string',
-            title: 'Github'
-        },
         resume: {
             type: 'string',
             title: 'Resume'
@@ -107,6 +139,10 @@ export const CandidateCreateSchema = {
             type: 'string',
             title: 'Phone Number'
         },
+        github: {
+            type: 'string',
+            title: 'Github'
+        },
         github_rating: {
             anyOf: [
                 {
@@ -118,12 +154,48 @@ export const CandidateCreateSchema = {
             ],
             title: 'Github Rating'
         },
+        portfolio: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio'
+        },
+        portfolio_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio Rating'
+        },
         grad_year: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Year'
         },
         grad_month: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Month'
         },
         created_at: {
@@ -143,7 +215,7 @@ export const CandidateCreateSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'resume', 'email', 'phone_number', 'github'],
     title: 'CandidateCreate'
 } as const;
 
@@ -318,7 +390,7 @@ export const CandidateRoleNoteSchema = {
 
 export const CandidateRoleNoteTypeSchema = {
     type: 'string',
-    enum: ['Generated', 'Takehome Assignment', 'Email', 'Phone Screen', 'Other'],
+    enum: ['Takehome Assignment', 'Email', 'Phone Screen', 'Other'],
     title: 'CandidateRoleNoteType'
 } as const;
 
@@ -410,10 +482,6 @@ export const CandidateUpdateSchema = {
             type: 'string',
             title: 'Linkedin'
         },
-        github: {
-            type: 'string',
-            title: 'Github'
-        },
         resume: {
             type: 'string',
             title: 'Resume'
@@ -426,6 +494,10 @@ export const CandidateUpdateSchema = {
             type: 'string',
             title: 'Phone Number'
         },
+        github: {
+            type: 'string',
+            title: 'Github'
+        },
         github_rating: {
             anyOf: [
                 {
@@ -437,12 +509,48 @@ export const CandidateUpdateSchema = {
             ],
             title: 'Github Rating'
         },
+        portfolio: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio'
+        },
+        portfolio_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio Rating'
+        },
         grad_year: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Year'
         },
         grad_month: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Month'
         },
         updated_at: {
@@ -452,7 +560,7 @@ export const CandidateUpdateSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'resume', 'email', 'phone_number', 'github'],
     title: 'CandidateUpdate'
 } as const;
 
@@ -474,10 +582,6 @@ export const CandidateWithIdSchema = {
             type: 'string',
             title: 'Linkedin'
         },
-        github: {
-            type: 'string',
-            title: 'Github'
-        },
         resume: {
             type: 'string',
             title: 'Resume'
@@ -490,6 +594,10 @@ export const CandidateWithIdSchema = {
             type: 'string',
             title: 'Phone Number'
         },
+        github: {
+            type: 'string',
+            title: 'Github'
+        },
         github_rating: {
             anyOf: [
                 {
@@ -501,12 +609,48 @@ export const CandidateWithIdSchema = {
             ],
             title: 'Github Rating'
         },
+        portfolio: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio'
+        },
+        portfolio_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio Rating'
+        },
         grad_year: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Year'
         },
         grad_month: {
-            type: 'string',
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Grad Month'
         },
         created_at: {
@@ -529,7 +673,7 @@ export const CandidateWithIdSchema = {
         }
     },
     type: 'object',
-    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'github', 'resume', 'email', 'phone_number', 'grad_year', 'grad_month', 'created_at', 'updated_at', 'generated_desc', 'candidate_id'],
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'resume', 'email', 'phone_number', 'github', 'created_at', 'updated_at', 'generated_desc', 'candidate_id'],
     title: 'CandidateWithId'
 } as const;
 

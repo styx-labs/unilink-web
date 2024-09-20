@@ -5,14 +5,13 @@ import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
 import {
-  listRolesCompaniesCompanyIdRolesGet,
-  createRoleCompaniesCompanyIdRolesPost,
-  updateRoleCompaniesCompanyIdRolesRoleIdPut,
-  deleteRoleCompaniesCompanyIdRolesRoleIdDelete,
+  listRolesEndpointCompaniesCompanyIdRolesGet,
+  createRoleEndpointCompaniesCompanyIdRolesPost,
+  updateRoleEndpointCompaniesCompanyIdRolesRoleIdPut,
+  deleteRoleEndpointCompaniesCompanyIdRolesRoleIdDelete,
 } from "../../client/services.gen";
 import {
   RoleWithId,
-  RoleCriteria,
   RoleCreate,
   RoleUpdate,
   RoleStatus,
@@ -60,7 +59,7 @@ function RoleList() {
 
   const fetchRoles = async () => {
     setLoading(true);
-    const { data, error } = await listRolesCompaniesCompanyIdRolesGet({
+    const { data, error } = await listRolesEndpointCompaniesCompanyIdRolesGet({
       path: { company_id: companyId || "" },
     });
     if (error) {
@@ -79,7 +78,7 @@ function RoleList() {
       role_criteria: newRole.role_criteria ?? [],
       role_status: newRole.role_status ?? RoleStatus.OPEN,
     };
-    const { error } = await createRoleCompaniesCompanyIdRolesPost({
+    const { error } = await createRoleEndpointCompaniesCompanyIdRolesPost({
       path: { company_id: companyId || "" },
       body: completeRole as RoleCreate,
     });
@@ -98,7 +97,7 @@ function RoleList() {
       role_criteria: editingRole.role_criteria ?? [],
       role_status: editingRole.role_status ?? RoleStatus.OPEN,
     };
-    const { error } = await updateRoleCompaniesCompanyIdRolesRoleIdPut({
+    const { error } = await updateRoleEndpointCompaniesCompanyIdRolesRoleIdPut({
       path: { company_id: companyId || "", role_id: editingRole.role_id },
       body: completeRole as RoleUpdate,
     });
@@ -114,9 +113,10 @@ function RoleList() {
   };
 
   const deleteRole = async (id: string) => {
-    const { error } = await deleteRoleCompaniesCompanyIdRolesRoleIdDelete({
-      path: { company_id: companyId || "", role_id: id },
-    });
+    const { error } =
+      await deleteRoleEndpointCompaniesCompanyIdRolesRoleIdDelete({
+        path: { company_id: companyId || "", role_id: id },
+      });
     if (error) {
       console.error("Error deleting role:", error);
     } else {

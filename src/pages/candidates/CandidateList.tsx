@@ -9,10 +9,10 @@ import {
   CandidateUpdate,
 } from "../../client/types.gen";
 import {
-  listCandidatesCandidatesGet,
-  createCandidateCandidatesPost,
-  updateCandidateCandidatesCandidateIdPut,
-  deleteCandidateCandidatesCandidateIdDelete,
+  listCandidatesEndpointCandidatesGet,
+  createCandidateEndpointCandidatesPost,
+  updateCandidateEndpointCandidatesCandidateIdPut,
+  deleteCandidateEndpointCandidatesCandidateIdDelete,
 } from "../../client/services.gen";
 import {
   CandidateCreateSchema,
@@ -63,7 +63,8 @@ function CandidateList() {
       if (
         key !== "created_at" &&
         key !== "updated_at" &&
-        key !== "github_rating"
+        key !== "github_rating" &&
+        key !== "portfolio_rating"
       ) {
         acc[key as keyof CandidateCreate] =
           (candidate[key as keyof CandidateCreate] as any) ?? "";
@@ -71,7 +72,7 @@ function CandidateList() {
       return acc;
     }, {} as Partial<CandidateCreate>);
 
-    const { error } = await createCandidateCandidatesPost({
+    const { error } = await createCandidateEndpointCandidatesPost({
       body: completeCandidate as CandidateCreate,
     });
     if (error) {
@@ -83,7 +84,7 @@ function CandidateList() {
 
   const fetchCandidates = async () => {
     setLoading(true);
-    const { data, error } = await listCandidatesCandidatesGet();
+    const { data, error } = await listCandidatesEndpointCandidatesGet();
     if (error) {
       console.error("Error fetching candidates:", error);
     } else {
@@ -106,7 +107,7 @@ function CandidateList() {
       }
       return acc;
     }, {} as Partial<CandidateUpdate>);
-    const { error } = await updateCandidateCandidatesCandidateIdPut({
+    const { error } = await updateCandidateEndpointCandidatesCandidateIdPut({
       body: completeCandidate as CandidateUpdate,
       path: { candidate_id: candidate.candidate_id },
     });
@@ -118,7 +119,7 @@ function CandidateList() {
   };
 
   const deleteCandidate = async (id: string) => {
-    const { error } = await deleteCandidateCandidatesCandidateIdDelete({
+    const { error } = await deleteCandidateEndpointCandidatesCandidateIdDelete({
       path: { candidate_id: id },
     });
     if (error) {
@@ -147,6 +148,7 @@ function CandidateList() {
             { key: "candidate_last_name", label: "Last Name" },
             { key: "linkedin", label: "LinkedIn" },
             { key: "github", label: "Github" },
+            { key: "portfolio", label: "Portfolio" },
             {
               key: "resume",
               label: "Resume",
