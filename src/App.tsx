@@ -8,9 +8,9 @@ import {
 import { auth } from "./firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import CandidateList from "./pages/candidates/CandidateList";
-import CandidateRoleList from "./pages/candidates/CandidateRoleList";
+import CandidateRoleList from "./pages/candidateRole/CandidateRoleList";
 import CandidatePage from "./pages/candidates/CandidatePage";
-import CandidateRolePage from "./pages/candidates/CandidateRolePage";
+import CandidateRolePage from "./pages/candidateRole/CandidateRolePage";
 import CompanyList from "./pages/companies/CompanyList";
 import LoginPage from "./pages/login/LoginPage";
 import { Loader } from "./components/ui/loader";

@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { CandidateRoleForm } from "./CandidateRoleForm";
-import { CandidateForm } from "./CandidateForm";
+import { CandidateForm } from "../candidates/CandidateForm";
 import { useParams } from "react-router-dom";
 import { Markdown } from "../../components/Markdown";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
