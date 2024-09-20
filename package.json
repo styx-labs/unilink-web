@@ -47,7 +47,7 @@
     "tsc:watch": "tsc -w",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "generate-client": "openapi-ts"
+    "generate": "openapi-ts"
   },
   "eslintConfig": {
     "extends": [

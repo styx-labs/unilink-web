@@ -5,11 +5,15 @@ export type Candidate = {
     candidate_last_name: string;
     candidate_desc: string;
     linkedin: string;
-    github: string;
     resume: string;
     email: string;
     phone_number: string;
+    github: string;
     github_rating?: ({
+    [key: string]: unknown;
+} | null);
+    portfolio?: (string | null);
+    portfolio_rating?: ({
     [key: string]: unknown;
 } | null);
     grad_year?: (string | null);
@@ -24,11 +28,15 @@ export type CandidateCreate = {
     candidate_last_name: string;
     candidate_desc: string;
     linkedin: string;
-    github: string;
     resume: string;
     email: string;
     phone_number: string;
+    github: string;
     github_rating?: ({
+    [key: string]: unknown;
+} | null);
+    portfolio?: (string | null);
+    portfolio_rating?: ({
     [key: string]: unknown;
 } | null);
     grad_year?: (string | null);
@@ -100,11 +108,15 @@ export type CandidateUpdate = {
     candidate_last_name: string;
     candidate_desc: string;
     linkedin: string;
-    github: string;
     resume: string;
     email: string;
     phone_number: string;
+    github: string;
     github_rating?: ({
+    [key: string]: unknown;
+} | null);
+    portfolio?: (string | null);
+    portfolio_rating?: ({
     [key: string]: unknown;
 } | null);
     grad_year?: (string | null);
@@ -117,11 +129,15 @@ export type CandidateWithId = {
     candidate_last_name: string;
     candidate_desc: string;
     linkedin: string;
-    github: string;
     resume: string;
     email: string;
     phone_number: string;
+    github: string;
     github_rating?: ({
+    [key: string]: unknown;
+} | null);
+    portfolio?: (string | null);
+    portfolio_rating?: ({
     [key: string]: unknown;
 } | null);
     grad_year?: (string | null);
@@ -433,6 +449,16 @@ export type RateCandidateGithubEndpointCandidatesCandidateIdGithubGetData = {
 export type RateCandidateGithubEndpointCandidatesCandidateIdGithubGetResponse = (Candidate);
 
 export type RateCandidateGithubEndpointCandidatesCandidateIdGithubGetError = (HTTPValidationError);
+
+export type RateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGetData = {
+    path: {
+        candidate_id: string;
+    };
+};
+
+export type RateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGetResponse = (Candidate);
+
+export type RateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGetError = (HTTPValidationError);
 
 export type CreateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePostData = {
     body: CandidateCreate;

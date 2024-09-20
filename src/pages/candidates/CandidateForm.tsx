@@ -8,8 +8,13 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { storage } from "../../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 
 export function CandidateForm({
   candidate,
@@ -29,8 +34,18 @@ export function CandidateForm({
   const [formData, setFormData] = useState<Partial<CandidateWithId>>(candidate);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   useEffect(() => {
@@ -40,7 +55,12 @@ export function CandidateForm({
   const handleSubmit = async () => {
     let updatedFormData = { ...formData };
     if (resumeFile) {
-      const storageRef = ref(storage, `resumes/${formData.candidate_first_name}_${formData.candidate_last_name}_${Date.now()}.pdf`);
+      const storageRef = ref(
+        storage,
+        `resumes/${formData.candidate_first_name}_${
+          formData.candidate_last_name
+        }_${Date.now()}.pdf`
+      );
       await uploadBytes(storageRef, resumeFile);
       const downloadURL = await getDownloadURL(storageRef);
       updatedFormData = { ...updatedFormData, resume: downloadURL };
@@ -110,6 +130,17 @@ export function CandidateForm({
           />
         </div>
         <div>
+          <Label htmlFor="portfolio">Portfolio</Label>
+          <Input
+            id="portfolio"
+            type="url"
+            value={formData.portfolio || ""}
+            onChange={(e) =>
+              setFormData({ ...formData, portfolio: e.target.value })
+            }
+          />
+        </div>
+        <div>
           <Label htmlFor="resume">Resume</Label>
           <Input
             id="resume"
@@ -118,7 +149,12 @@ export function CandidateForm({
             onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
           />
           {formData.resume && (
-            <a href={formData.resume} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500">
+            <a
+              href={formData.resume}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-500"
+            >
               View current resume
             </a>
           )}
@@ -155,7 +191,9 @@ export function CandidateForm({
             id="grad_year"
             type="number"
             value={formData.grad_year || ""}
-            onChange={(e) => setFormData({ ...formData, grad_year: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, grad_year: e.target.value })
+            }
             placeholder="Enter graduation year"
           />
         </div>
@@ -163,14 +201,18 @@ export function CandidateForm({
           <Label htmlFor="grad_month">Graduation Month</Label>
           <Select
             value={formData.grad_month || ""}
-            onValueChange={(value) => setFormData({ ...formData, grad_month: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, grad_month: value })
+            }
           >
             <SelectTrigger id="grad_month">
               <SelectValue placeholder="Select month" />
             </SelectTrigger>
             <SelectContent>
               {months.map((month) => (
-                <SelectItem key={month} value={month}>{month}</SelectItem>
+                <SelectItem key={month} value={month}>
+                  {month}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>

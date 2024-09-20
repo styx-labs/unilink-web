@@ -177,6 +177,7 @@ function CandidateRoleList() {
       email: newCandidate.email ?? "",
       phone_number: newCandidate.phone_number ?? "",
       github: newCandidate.github ?? "",
+      portfolio: newCandidate.portfolio ?? "",
       candidate_desc: newCandidate.candidate_desc ?? "",
       resume: newCandidate.resume ?? "",
       grad_year: newCandidate.grad_year ?? "",

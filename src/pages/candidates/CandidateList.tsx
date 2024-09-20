@@ -63,7 +63,8 @@ function CandidateList() {
       if (
         key !== "created_at" &&
         key !== "updated_at" &&
-        key !== "github_rating"
+        key !== "github_rating" &&
+        key !== "portfolio_rating"
       ) {
         acc[key as keyof CandidateCreate] =
           (candidate[key as keyof CandidateCreate] as any) ?? "";
@@ -147,6 +148,7 @@ function CandidateList() {
             { key: "candidate_last_name", label: "Last Name" },
             { key: "linkedin", label: "LinkedIn" },
             { key: "github", label: "Github" },
+            { key: "portfolio", label: "Portfolio" },
             {
               key: "resume",
               label: "Resume",
