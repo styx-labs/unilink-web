@@ -9,6 +9,9 @@ export type Candidate = {
     resume: string;
     email: string;
     phone_number: string;
+    github_rating?: ({
+    [key: string]: unknown;
+} | null);
     grad_year: string;
     grad_month: string;
     created_at: string;
@@ -25,6 +28,9 @@ export type CandidateCreate = {
     resume: string;
     email: string;
     phone_number: string;
+    github_rating?: ({
+    [key: string]: unknown;
+} | null);
     grad_year: string;
     grad_month: string;
     created_at?: string;
@@ -69,11 +75,12 @@ export const CandidateRoleNoteType = {
     OTHER: 'Other'
 } as const;
 
-export type CandidateRoleStatus = 'Outreach' | 'Screening' | 'Interview' | 'Offer' | 'Hired' | 'Rejected';
+export type CandidateRoleStatus = 'Outreach' | 'Screening' | 'Sent' | 'Interview' | 'Offer' | 'Hired' | 'Rejected';
 
 export const CandidateRoleStatus = {
     OUTREACH: 'Outreach',
     SCREENING: 'Screening',
+    SENT: 'Sent',
     INTERVIEW: 'Interview',
     OFFER: 'Offer',
     HIRED: 'Hired',
@@ -98,6 +105,9 @@ export type CandidateUpdate = {
     resume: string;
     email: string;
     phone_number: string;
+    github_rating?: ({
+    [key: string]: unknown;
+} | null);
     grad_year: string;
     grad_month: string;
     updated_at?: string;
@@ -112,6 +122,9 @@ export type CandidateWithId = {
     resume: string;
     email: string;
     phone_number: string;
+    github_rating?: ({
+    [key: string]: unknown;
+} | null);
     grad_year: string;
     grad_month: string;
     created_at: string;
@@ -121,17 +134,21 @@ export type CandidateWithId = {
 };
 
 export type Company = {
+    status?: (CompanyStatus);
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
+    contract_size?: (string | null);
     created_at: string;
     updated_at: string;
 };
 
 export type CompanyCreate = {
+    status?: (CompanyStatus);
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
+    contract_size?: (string | null);
     created_at?: string;
     updated_at?: string;
 };
@@ -144,20 +161,33 @@ export type CompanyFounder = {
     founder_linkedin_url: string;
 };
 
+export type CompanyStatus = 'Active' | 'Inactive' | 'Pending';
+
+export const CompanyStatus = {
+    ACTIVE: 'Active',
+    INACTIVE: 'Inactive',
+    PENDING: 'Pending'
+} as const;
+
 export type CompanyUpdate = {
+    status?: (CompanyStatus);
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
+    contract_size?: (string | null);
     updated_at?: string;
 };
 
 export type CompanyWithId = {
+    status?: (CompanyStatus);
     company_name: string;
     company_desc: string;
     founders: Array<CompanyFounder>;
+    contract_size?: (string | null);
     created_at: string;
     updated_at: string;
     company_id: string;
+    roles_count?: (number | null);
 };
 
 export type CriteriaScoringItem = {
@@ -227,6 +257,8 @@ export type RoleWithId = {
     created_at: string;
     updated_at: string;
     role_id: string;
+    candidates_interview_count: number;
+    candidates_sent_count: number;
 };
 
 export type ValidationError = {
@@ -488,3 +520,13 @@ export type DeleteCandidateCandidatesCandidateIdDeleteData = {
 export type DeleteCandidateCandidatesCandidateIdDeleteResponse = (Candidate);
 
 export type DeleteCandidateCandidatesCandidateIdDeleteError = (HTTPValidationError);
+
+export type RateCandidateGithubCandidatesCandidateIdGithubGetData = {
+    path: {
+        candidate_id: string;
+    };
+};
+
+export type RateCandidateGithubCandidatesCandidateIdGithubGetResponse = (Candidate);
+
+export type RateCandidateGithubCandidatesCandidateIdGithubGetError = (HTTPValidationError);

@@ -20,13 +20,17 @@ import {
 
 import BreadCrumbs from "../../components/breadcrumbs";
 import { Skeleton } from "../../components/ui/skeleton";
-import { getCandidateCandidatesCandidateIdGet } from "../../client/services.gen";
+import {
+  getCandidateCandidatesCandidateIdGet,
+  rateCandidateGithubCandidatesCandidateIdGithubGet,
+} from "../../client/services.gen";
 import { Candidate } from "../../client/types.gen";
 
 const CandidatePage: React.FC = () => {
   const { candidateId } = useParams();
   const navigate = useNavigate();
   const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchCandidate = async () => {
     const { data, error } = await getCandidateCandidatesCandidateIdGet({
@@ -44,6 +48,24 @@ const CandidatePage: React.FC = () => {
   useEffect(() => {
     fetchCandidate();
   }, [candidateId]);
+
+  const generateGitHubDescription = async () => {
+    if (!candidate) return;
+    setIsLoading(true);
+    const { data, error } =
+      await rateCandidateGithubCandidatesCandidateIdGithubGet({
+        path: { candidate_id: candidateId || "" },
+      });
+    if (error) {
+      console.error("Error generating GitHub description:", error);
+    } else {
+      console.log("data", data);
+      setCandidate({
+        ...candidate,
+      });
+    }
+    setIsLoading(false);
+  };
 
   if (!candidate) {
     return (
@@ -136,42 +158,71 @@ const CandidatePage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Linkedin className="h-4 w-4" />
-                  <a
-                    href={candidate.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >
-                    LinkedIn Profile
-                  </a>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Github className="h-4 w-4" />
-                  <a
-                    href={candidate.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >
-                    GitHub Profile
-                  </a>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <FileText className="h-4 w-4" />
-                  <a
-                    href={candidate.resume}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >
-                    View Resume
-                  </a>
-                </div>
+                {candidate.linkedin && (
+                  <div className="flex items-center space-x-2">
+                    <Linkedin className="h-4 w-4" />
+                    <a
+                      href={candidate.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      LinkedIn Profile
+                    </a>
+                  </div>
+                )}
+                {candidate.github && (
+                  <div className="flex items-center space-x-2">
+                    <Github className="h-4 w-4" />
+                    <a
+                      href={candidate.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      GitHub Profile
+                    </a>
+                  </div>
+                )}
+                {candidate.resume && (
+                  <div className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4" />
+                    <a
+                      href={candidate.resume}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      View Resume
+                    </a>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
+          {candidate.github && candidate.github_rating && (
+            <Card>
+              <CardHeader>
+                <CardTitle>GitHub Rating</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {Object.entries(candidate.github_rating || {}).map(
+                    ([key, value]) => (
+                      <div key={key}>
+                        <Label>{key}</Label>
+                        <div className="font-medium">
+                          {typeof value === "object"
+                            ? JSON.stringify(value)
+                            : String(value)}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>Generated Information</CardTitle>

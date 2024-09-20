@@ -4,10 +4,11 @@ import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { CandidateRoleForm } from "./CandidateRoleForm";
-import { CandidateForm } from "./CandidateForm";
+import { CandidateForm } from "../candidates/CandidateForm";
 import { useParams } from "react-router-dom";
+import { Markdown } from "../../components/Markdown";
 import AddExistingCandidatesDialog from "./AddExistingCandidatesDialog";
-import { FindCandidatesDialog } from "./FindCandidatesDialog";
+import { FindCandidatesDialog } from "../candidates/FindCandidatesDialog";
 import {
   CandidateRole,
   CandidateWithId,
@@ -34,7 +35,8 @@ function CandidateRoleList() {
   const [isAddExistingDialogOpen, setIsAddExistingDialogOpen] =
     useState<boolean>(false);
   const [isAddNewModalOpen, setIsAddNewModalOpen] = useState<boolean>(false);
-  const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] = useState<boolean>(false);
+  const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] =
+    useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
   const [formData, setFormData] = useState<{
@@ -126,14 +128,13 @@ function CandidateRoleList() {
     });
   };
 
-  const findCandidates = async (
-    findCandidatesBody: FindCandidatesBody
-  ) => {
-    const { data, error } = await findCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPost({
-      path: { company_id: companyId || "", role_id: roleId || "" },
-      body: findCandidatesBody,
-    });
-  
+  const findCandidates = async (findCandidatesBody: FindCandidatesBody) => {
+    const { data, error } =
+      await findCandidatesCompaniesCompanyIdRolesRoleIdCandidatesFindPost({
+        path: { company_id: companyId || "", role_id: roleId || "" },
+        body: findCandidatesBody,
+      });
+
     if (error) {
       console.error("Error finding candidates:", error);
     } else {
@@ -247,17 +248,12 @@ function CandidateRoleList() {
               {
                 key: "candidate_role_generated_description",
                 label: "Generated Description",
-              },
-              { key: "candidate_role_notes", label: "Notes" },
-              {
-                key: "criteria_scores",
-                label: "Criteria Scores",
-                render: (scores: CriteriaScoringItem[]) =>
-                  scores
-                    ? scores
-                        .map((s) => `${s.criteria_name}: ${s.score}`)
-                        .join(", ")
-                    : "",
+                render: (value: string | null) =>
+                  value ? (
+                    <Markdown content={value} />
+                  ) : (
+                    "No description generated"
+                  ),
               },
             ]}
             data={candidates.map((candidate) => ({
@@ -273,7 +269,9 @@ function CandidateRoleList() {
             }))}
             onDelete={deleteCandidate}
             onEdit={(candidate) => openEditForm(candidate)}
-            detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
+            detailsPath={(candidate) =>
+              `/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`
+            }
             idField="candidate_id"
             isLoading={loading}
           />

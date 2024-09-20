@@ -8,6 +8,7 @@ import {
   CompanyFounder,
   CompanyCreate,
   CompanyUpdate,
+  CompanyStatus,
 } from "../../client/types.gen";
 import {
   listCompaniesCompaniesGet,
@@ -69,6 +70,8 @@ function CompanyList() {
       company_name: newCompany.company_name ?? "",
       company_desc: newCompany.company_desc ?? "",
       founders: newCompany.founders ?? [],
+      contract_size: newCompany.contract_size ?? "",
+      status: newCompany.status ?? CompanyStatus.PENDING,
     };
 
     const { error } = await createCompanyCompaniesPost({
@@ -86,6 +89,8 @@ function CompanyList() {
       company_name: editingCompany.company_name ?? "",
       company_desc: editingCompany.company_desc ?? "",
       founders: editingCompany.founders ?? [],
+      contract_size: editingCompany.contract_size ?? "",
+      status: editingCompany.status ?? CompanyStatus.PENDING,
     };
 
     const { error } = await updateCompanyCompaniesCompanyIdPut({
@@ -129,14 +134,16 @@ function CompanyList() {
         </div>
         <DataTable
           columns={[
+            { key: "status", label: "Status" },
             { key: "company_name", label: "Company Name" },
-            { key: "company_desc", label: "Description" },
+            { key: "contract_size", label: "Contract Size" },
             {
               key: "founders",
-              label: "Founders",
+              label: "Point of Contact",
               render: (founders: CompanyFounder[]) =>
                 founders.map((f) => f.founder_name).join(", "),
             },
+            { key: "roles_count", label: "Number of Roles" },
           ]}
           data={companies}
           onEdit={openEditForm}

@@ -60,9 +60,13 @@ function CandidateList() {
     const completeCandidate = Object.keys(
       CandidateCreateSchema.properties
     ).reduce((acc, key) => {
-      if (key !== "created_at" && key !== "updated_at") {
+      if (
+        key !== "created_at" &&
+        key !== "updated_at" &&
+        key !== "github_rating"
+      ) {
         acc[key as keyof CandidateCreate] =
-          candidate[key as keyof CandidateCreate] ?? "";
+          (candidate[key as keyof CandidateCreate] as any) ?? "";
       }
       return acc;
     }, {} as Partial<CandidateCreate>);
@@ -92,9 +96,13 @@ function CandidateList() {
     const completeCandidate = Object.keys(
       CandidateUpdateSchema.properties
     ).reduce((acc, key) => {
-      if (key !== "created_at" && key !== "updated_at") {
+      if (
+        key !== "created_at" &&
+        key !== "updated_at" &&
+        key !== "github_rating"
+      ) {
         acc[key as keyof CandidateUpdate] =
-          candidate[key as keyof CandidateUpdate] ?? "";
+          (candidate[key as keyof CandidateUpdate] as any) ?? "";
       }
       return acc;
     }, {} as Partial<CandidateUpdate>);
@@ -139,14 +147,22 @@ function CandidateList() {
             { key: "candidate_last_name", label: "Last Name" },
             { key: "linkedin", label: "LinkedIn" },
             { key: "github", label: "Github" },
-            { 
-              key: "resume", 
+            {
+              key: "resume",
               label: "Resume",
-              render: (value) => value ? (
-                <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  View Resume
-                </a>
-              ) : ''
+              render: (value) =>
+                value ? (
+                  <a
+                    href={value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    View Resume
+                  </a>
+                ) : (
+                  ""
+                ),
             },
             { key: "email", label: "Email" },
             { key: "phone_number", label: "Phone Number" },
