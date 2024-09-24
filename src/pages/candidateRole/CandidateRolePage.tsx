@@ -60,18 +60,20 @@ const CandidateRolePage: React.FC = () => {
   const [rating, setRating] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("view");
   const [newNoteType, setNewNoteType] = useState<CandidateRoleNoteType>(
-    CandidateRoleNoteType.OTHER
+    CandidateRoleNoteType.PHONE_SCREEN
   );
 
   const fetchCandidateRole = async () => {
     const { data, error } =
-      await getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet({
-        path: {
-          company_id: companyId || "",
-          role_id: roleId || "",
-          candidate_id: candidateId || "",
-        },
-      });
+      await getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet(
+        {
+          path: {
+            company_id: companyId || "",
+            role_id: roleId || "",
+            candidate_id: candidateId || "",
+          },
+        }
+      );
     if (error) {
       console.error("Error fetching candidate role:", error);
     } else {
