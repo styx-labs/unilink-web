@@ -47,6 +47,9 @@ function CandidateRoleList() {
     isOpen: false,
     isEditing: false,
   });
+  const [newCandidate, setNewCandidate] = useState<Partial<CandidateWithId>>(
+    {}
+  );
 
   const { companyId, roleId } = useParams();
 
@@ -195,6 +198,7 @@ function CandidateRoleList() {
     } else {
       setIsAddNewModalOpen(false);
       fetchCandidates();
+      setNewCandidate({});
     }
   };
 
@@ -298,7 +302,7 @@ function CandidateRoleList() {
       />
 
       <CandidateForm
-        candidate={{}}
+        candidate={newCandidate}
         onSubmit={addCandidate}
         open={isAddNewModalOpen}
         onOpenChange={setIsAddNewModalOpen}
