@@ -63,6 +63,10 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                <Route
+                  path="/companies/:companyId/roles/:roleId/candidate"
+                  element={<CandidateRoleList />}
+                />
                 {user ? (
                   <Route
                     path="/*"
