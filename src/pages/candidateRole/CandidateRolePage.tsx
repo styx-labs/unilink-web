@@ -10,7 +10,6 @@ import {
   CardContent,
 } from "../../components/ui/card";
 import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import {
   Star,
@@ -30,16 +29,9 @@ import {
 } from "../../client/services.gen";
 import {
   CandidateRole,
-  CandidateRoleNote,
   CandidateRoleUpdate,
+  CandidateRoleStatus,
 } from "../../client/types.gen";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../components/ui/tabs";
-import { Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -48,6 +40,9 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { CandidateRoleNoteType } from "../../client/types.gen";
+import NotesInput from "../../components/inputs/NotesInput";
+import { CriteriaScoresInput } from "../../components/inputs/CriteriaScoresInput";
+
 
 const CandidateRolePage: React.FC = () => {
   const { companyId, roleId, candidateId } = useParams();
@@ -56,12 +51,6 @@ const CandidateRolePage: React.FC = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [newNote, setNewNote] = useState("");
-  const [rating, setRating] = useState(0);
-  const [activeTab, setActiveTab] = useState<string>("view");
-  const [newNoteType, setNewNoteType] = useState<CandidateRoleNoteType>(
-    CandidateRoleNoteType.PHONE_SCREEN
-  );
 
   const fetchCandidateRole = async () => {
     const { data, error } =
@@ -130,30 +119,6 @@ const CandidateRolePage: React.FC = () => {
     }
   };
 
-  const handleAddNote = async () => {
-    if (newNote.trim() && candidateRole) {
-      const updatedCandidateRole = {
-        ...candidateRole,
-        candidate_role_notes: [
-          ...(candidateRole.candidate_role_notes || []),
-          {
-            type: newNoteType,
-            notes: newNote,
-            created_at: new Date().toISOString(),
-          },
-        ],
-      };
-      await updateCandidateRole(updatedCandidateRole);
-      setNewNote("");
-      setActiveTab("view");
-    }
-  };
-
-  const handleRatingChange = async (newRating: number) => {
-    // Implement API call to update rating
-    setRating(newRating);
-  };
-
   const breadcrumbItems = [
     { label: "Companies", path: "/" },
     { label: "Roles", path: `/companies/${companyId}/roles` },
@@ -181,6 +146,39 @@ const CandidateRolePage: React.FC = () => {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Candidates
         </Button>
       </div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Label htmlFor="candidate_role_status">Status</Label>
+            <Select
+              value={candidateRole.candidate_role_status || ""}
+              onValueChange={(value) => {
+                  const updatedCandidateRole = {
+                    ...candidateRole,
+                    candidate_role_status: value as CandidateRoleStatus
+                  };
+                  updateCandidateRole(updatedCandidateRole)
+                }
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(CandidateRoleStatus).map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* General Information */}
       <Card>
@@ -289,86 +287,33 @@ const CandidateRolePage: React.FC = () => {
           <div>
             <Label>Rating</Label>
             <div className="flex items-center space-x-1 mt-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`h-6 w-6 cursor-pointer ${
-                    star <= rating
-                      ? "text-yellow-400 fill-current"
-                      : "text-gray-300"
-                  }`}
-                  onClick={() => handleRatingChange(star)}
-                />
-              ))}
+            <CriteriaScoresInput
+              values={candidateRole.criteria_scores || []}
+              onChange={(value) => {
+                const updatedCandidateRole = {
+                  ...candidateRole,
+                  criteria_scores: value
+                };
+                updateCandidateRole(updatedCandidateRole)
+              }
+          }
+            />
             </div>
           </div>
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="view">View Notes</TabsTrigger>
-              <TabsTrigger value="add">Add Note</TabsTrigger>
-            </TabsList>
-            <TabsContent value="view">
-              <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                {candidateRole.candidate_role_notes &&
-                candidateRole.candidate_role_notes.length > 0 ? (
-                  candidateRole.candidate_role_notes.map(
-                    (note: CandidateRoleNote, index: number) => (
-                      <Card key={index} className="mb-4 last:mb-0">
-                        <CardHeader>
-                          <CardTitle className="text-sm font-medium">
-                            {note.type} -{" "}
-                            {new Date(note.created_at || "").toLocaleString()}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p>{note.notes}</p>
-                        </CardContent>
-                      </Card>
-                    )
-                  )
-                ) : (
-                  <p>No notes available.</p>
-                )}
-              </ScrollArea>
-            </TabsContent>
-            <TabsContent value="add">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="note-type">Note Type</Label>
-                  <Select
-                    value={newNoteType}
-                    onValueChange={(value) =>
-                      setNewNoteType(value as CandidateRoleNoteType)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select note type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(CandidateRoleNoteType).map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Textarea
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  placeholder="Enter a new note..."
-                  className="min-h-[100px]"
-                />
-                <Button onClick={handleAddNote} className="w-full">
-                  <Plus className="mr-2 h-4 w-4" /> Add Note
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
+          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+            <NotesInput
+              value={candidateRole.candidate_role_notes || []}
+              onChange={(value) => {
+                    const updatedCandidateRole = {
+                      ...candidateRole,
+                      candidate_role_notes: value
+                    };
+                    updateCandidateRole(updatedCandidateRole)
+                  }
+              }
+              options={Object.values(CandidateRoleNoteType) || []}
+            />
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>

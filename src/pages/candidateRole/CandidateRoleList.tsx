@@ -3,7 +3,6 @@ import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
-import { CandidateRoleForm } from "./CandidateRoleForm";
 import { CandidateForm } from "../candidates/CandidateForm";
 import { useParams } from "react-router-dom";
 import { Markdown } from "../../components/Markdown";
@@ -13,19 +12,21 @@ import {
   CandidateRole,
   CandidateWithId,
   CandidateRoleNote,
-  CandidateRoleUpdate,
+  CandidateUpdate,
   CandidateCreate,
   FindCandidatesBody,
 } from "../../client/types.gen";
 import {
   listCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGet,
-  updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
   deleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDelete,
   createCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePost,
   listCandidatesEndpointCandidatesGet,
   addCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPost,
   findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost,
+  getCandidateEndpointCandidatesCandidateIdGet,
+  updateCandidateEndpointCandidatesCandidateIdPut
 } from "../../client/services.gen";
+
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
@@ -33,23 +34,19 @@ function CandidateRoleList() {
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddExistingDialogOpen, setIsAddExistingDialogOpen] =
     useState<boolean>(false);
-  const [isAddNewModalOpen, setIsAddNewModalOpen] = useState<boolean>(false);
   const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] =
     useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [candidateNotes, setCandidateNotes] = useState<CandidateRoleNote[]>([]);
   const [formData, setFormData] = useState<{
-    candidateRole: Partial<CandidateRole>;
+    candidate: Partial<CandidateWithId>;
     isOpen: boolean;
     isEditing: boolean;
   }>({
-    candidateRole: {},
+    candidate: {},
     isOpen: false,
     isEditing: false,
   });
-  const [newCandidate, setNewCandidate] = useState<Partial<CandidateWithId>>(
-    {}
-  );
 
   const { companyId, roleId } = useParams();
 
@@ -131,7 +128,7 @@ function CandidateRoleList() {
   };
 
   const findCandidates = async (findCandidatesBody: FindCandidatesBody) => {
-    const { data, error } =
+    const error =
       await findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost(
         {
           path: { company_id: companyId || "", role_id: roleId || "" },
@@ -146,30 +143,34 @@ function CandidateRoleList() {
     }
   };
 
-  const updateCandidateRole = async (
-    updatedCandidateRole: Partial<CandidateRole>
-  ) => {
-    const { error } =
-      await updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
-        {
-          path: {
-            company_id: companyId || "",
-            role_id: roleId || "",
-            candidate_id: updatedCandidateRole.candidate_id || "",
-          },
-          body: updatedCandidateRole as CandidateRoleUpdate,
-        }
-      );
+  const openEditForm = async (candidateRole: CandidateRole) => {
+    const { data, error } = await getCandidateEndpointCandidatesCandidateIdGet({
+      path: {
+        candidate_id: candidateRole.candidate_id || "",
+      },
+    });
     if (error) {
-      console.error("Error updating candidate role:", error);
+      console.error("Error fetching candidate:", error);
     } else {
-      setFormData({ ...formData, isOpen: false, isEditing: false });
-      fetchCandidates();
+      if (data) {
+        const candidate = {...data, candidate_id: candidateRole.candidate_id}
+        console.log(candidate);
+        setFormData({candidate, isOpen: true, isEditing: true});
+      }
     }
   };
 
-  const openEditForm = (candidateRole: CandidateRole) => {
-    setFormData({ candidateRole, isOpen: true, isEditing: true });
+  const closeForm = () => {
+    setFormData({ candidate: {}, isOpen: false, isEditing: false });
+  };
+
+  const handleSubmit = async (submittedCandidate: Partial<CandidateWithId>) => {
+    if (formData.isEditing) {
+      await updateCandidate(submittedCandidate as CandidateWithId);
+    } else {
+      await addCandidate(submittedCandidate);
+    }
+    closeForm();
   };
 
   const addCandidate = async (newCandidate: Partial<CandidateWithId>) => {
@@ -196,9 +197,35 @@ function CandidateRoleList() {
     if (error) {
       console.error("Error adding candidate:", error);
     } else {
-      setIsAddNewModalOpen(false);
       fetchCandidates();
-      setNewCandidate({});
+    }
+  };
+
+  const updateCandidate = async (newCandidate: Partial<CandidateWithId>) => {
+    const completeCandidate: CandidateUpdate = {
+      candidate_first_name: newCandidate.candidate_first_name ?? "",
+      candidate_last_name: newCandidate.candidate_last_name ?? "",
+      linkedin: newCandidate.linkedin ?? "",
+      email: newCandidate.email ?? "",
+      phone_number: newCandidate.phone_number ?? "",
+      github: newCandidate.github ?? "",
+      portfolio: newCandidate.portfolio ?? "",
+      candidate_desc: newCandidate.candidate_desc ?? "",
+      resume: newCandidate.resume ?? "",
+      grad_year: newCandidate.grad_year ?? "",
+      grad_month: newCandidate.grad_month ?? "",
+    };
+    const { error } =
+      await updateCandidateEndpointCandidatesCandidateIdPut(
+        {
+          path: { candidate_id: newCandidate.candidate_id || "" },
+          body: completeCandidate as CandidateCreate,
+        }
+      );
+    if (error) {
+      console.error("Error adding candidate:", error);
+    } else {
+      fetchCandidates();
     }
   };
 
@@ -234,7 +261,7 @@ function CandidateRoleList() {
             <Button onClick={() => setIsAddExistingDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
-            <Button onClick={() => setIsAddNewModalOpen(true)}>
+            <Button onClick={() => setFormData({isOpen: true, isEditing: false, candidate: {}})}>
               <Plus className="mr-2 h-4 w-4" /> Add New Candidate
             </Button>
           </div>
@@ -302,22 +329,16 @@ function CandidateRoleList() {
       />
 
       <CandidateForm
-        candidate={newCandidate}
-        onSubmit={addCandidate}
-        open={isAddNewModalOpen}
-        onOpenChange={setIsAddNewModalOpen}
-        title="Add New Candidate"
-        description="Enter the details for the new candidate here."
-      />
-
-      <CandidateRoleForm
-        candidateRole={formData.candidateRole}
-        onSubmit={updateCandidateRole}
+        candidate={formData.candidate}
+        onSubmit={handleSubmit}
         open={formData.isOpen}
-        onOpenChange={(open) => setFormData({ ...formData, isOpen: open })}
-        isEditing={formData.isEditing}
-        companyId={companyId || ""}
-        roleId={roleId || ""}
+        onOpenChange={closeForm}
+        title={formData.isEditing ? "Edit Candidate" : "Add Candidate"}
+        description={
+          formData.isEditing
+            ? "Make changes to the candidate here."
+            : "Enter the details for the new candidate here."
+        }
       />
     </div>
   );
