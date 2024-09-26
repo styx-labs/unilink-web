@@ -89,7 +89,10 @@ const NotesInput: React.FC<NotesInputProps> = ({
         {value.map((note, index) => (
           <Card key={index} className="flex flex-col justify-between">
             <CardHeader>
-              <CardTitle className="text-sm font-medium">{note.type}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {note.type} -{" "}
+                {new Date(note.created_at || "").toLocaleString()}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-500 dark:text-gray-400 overflow-hidden">
