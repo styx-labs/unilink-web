@@ -1,30 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { useParams } from "react-router-dom";
-import {
-  listRolesEndpointCompaniesCompanyIdRolesGet,
-  createRoleEndpointCompaniesCompanyIdRolesPost,
-  updateRoleEndpointCompaniesCompanyIdRolesRoleIdPut,
-  deleteRoleEndpointCompaniesCompanyIdRolesRoleIdDelete,
-} from "../../client/services.gen";
-import {
-  RoleWithId,
-  RoleCreate,
-  RoleUpdate,
-  RoleStatus,
-} from "../../client/types.gen";
+import { RoleWithId } from "../../client/types.gen";
 import { RoleForm } from "./RoleForm";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "../../components/ui/loader";
+import { useRoles } from "../../hooks/useRoles";
 
 function RoleList() {
-  const [roles, setRoles] = useState<RoleWithId[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState<boolean>(true);
+  const { companyId } = useParams();
+  const { roles, loading, hasMore, addRole, updateRole, deleteRole, loadMore } =
+    useRoles();
   const [formData, setFormData] = useState<{
     role: Partial<RoleWithId>;
     isOpen: boolean;
@@ -34,7 +23,6 @@ function RoleList() {
     isOpen: false,
     isEditing: false,
   });
-  const { companyId } = useParams();
 
   const openAddForm = () => {
     setFormData({ role: {}, isOpen: true, isEditing: false });
@@ -55,92 +43,6 @@ function RoleList() {
       await addRole(submittedRole);
     }
     closeForm();
-  };
-
-  useEffect(() => {
-    fetchRoles();
-  }, [companyId]);
-
-  const fetchRoles = async (cursorParam?: string | null) => {
-    setLoading(true);
-    const { data, error } = await listRolesEndpointCompaniesCompanyIdRolesGet({
-      path: { company_id: companyId || "" },
-      query: {
-        cursor: cursorParam || undefined,
-        limit: 20,
-      },
-    });
-    if (error) {
-      console.error("Error fetching roles:", error);
-    } else {
-      const [newRoles, newNextCursor] = data!;
-      setRoles((prev) => (cursorParam ? [...prev, ...newRoles] : newRoles));
-      setNextCursor(newNextCursor);
-      setHasMore(!!newNextCursor);
-    }
-    setLoading(false);
-  };
-
-  const addRole = async (newRole: Partial<RoleWithId>) => {
-    const completeRole: RoleCreate = {
-      role_name: newRole.role_name ?? "",
-      role_desc: newRole.role_desc ?? "",
-      role_requirements: newRole.role_requirements ?? "",
-      role_criteria: newRole.role_criteria ?? [],
-      role_status: newRole.role_status ?? RoleStatus.OPEN,
-      meeting_link: newRole.meeting_link ?? "",
-    };
-    const { error } = await createRoleEndpointCompaniesCompanyIdRolesPost({
-      path: { company_id: companyId || "" },
-      body: completeRole as RoleCreate,
-    });
-    if (error) {
-      console.error("Error adding role:", error);
-    } else {
-      fetchRoles();
-    }
-  };
-
-  const updateRole = async (editingRole: RoleWithId) => {
-    const completeRole: RoleUpdate = {
-      role_name: editingRole.role_name ?? "",
-      role_desc: editingRole.role_desc ?? "",
-      role_requirements: editingRole.role_requirements ?? "",
-      role_criteria: editingRole.role_criteria ?? [],
-      role_status: editingRole.role_status ?? RoleStatus.OPEN,
-      meeting_link: editingRole.meeting_link ?? "",
-    };
-    const { error } = await updateRoleEndpointCompaniesCompanyIdRolesRoleIdPut({
-      path: { company_id: companyId || "", role_id: editingRole.role_id },
-      body: completeRole as RoleUpdate,
-    });
-    if (error) {
-      console.error("Error updating role:", error);
-    } else {
-      setRoles(
-        roles.map((role) =>
-          role.role_id === editingRole.role_id ? editingRole : role
-        )
-      );
-    }
-  };
-
-  const deleteRole = async (id: string) => {
-    const { error } =
-      await deleteRoleEndpointCompaniesCompanyIdRolesRoleIdDelete({
-        path: { company_id: companyId || "", role_id: id },
-      });
-    if (error) {
-      console.error("Error deleting role:", error);
-    } else {
-      fetchRoles();
-    }
-  };
-
-  const loadMore = () => {
-    if (!loading && hasMore) {
-      fetchRoles(nextCursor);
-    }
   };
 
   return (
