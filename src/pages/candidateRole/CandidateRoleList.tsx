@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, ClipboardCopy } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import DataTable from "../../components/DataTable";
 import { CandidateForm } from "../candidates/CandidateForm";
@@ -12,7 +12,6 @@ import {
   CandidateRole,
   CandidateWithId,
   CandidateRoleNote,
-  CandidateUpdate,
   CandidateCreate,
   FindCandidatesBody,
 } from "../../client/types.gen";
@@ -28,6 +27,10 @@ import {
 } from "../../client/services.gen";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "../../components/ui/loader";
+import {
+  CandidateCreateSchema,
+} from "../../client/schemas.gen";
+
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
@@ -196,25 +199,29 @@ function CandidateRoleList() {
     if (formData.isEditing) {
       await updateCandidate(submittedCandidate as CandidateWithId);
     } else {
-      await addCandidate(submittedCandidate);
+      await addCandidate(submittedCandidate as CandidateWithId);
     }
     closeForm();
   };
 
   const addCandidate = async (newCandidate: Partial<CandidateWithId>) => {
-    const completeCandidate: CandidateCreate = {
-      candidate_first_name: newCandidate.candidate_first_name ?? "",
-      candidate_last_name: newCandidate.candidate_last_name ?? "",
-      linkedin: newCandidate.linkedin ?? "",
-      email: newCandidate.email ?? "",
-      phone_number: newCandidate.phone_number ?? "",
-      github: newCandidate.github ?? "",
-      portfolio: newCandidate.portfolio ?? "",
-      candidate_desc: newCandidate.candidate_desc ?? "",
-      resume: newCandidate.resume ?? "",
-      grad_year: newCandidate.grad_year ?? "",
-      grad_month: newCandidate.grad_month ?? "",
-    };
+    const completeCandidate = Object.keys(
+      CandidateCreateSchema.properties
+    ).reduce((acc, key) => {
+      if (
+        key !== "created_at" &&
+        key !== "updated_at" &&
+        key !== "github_rating" &&
+        key !== "portfolio_rating" &&
+        key !== "requires_sponsorship" &&
+        key !== "authorized_us"
+      ) {
+        acc[key as keyof CandidateCreate] =
+          (newCandidate[key as keyof CandidateCreate] as any) ?? "";
+      }
+      return acc;
+    }, {} as Partial<CandidateCreate>);
+
     const { error } =
       await createCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePost(
         {
@@ -272,6 +279,9 @@ function CandidateRoleList() {
     if (!loading && allCandidatesHasMore) {
       fetchAllCandidates(allCandidatesNextCursor);
     }
+  const copyExternalLink = () => {
+    const externalUrl = `${window.location.origin}/companies/${companyId}/roles/${roleId}/external`;
+    navigator.clipboard.writeText(externalUrl);
   };
 
   return (
@@ -292,6 +302,9 @@ function CandidateRoleList() {
             Candidates
           </h2>
           <div className="flex space-x-2">
+            <Button onClick={() => copyExternalLink()}>
+              <ClipboardCopy className="mr-2 h-4 w-4" /> Copy External Link
+            </Button>
             <Button onClick={() => setIsFindCandidatesModalOpen(true)}>
               Find Candidates
             </Button>

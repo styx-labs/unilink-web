@@ -88,6 +88,7 @@ function RoleList() {
       role_requirements: newRole.role_requirements ?? "",
       role_criteria: newRole.role_criteria ?? [],
       role_status: newRole.role_status ?? RoleStatus.OPEN,
+      meeting_link: newRole.meeting_link ?? "",
     };
     const { error } = await createRoleEndpointCompaniesCompanyIdRolesPost({
       path: { company_id: companyId || "" },
@@ -107,6 +108,7 @@ function RoleList() {
       role_requirements: editingRole.role_requirements ?? "",
       role_criteria: editingRole.role_criteria ?? [],
       role_status: editingRole.role_status ?? RoleStatus.OPEN,
+      meeting_link: editingRole.meeting_link ?? "",
     };
     const { error } = await updateRoleEndpointCompaniesCompanyIdRolesRoleIdPut({
       path: { company_id: companyId || "", role_id: editingRole.role_id },

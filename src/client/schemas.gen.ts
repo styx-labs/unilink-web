@@ -34,6 +34,28 @@ export const CandidateSchema = {
             type: 'string',
             title: 'Github'
         },
+        requires_sponsorship: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Requires Sponsorship'
+        },
+        authorized_us: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Authorized Us'
+        },
         github_rating: {
             anyOf: [
                 {
@@ -142,6 +164,28 @@ export const CandidateCreateSchema = {
         github: {
             type: 'string',
             title: 'Github'
+        },
+        requires_sponsorship: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Requires Sponsorship'
+        },
+        authorized_us: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Authorized Us'
         },
         github_rating: {
             anyOf: [
@@ -498,6 +542,28 @@ export const CandidateUpdateSchema = {
             type: 'string',
             title: 'Github'
         },
+        requires_sponsorship: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Requires Sponsorship'
+        },
+        authorized_us: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Authorized Us'
+        },
         github_rating: {
             anyOf: [
                 {
@@ -597,6 +663,28 @@ export const CandidateWithIdSchema = {
         github: {
             type: 'string',
             title: 'Github'
+        },
+        requires_sponsorship: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Requires Sponsorship'
+        },
+        authorized_us: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Authorized Us'
         },
         github_rating: {
             anyOf: [
@@ -1021,6 +1109,17 @@ export const RoleSchema = {
             type: 'array',
             title: 'Role Criteria'
         },
+        meeting_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Meeting Link'
+        },
         created_at: {
             type: 'string',
             format: 'date-time',
@@ -1072,6 +1171,17 @@ export const RoleCreateSchema = {
             },
             type: 'array',
             title: 'Role Criteria'
+        },
+        meeting_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Meeting Link'
         },
         created_at: {
             type: 'string',
@@ -1148,6 +1258,17 @@ export const RoleUpdateSchema = {
             type: 'array',
             title: 'Role Criteria'
         },
+        meeting_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Meeting Link'
+        },
         updated_at: {
             type: 'string',
             format: 'date-time',
@@ -1194,6 +1315,17 @@ export const RoleWithIdSchema = {
             },
             type: 'array',
             title: 'Role Criteria'
+        },
+        meeting_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Meeting Link'
         },
         created_at: {
             type: 'string',

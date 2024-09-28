@@ -9,6 +9,8 @@ export type Candidate = {
     email: string;
     phone_number: string;
     github: string;
+    requires_sponsorship?: (boolean | null);
+    authorized_us?: (boolean | null);
     github_rating?: ({
     [key: string]: unknown;
 } | null);
@@ -32,6 +34,8 @@ export type CandidateCreate = {
     email: string;
     phone_number: string;
     github: string;
+    requires_sponsorship?: (boolean | null);
+    authorized_us?: (boolean | null);
     github_rating?: ({
     [key: string]: unknown;
 } | null);
@@ -112,6 +116,8 @@ export type CandidateUpdate = {
     email: string;
     phone_number: string;
     github: string;
+    requires_sponsorship?: (boolean | null);
+    authorized_us?: (boolean | null);
     github_rating?: ({
     [key: string]: unknown;
 } | null);
@@ -133,6 +139,8 @@ export type CandidateWithId = {
     email: string;
     phone_number: string;
     github: string;
+    requires_sponsorship?: (boolean | null);
+    authorized_us?: (boolean | null);
     github_rating?: ({
     [key: string]: unknown;
 } | null);
@@ -225,6 +233,7 @@ export type Role = {
     role_requirements?: (string | null);
     role_status?: (RoleStatus);
     role_criteria?: Array<RoleCriteria>;
+    meeting_link?: (string | null);
     created_at: string;
     updated_at: string;
 };
@@ -235,6 +244,7 @@ export type RoleCreate = {
     role_requirements?: (string | null);
     role_status?: (RoleStatus);
     role_criteria?: Array<RoleCriteria>;
+    meeting_link?: (string | null);
     created_at?: string;
     updated_at?: string;
     is_open?: boolean;
@@ -260,6 +270,7 @@ export type RoleUpdate = {
     role_requirements?: (string | null);
     role_status?: (RoleStatus);
     role_criteria?: Array<RoleCriteria>;
+    meeting_link?: (string | null);
     updated_at?: string;
 };
 
@@ -269,6 +280,7 @@ export type RoleWithId = {
     role_requirements?: (string | null);
     role_status?: (RoleStatus);
     role_criteria?: Array<RoleCriteria>;
+    meeting_link?: (string | null);
     created_at: string;
     updated_at: string;
     role_id: string;
