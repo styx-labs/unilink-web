@@ -80,6 +80,17 @@ export function RoleForm({
           </Select>
         </div>
         <div>
+          <Label htmlFor="meeting_link">Meeting Link</Label>
+          <Input
+            id="meeting_link"
+            value={formData.meeting_link || ""}
+            type="url"
+            onChange={(e) =>
+              setFormData({ ...formData, meeting_link: e.target.value })
+            }
+          />
+        </div>
+        <div>
           <Label htmlFor="role_desc">Description</Label>
           <Textarea
             id="role_desc"

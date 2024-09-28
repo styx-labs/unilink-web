@@ -11,7 +11,9 @@ import CandidateList from "./pages/candidates/CandidateList";
 import CandidateRoleList from "./pages/candidateRole/CandidateRoleList";
 import CandidatePage from "./pages/candidates/CandidatePage";
 import CandidateRolePage from "./pages/candidateRole/CandidateRolePage";
+import CandidateRoleExternal from "./pages/candidateRole/CandidateRoleExternal";
 import CompanyList from "./pages/companies/CompanyList";
+import SubmissionSuccess from "./pages/candidateRole/SubmissionSuccess"
 import LoginPage from "./pages/login/LoginPage";
 import { Loader } from "./components/ui/loader";
 import RoleList from "./pages/roles/RoleList";
@@ -63,9 +65,10 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                <Route path="/submission-success" element={<SubmissionSuccess />} />
                 <Route
-                  path="/companies/:companyId/roles/:roleId/candidate"
-                  element={<CandidateRoleList />}
+                  path="/companies/:companyId/roles/:roleId/external"
+                  element={<CandidateRoleExternal />}
                 />
                 {user ? (
                   <Route

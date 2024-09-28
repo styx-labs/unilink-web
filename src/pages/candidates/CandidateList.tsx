@@ -64,7 +64,9 @@ function CandidateList() {
         key !== "created_at" &&
         key !== "updated_at" &&
         key !== "github_rating" &&
-        key !== "portfolio_rating"
+        key !== "portfolio_rating" &&
+        key !== "requires_sponsorship" &&
+        key !== "authorized_us"
       ) {
         acc[key as keyof CandidateCreate] =
           (candidate[key as keyof CandidateCreate] as any) ?? "";
