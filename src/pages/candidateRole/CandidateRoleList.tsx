@@ -14,6 +14,7 @@ import {
   CandidateRoleNote,
   CandidateCreate,
   FindCandidatesBody,
+  CandidateUpdate,
 } from "../../client/types.gen";
 import {
   listCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGet,
@@ -27,10 +28,7 @@ import {
 } from "../../client/services.gen";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "../../components/ui/loader";
-import {
-  CandidateCreateSchema,
-} from "../../client/schemas.gen";
-
+import { CandidateCreateSchema } from "../../client/schemas.gen";
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
@@ -279,6 +277,8 @@ function CandidateRoleList() {
     if (!loading && allCandidatesHasMore) {
       fetchAllCandidates(allCandidatesNextCursor);
     }
+  };
+
   const copyExternalLink = () => {
     const externalUrl = `${window.location.origin}/companies/${companyId}/roles/${roleId}/external`;
     navigator.clipboard.writeText(externalUrl);
