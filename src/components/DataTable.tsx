@@ -10,7 +10,7 @@ import {
 import { Button } from "./ui/button";
 import { ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Skeleton } from "./ui/skeleton";
+import { cn } from "../lib/utils";
 
 interface Column {
   key: string;
@@ -26,6 +26,7 @@ interface DataTableProps {
   detailsPath: (item: any) => string;
   idField?: string;
   isLoading?: boolean;
+  className?: string;
 }
 
 const DataTable: React.FC<DataTableProps> = ({
@@ -35,25 +36,10 @@ const DataTable: React.FC<DataTableProps> = ({
   onDelete,
   detailsPath,
   idField = "id",
-  isLoading = false,
+  className,
 }) => {
-  const renderCellContent = (item: any, column: Column) => {
-    const value = item[column.key];
-    if (column.render) {
-      return column.render(value);
-    }
-    if (Array.isArray(value)) {
-      return value.map((v, index) => (
-        <div key={index}>
-          {v.type}: {v.notes}
-        </div>
-      ));
-    }
-    return value;
-  };
-
   return (
-    <Table>
+    <Table className={cn("w-full", className)}>
       <TableHeader>
         <TableRow>
           {columns.map((column) => (
@@ -63,63 +49,44 @@ const DataTable: React.FC<DataTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {isLoading ? (
-          <>
-            {[...Array(5)].map((_, index) => (
-              <TableRow key={index}>
-                {columns.map((column) => (
-                  <TableCell key={column.key}>
-                    <Skeleton className="h-4 w-full" />
-                  </TableCell>
-                ))}
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Skeleton className="h-8 w-8" />
-                    <Skeleton className="h-8 w-8" />
-                    <Skeleton className="h-8 w-8" />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </>
-        ) : (
-          data.map((item) => (
-            <TableRow key={item[idField]}>
-              {columns.map((column) => (
-                <TableCell key={column.key}>
-                  {renderCellContent(item, column)}
-                </TableCell>
-              ))}
-              <TableCell>
-                <div className="flex space-x-2">
-                  {onEdit && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEdit(item)}
-                    >
-                      <Pencil className="h-4 w-4 text-blue-500" />
-                    </Button>
-                  )}
-                  {onDelete && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDelete(item[idField])}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  )}
-                  <Link to={detailsPath(item)}>
-                    <Button variant="ghost" size="sm">
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
+        {data.map((item) => (
+          <TableRow key={item[idField]}>
+            {columns.map((column) => (
+              <TableCell key={column.key}>
+                {column.render
+                  ? column.render(item[column.key])
+                  : item[column.key]}
               </TableCell>
-            </TableRow>
-          ))
-        )}
+            ))}
+            <TableCell>
+              <div className="flex space-x-2">
+                {onEdit && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(item)}
+                  >
+                    <Pencil className="h-4 w-4 text-blue-500" />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(item[idField])}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                )}
+                <Link to={detailsPath(item)}>
+                  <Button variant="ghost" size="sm">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

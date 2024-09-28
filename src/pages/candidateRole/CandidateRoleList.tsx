@@ -24,9 +24,8 @@ import {
   addCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPost,
   findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost,
   getCandidateEndpointCandidatesCandidateIdGet,
-  updateCandidateEndpointCandidatesCandidateIdPut
+  updateCandidateEndpointCandidatesCandidateIdPut,
 } from "../../client/services.gen";
-
 
 function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
@@ -67,7 +66,7 @@ function CandidateRoleList() {
     if (error) {
       console.error("Error fetching candidates:", error);
     } else {
-      setCandidates(data || []);
+      setCandidates(data?.[0] || []);
     }
     setLoading(false);
   };
@@ -81,9 +80,9 @@ function CandidateRoleList() {
         (candidate) => candidate.candidate_id
       );
       setAllCandidates(
-        data?.filter(
+        (data?.[0] || []).filter(
           (candidate) => !existingCandidateIds.includes(candidate.candidate_id)
-        ) || []
+        )
       );
     }
   };
@@ -153,9 +152,9 @@ function CandidateRoleList() {
       console.error("Error fetching candidate:", error);
     } else {
       if (data) {
-        const candidate = {...data, candidate_id: candidateRole.candidate_id}
+        const candidate = { ...data, candidate_id: candidateRole.candidate_id };
         console.log(candidate);
-        setFormData({candidate, isOpen: true, isEditing: true});
+        setFormData({ candidate, isOpen: true, isEditing: true });
       }
     }
   };
@@ -215,13 +214,10 @@ function CandidateRoleList() {
       grad_year: newCandidate.grad_year ?? "",
       grad_month: newCandidate.grad_month ?? "",
     };
-    const { error } =
-      await updateCandidateEndpointCandidatesCandidateIdPut(
-        {
-          path: { candidate_id: newCandidate.candidate_id || "" },
-          body: completeCandidate as CandidateCreate,
-        }
-      );
+    const { error } = await updateCandidateEndpointCandidatesCandidateIdPut({
+      path: { candidate_id: newCandidate.candidate_id || "" },
+      body: completeCandidate as CandidateCreate,
+    });
     if (error) {
       console.error("Error adding candidate:", error);
     } else {
@@ -261,7 +257,11 @@ function CandidateRoleList() {
             <Button onClick={() => setIsAddExistingDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
-            <Button onClick={() => setFormData({isOpen: true, isEditing: false, candidate: {}})}>
+            <Button
+              onClick={() =>
+                setFormData({ isOpen: true, isEditing: false, candidate: {} })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" /> Add New Candidate
             </Button>
           </div>

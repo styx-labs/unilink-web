@@ -18,6 +18,9 @@ import {
   CandidateCreateSchema,
   CandidateUpdateSchema,
 } from "../../client/schemas.gen";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Loader } from "../../components/ui/loader";
+
 function CandidateList() {
   const [candidates, setCandidates] = useState<CandidateWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -30,10 +33,41 @@ function CandidateList() {
     isOpen: false,
     isEditing: false,
   });
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
   useEffect(() => {
     fetchCandidates();
   }, []);
+
+  const fetchCandidates = async (cursorParam?: string | null) => {
+    setLoading(true);
+    const { data, error } = await listCandidatesEndpointCandidatesGet({
+      query: {
+        cursor: cursorParam || undefined,
+        limit: 20,
+      },
+    });
+    if (error) {
+      console.error("Error fetching candidates:", error);
+    } else {
+      const [newCandidates, newNextCursor] = data!;
+
+      setCandidates((prev) =>
+        cursorParam ? [...prev, ...newCandidates] : newCandidates
+      );
+      setNextCursor(newNextCursor);
+      setHasMore(!!newNextCursor);
+    }
+    setLoading(false);
+  };
+
+  const loadMore = () => {
+    console.log("loadMore", loading, hasMore, nextCursor);
+    if (!loading && hasMore) {
+      fetchCandidates(nextCursor);
+    }
+  };
 
   const openAddForm = () => {
     setFormData({ candidate: {}, isOpen: true, isEditing: false });
@@ -80,17 +114,6 @@ function CandidateList() {
     } else {
       fetchCandidates();
     }
-  };
-
-  const fetchCandidates = async () => {
-    setLoading(true);
-    const { data, error } = await listCandidatesEndpointCandidatesGet();
-    if (error) {
-      console.error("Error fetching candidates:", error);
-    } else {
-      setCandidates(data!);
-    }
-    setLoading(false);
   };
 
   const updateCandidate = async (candidate: CandidateWithId) => {
@@ -142,40 +165,132 @@ function CandidateList() {
             </Button>
           </div>
         </div>
-        <DataTable
-          columns={[
-            { key: "candidate_first_name", label: "First Name" },
-            { key: "candidate_last_name", label: "Last Name" },
-            { key: "linkedin", label: "LinkedIn" },
-            { key: "github", label: "Github" },
-            { key: "portfolio", label: "Portfolio" },
-            {
-              key: "resume",
-              label: "Resume",
-              render: (value) =>
-                value ? (
-                  <a
-                    href={value}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Resume
-                  </a>
-                ) : (
-                  ""
-                ),
-            },
-            { key: "email", label: "Email" },
-            { key: "phone_number", label: "Phone Number" },
-          ]}
-          data={candidates}
-          onEdit={openEditForm}
-          onDelete={deleteCandidate}
-          detailsPath={(candidate) => `/candidates/${candidate.candidate_id}`}
-          idField="candidate_id"
-          isLoading={loading}
-        />
+        <div id="scrollableDiv" style={{ height: "80vh", overflow: "auto" }}>
+          <InfiniteScroll
+            dataLength={candidates.length}
+            next={loadMore}
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center items-center p-4">
+                <Loader />
+              </div>
+            }
+            scrollableTarget="scrollableDiv"
+          >
+            <DataTable
+              columns={[
+                { key: "candidate_first_name", label: "First Name" },
+                { key: "candidate_last_name", label: "Last Name" },
+                {
+                  key: "linkedin",
+                  label: "LinkedIn",
+                  render: (value) =>
+                    value ? (
+                      <a
+                        href={value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      ""
+                    ),
+                },
+                {
+                  key: "github",
+                  label: "Github",
+                  render: (value) =>
+                    value ? (
+                      <a
+                        href={value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      ""
+                    ),
+                },
+                {
+                  key: "portfolio",
+                  label: "Portfolio",
+                  render: (value) =>
+                    value ? (
+                      <a
+                        href={value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      ""
+                    ),
+                },
+                {
+                  key: "resume",
+                  label: "Resume",
+                  render: (value) =>
+                    value ? (
+                      <a
+                        href={value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        View Resume
+                      </a>
+                    ) : (
+                      ""
+                    ),
+                },
+                {
+                  key: "email",
+                  label: "Email",
+                  render: (value) =>
+                    value ? (
+                      <a
+                        href={`mailto:${value}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      ""
+                    ),
+                },
+                {
+                  key: "phone_number",
+                  label: "Phone Number",
+                  render: (value) =>
+                    value ? (
+                      <a
+                        href={`tel:${value}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      ""
+                    ),
+                },
+              ]}
+              data={candidates}
+              onEdit={openEditForm}
+              onDelete={deleteCandidate}
+              detailsPath={(candidate) =>
+                `/candidates/${candidate.candidate_id}`
+              }
+              idField="candidate_id"
+              isLoading={loading}
+            />
+          </InfiniteScroll>
+        </div>
       </div>
 
       <CandidateForm
