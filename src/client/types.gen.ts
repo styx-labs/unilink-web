@@ -356,9 +356,16 @@ export type ListRolesEndpointCompaniesCompanyIdRolesGetData = {
     path: {
         company_id: string;
     };
+    query?: {
+        cursor?: (string | null);
+        limit?: number;
+    };
 };
 
-export type ListRolesEndpointCompaniesCompanyIdRolesGetResponse = (Array<RoleWithId>);
+export type ListRolesEndpointCompaniesCompanyIdRolesGetResponse = ([
+    Array<RoleWithId>,
+    (string | null)
+]);
 
 export type ListRolesEndpointCompaniesCompanyIdRolesGetError = (HTTPValidationError);
 

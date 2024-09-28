@@ -17,10 +17,14 @@ import {
   RoleStatus,
 } from "../../client/types.gen";
 import { RoleForm } from "./RoleForm";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Loader } from "../../components/ui/loader";
 
 function RoleList() {
   const [roles, setRoles] = useState<RoleWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const [formData, setFormData] = useState<{
     role: Partial<RoleWithId>;
     isOpen: boolean;
@@ -57,15 +61,22 @@ function RoleList() {
     fetchRoles();
   }, [companyId]);
 
-  const fetchRoles = async () => {
+  const fetchRoles = async (cursorParam?: string | null) => {
     setLoading(true);
     const { data, error } = await listRolesEndpointCompaniesCompanyIdRolesGet({
       path: { company_id: companyId || "" },
+      query: {
+        cursor: cursorParam || undefined,
+        limit: 20,
+      },
     });
     if (error) {
       console.error("Error fetching roles:", error);
     } else {
-      setRoles(data!);
+      const [newRoles, newNextCursor] = data!;
+      setRoles((prev) => (cursorParam ? [...prev, ...newRoles] : newRoles));
+      setNextCursor(newNextCursor);
+      setHasMore(!!newNextCursor);
     }
     setLoading(false);
   };
@@ -124,6 +135,12 @@ function RoleList() {
     }
   };
 
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchRoles(nextCursor);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       <BreadCrumbs
@@ -141,25 +158,39 @@ function RoleList() {
             <Plus className="mr-2 h-4 w-4" /> Add Role
           </Button>
         </div>
-        <DataTable
-          columns={[
-            { key: "role_status", label: "Status" },
-            { key: "role_name", label: "Title" },
-            {
-              key: "candidates_interview_count",
-              label: "Candidates Interviewed",
-            },
-            { key: "candidates_sent_count", label: "Candidates Sent" },
-          ]}
-          data={roles}
-          onEdit={openEditForm}
-          onDelete={deleteRole}
-          detailsPath={(role) =>
-            `/companies/${companyId}/roles/${role.role_id}/candidates`
-          }
-          idField="role_id"
-          isLoading={loading}
-        />
+        <div id="scrollableDiv" style={{ height: "80vh", overflow: "auto" }}>
+          <InfiniteScroll
+            dataLength={roles.length}
+            next={loadMore}
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center items-center p-4">
+                <Loader />
+              </div>
+            }
+            scrollableTarget="scrollableDiv"
+          >
+            <DataTable
+              columns={[
+                { key: "role_status", label: "Status" },
+                { key: "role_name", label: "Title" },
+                {
+                  key: "candidates_interview_count",
+                  label: "Candidates Interviewed",
+                },
+                { key: "candidates_sent_count", label: "Candidates Sent" },
+              ]}
+              data={roles}
+              onEdit={openEditForm}
+              onDelete={deleteRole}
+              detailsPath={(role) =>
+                `/companies/${companyId}/roles/${role.role_id}/candidates`
+              }
+              idField="role_id"
+              isLoading={loading}
+            />
+          </InfiniteScroll>
+        </div>
       </div>
 
       <RoleForm
