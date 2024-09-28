@@ -300,10 +300,6 @@ export type HealthcheckHealthcheckGetResponse = ({
 
 export type HealthcheckHealthcheckGetError = unknown;
 
-export type ListCompaniesEndpointCompaniesGetResponse = (Array<CompanyWithId>);
-
-export type ListCompaniesEndpointCompaniesGetError = unknown;
-
 export type CreateCompanyEndpointCompaniesPostData = {
     body: CompanyCreate;
 };
@@ -311,6 +307,20 @@ export type CreateCompanyEndpointCompaniesPostData = {
 export type CreateCompanyEndpointCompaniesPostResponse = (string);
 
 export type CreateCompanyEndpointCompaniesPostError = (HTTPValidationError);
+
+export type ListCompaniesEndpointCompaniesGetData = {
+    query?: {
+        cursor?: (string | null);
+        limit?: number;
+    };
+};
+
+export type ListCompaniesEndpointCompaniesGetResponse = ([
+    Array<CompanyWithId>,
+    (string | null)
+]);
+
+export type ListCompaniesEndpointCompaniesGetError = (HTTPValidationError);
 
 export type GetCompanyEndpointCompaniesCompanyIdGetData = {
     path: {
@@ -358,9 +368,16 @@ export type ListRolesEndpointCompaniesCompanyIdRolesGetData = {
     path: {
         company_id: string;
     };
+    query?: {
+        cursor?: (string | null);
+        limit?: number;
+    };
 };
 
-export type ListRolesEndpointCompaniesCompanyIdRolesGetResponse = (Array<RoleWithId>);
+export type ListRolesEndpointCompaniesCompanyIdRolesGetResponse = ([
+    Array<RoleWithId>,
+    (string | null)
+]);
 
 export type ListRolesEndpointCompaniesCompanyIdRolesGetError = (HTTPValidationError);
 
@@ -409,10 +426,6 @@ export type GenerateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteri
 
 export type GenerateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPostError = (HTTPValidationError);
 
-export type ListCandidatesEndpointCandidatesGetResponse = (Array<CandidateWithId>);
-
-export type ListCandidatesEndpointCandidatesGetError = unknown;
-
 export type CreateCandidateEndpointCandidatesPostData = {
     body: CandidateCreate;
 };
@@ -420,6 +433,20 @@ export type CreateCandidateEndpointCandidatesPostData = {
 export type CreateCandidateEndpointCandidatesPostResponse = (string);
 
 export type CreateCandidateEndpointCandidatesPostError = (HTTPValidationError);
+
+export type ListCandidatesEndpointCandidatesGetData = {
+    query?: {
+        cursor?: (string | null);
+        limit?: number;
+    };
+};
+
+export type ListCandidatesEndpointCandidatesGetResponse = ([
+    Array<CandidateWithId>,
+    (string | null)
+]);
+
+export type ListCandidatesEndpointCandidatesGetError = (HTTPValidationError);
 
 export type GetCandidateEndpointCandidatesCandidateIdGetData = {
     path: {
@@ -501,9 +528,16 @@ export type ListCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGetData
         company_id: string;
         role_id: string;
     };
+    query?: {
+        cursor?: (string | null);
+        limit?: number;
+    };
 };
 
-export type ListCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGetResponse = (Array<CandidateRole>);
+export type ListCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGetResponse = ([
+    Array<CandidateRole>,
+    (string | null)
+]);
 
 export type ListCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGetError = (HTTPValidationError);
 

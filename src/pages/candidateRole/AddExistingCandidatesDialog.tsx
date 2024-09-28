@@ -17,6 +17,9 @@ import {
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import { CandidateWithId } from "../../client/types.gen";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Loader } from "../../components/ui/loader";
+
 interface AddExistingCandidatesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -24,6 +27,8 @@ interface AddExistingCandidatesDialogProps {
   selectedCandidates: string[];
   toggleCandidateSelection: (candidateId: string) => void;
   addExistingCandidates: () => void;
+  loadMoreAllCandidates: () => void;
+  allCandidatesHasMore: boolean;
 }
 
 function AddExistingCandidatesDialog({
@@ -33,6 +38,8 @@ function AddExistingCandidatesDialog({
   selectedCandidates,
   toggleCandidateSelection,
   addExistingCandidates,
+  loadMoreAllCandidates,
+  allCandidatesHasMore,
 }: AddExistingCandidatesDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -43,38 +50,54 @@ function AddExistingCandidatesDialog({
             Select candidates to add to this role.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex-grow overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]">Select</TableHead>
-                <TableHead>First Name</TableHead>
-                <TableHead>Last Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>LinkedIn</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {allCandidates.map((candidate) => (
-                <TableRow key={candidate.candidate_id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedCandidates.includes(
-                        candidate.candidate_id
-                      )}
-                      onCheckedChange={() =>
-                        toggleCandidateSelection(candidate.candidate_id)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>{candidate.candidate_first_name}</TableCell>
-                  <TableCell>{candidate.candidate_last_name}</TableCell>
-                  <TableCell>{candidate.email}</TableCell>
-                  <TableCell>{candidate.linkedin}</TableCell>
+        <div
+          className="flex-grow overflow-auto"
+          style={{ height: "80vh" }}
+          id="scrollableDivModal"
+        >
+          <InfiniteScroll
+            dataLength={allCandidates.length}
+            next={loadMoreAllCandidates}
+            hasMore={allCandidatesHasMore}
+            loader={
+              <div className="flex justify-center items-center p-4">
+                <Loader />
+              </div>
+            }
+            scrollableTarget="scrollableDivModal"
+          >
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[50px]">Select</TableHead>
+                  <TableHead>First Name</TableHead>
+                  <TableHead>Last Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>LinkedIn</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {allCandidates.map((candidate) => (
+                  <TableRow key={candidate.candidate_id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedCandidates.includes(
+                          candidate.candidate_id
+                        )}
+                        onCheckedChange={() =>
+                          toggleCandidateSelection(candidate.candidate_id)
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>{candidate.candidate_first_name}</TableCell>
+                    <TableCell>{candidate.candidate_last_name}</TableCell>
+                    <TableCell>{candidate.email}</TableCell>
+                    <TableCell>{candidate.linkedin}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </InfiniteScroll>
         </div>
         <DialogFooter>
           <Button

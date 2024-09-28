@@ -23,8 +23,10 @@ import {
   addCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPost,
   findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost,
   getCandidateEndpointCandidatesCandidateIdGet,
-  updateCandidateEndpointCandidatesCandidateIdPut
+  updateCandidateEndpointCandidatesCandidateIdPut,
 } from "../../client/services.gen";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Loader } from "../../components/ui/loader";
 import {
   CandidateCreateSchema,
 } from "../../client/schemas.gen";
@@ -34,6 +36,8 @@ function CandidateRoleList() {
   const [candidates, setCandidates] = useState<CandidateRole[]>([]);
   const [allCandidates, setAllCandidates] = useState<CandidateWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const [isAddExistingDialogOpen, setIsAddExistingDialogOpen] =
     useState<boolean>(false);
   const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] =
@@ -49,6 +53,11 @@ function CandidateRoleList() {
     isOpen: false,
     isEditing: false,
   });
+  const [allCandidatesNextCursor, setAllCandidatesNextCursor] = useState<
+    string | null
+  >(null);
+  const [allCandidatesHasMore, setAllCandidatesHasMore] =
+    useState<boolean>(true);
 
   const { companyId, roleId } = useParams();
 
@@ -60,33 +69,53 @@ function CandidateRoleList() {
     fetchAllCandidates();
   }, [candidates]);
 
-  const fetchCandidates = async () => {
+  const fetchCandidates = async (cursorParam?: string | null) => {
     setLoading(true);
     const { data, error } =
       await listCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGet({
         path: { company_id: companyId || "", role_id: roleId || "" },
+        query: {
+          cursor: cursorParam || undefined,
+          limit: 20,
+        },
       });
     if (error) {
       console.error("Error fetching candidates:", error);
     } else {
-      setCandidates(data || []);
+      const [newCandidates, newNextCursor] = data!;
+      setCandidates((prev) =>
+        cursorParam ? [...prev, ...newCandidates] : newCandidates
+      );
+      setNextCursor(newNextCursor);
+      setHasMore(!!newNextCursor);
     }
     setLoading(false);
   };
 
-  const fetchAllCandidates = async () => {
-    const { data, error } = await listCandidatesEndpointCandidatesGet();
+  const fetchAllCandidates = async (cursorParam?: string | null) => {
+    const { data, error } = await listCandidatesEndpointCandidatesGet({
+      query: {
+        cursor: cursorParam || undefined,
+        limit: 20,
+      },
+    });
     if (error) {
       console.error("Error fetching candidates:", error);
     } else {
+      const [newCandidates, newNextCursor] = data!;
       const existingCandidateIds = candidates.map(
         (candidate) => candidate.candidate_id
       );
-      setAllCandidates(
-        data?.filter(
-          (candidate) => !existingCandidateIds.includes(candidate.candidate_id)
-        ) || []
+      const filteredNewCandidates = newCandidates.filter(
+        (candidate) => !existingCandidateIds.includes(candidate.candidate_id)
       );
+      setAllCandidates((prev) =>
+        cursorParam
+          ? [...prev, ...filteredNewCandidates]
+          : filteredNewCandidates
+      );
+      setAllCandidatesNextCursor(newNextCursor);
+      setAllCandidatesHasMore(!!newNextCursor);
     }
   };
 
@@ -155,9 +184,9 @@ function CandidateRoleList() {
       console.error("Error fetching candidate:", error);
     } else {
       if (data) {
-        const candidate = {...data, candidate_id: candidateRole.candidate_id}
+        const candidate = { ...data, candidate_id: candidateRole.candidate_id };
         console.log(candidate);
-        setFormData({candidate, isOpen: true, isEditing: true});
+        setFormData({ candidate, isOpen: true, isEditing: true });
       }
     }
   };
@@ -208,13 +237,23 @@ function CandidateRoleList() {
   };
 
   const updateCandidate = async (newCandidate: Partial<CandidateWithId>) => {
-    const { error } =
-      await updateCandidateEndpointCandidatesCandidateIdPut(
-        {
-          path: { candidate_id: newCandidate.candidate_id || "" },
-          body: newCandidate as CandidateCreate,
-        }
-      );
+    const completeCandidate: CandidateUpdate = {
+      candidate_first_name: newCandidate.candidate_first_name ?? "",
+      candidate_last_name: newCandidate.candidate_last_name ?? "",
+      linkedin: newCandidate.linkedin ?? "",
+      email: newCandidate.email ?? "",
+      phone_number: newCandidate.phone_number ?? "",
+      github: newCandidate.github ?? "",
+      portfolio: newCandidate.portfolio ?? "",
+      candidate_desc: newCandidate.candidate_desc ?? "",
+      resume: newCandidate.resume ?? "",
+      grad_year: newCandidate.grad_year ?? "",
+      grad_month: newCandidate.grad_month ?? "",
+    };
+    const { error } = await updateCandidateEndpointCandidatesCandidateIdPut({
+      path: { candidate_id: newCandidate.candidate_id || "" },
+      body: completeCandidate as CandidateCreate,
+    });
     if (error) {
       console.error("Error adding candidate:", error);
     } else {
@@ -230,6 +269,16 @@ function CandidateRoleList() {
     );
   };
 
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchCandidates(nextCursor);
+    }
+  };
+
+  const loadMoreAllCandidates = () => {
+    if (!loading && allCandidatesHasMore) {
+      fetchAllCandidates(allCandidatesNextCursor);
+    }
   const copyExternalLink = () => {
     const externalUrl = `${window.location.origin}/companies/${companyId}/roles/${roleId}/external`;
     navigator.clipboard.writeText(externalUrl);
@@ -262,56 +311,58 @@ function CandidateRoleList() {
             <Button onClick={() => setIsAddExistingDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Existing Candidate
             </Button>
-            <Button onClick={() => setFormData({isOpen: true, isEditing: false, candidate: {}})}>
+            <Button
+              onClick={() =>
+                setFormData({ isOpen: true, isEditing: false, candidate: {} })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" /> Add New Candidate
             </Button>
           </div>
         </div>
-        {candidates.length === 0 && !loading ? (
-          <p>No candidates found.</p>
-        ) : (
-          <DataTable
-            columns={[
-              { key: "candidate_role_status", label: "Status" },
-              {
-                key: "candidate_first_name",
-                label: "First Name",
-              },
-              {
-                key: "candidate_last_name",
-                label: "Last Name",
-              },
-              {
-                key: "candidate_role_generated_description",
-                label: "Generated Description",
-                render: (value: string | null) =>
-                  value ? (
-                    <Markdown content={value} />
-                  ) : (
-                    "No description generated"
-                  ),
-              },
-            ]}
-            data={candidates.map((candidate) => ({
-              ...candidate,
-              candidate_first_name: candidate.candidate?.candidate_first_name,
-              candidate_last_name: candidate.candidate?.candidate_last_name,
-              linkedin: candidate.candidate?.linkedin,
-              candidate_role_notes: candidate.candidate_role_notes,
-              candidate_role_status: candidate.candidate_role_status,
-              criteria_scores: candidate.criteria_scores,
-              candidate_role_generated_description:
-                candidate.candidate_role_generated_description,
-            }))}
-            onDelete={deleteCandidate}
-            onEdit={(candidate) => openEditForm(candidate)}
-            detailsPath={(candidate) =>
-              `/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`
+        <div id="scrollableDiv" style={{ height: "80vh", overflow: "auto" }}>
+          <InfiniteScroll
+            dataLength={candidates.length}
+            next={loadMore}
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center items-center p-4">
+                <Loader />
+              </div>
             }
-            idField="candidate_id"
-            isLoading={loading}
-          />
-        )}
+            scrollableTarget="scrollableDiv"
+          >
+            <DataTable
+              columns={[
+                { key: "candidate_role_status", label: "Status" },
+                { key: "candidate_first_name", label: "First Name" },
+                { key: "candidate_last_name", label: "Last Name" },
+                {
+                  key: "candidate_role_generated_description",
+                  label: "Generated Description",
+                  render: (value: string | null) =>
+                    value ? (
+                      <Markdown content={value} />
+                    ) : (
+                      "No description generated"
+                    ),
+                },
+              ]}
+              data={candidates.map((candidate) => ({
+                ...candidate,
+                candidate_first_name: candidate.candidate?.candidate_first_name,
+                candidate_last_name: candidate.candidate?.candidate_last_name,
+              }))}
+              onDelete={deleteCandidate}
+              onEdit={(candidate) => openEditForm(candidate)}
+              detailsPath={(candidate) =>
+                `/companies/${companyId}/roles/${roleId}/candidates/${candidate.candidate_id}`
+              }
+              idField="candidate_id"
+              isLoading={loading}
+            />
+          </InfiniteScroll>
+        </div>
       </div>
 
       <AddExistingCandidatesDialog
@@ -321,6 +372,8 @@ function CandidateRoleList() {
         selectedCandidates={selectedCandidates}
         toggleCandidateSelection={toggleCandidateSelection}
         addExistingCandidates={addExistingCandidates}
+        loadMoreAllCandidates={loadMoreAllCandidates}
+        allCandidatesHasMore={allCandidatesHasMore}
       />
 
       <FindCandidatesDialog
