@@ -288,10 +288,6 @@ export type HealthcheckHealthcheckGetResponse = ({
 
 export type HealthcheckHealthcheckGetError = unknown;
 
-export type ListCompaniesEndpointCompaniesGetResponse = (Array<CompanyWithId>);
-
-export type ListCompaniesEndpointCompaniesGetError = unknown;
-
 export type CreateCompanyEndpointCompaniesPostData = {
     body: CompanyCreate;
 };
@@ -299,6 +295,20 @@ export type CreateCompanyEndpointCompaniesPostData = {
 export type CreateCompanyEndpointCompaniesPostResponse = (string);
 
 export type CreateCompanyEndpointCompaniesPostError = (HTTPValidationError);
+
+export type ListCompaniesEndpointCompaniesGetData = {
+    query?: {
+        cursor?: (string | null);
+        limit?: number;
+    };
+};
+
+export type ListCompaniesEndpointCompaniesGetResponse = ([
+    Array<CompanyWithId>,
+    (string | null)
+]);
+
+export type ListCompaniesEndpointCompaniesGetError = (HTTPValidationError);
 
 export type GetCompanyEndpointCompaniesCompanyIdGetData = {
     path: {

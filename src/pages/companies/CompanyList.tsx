@@ -16,9 +16,16 @@ import {
   updateCompanyEndpointCompaniesCompanyIdPut,
   deleteCompanyEndpointCompaniesCompanyIdDelete,
 } from "../../client/services.gen";
+import { useParams } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Loader } from "../../components/ui/loader";
+import BreadCrumbs from "../../components/breadcrumbs";
+
 function CompanyList() {
   const [companies, setCompanies] = useState<CompanyWithId[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const [formData, setFormData] = useState<{
     company: Partial<CompanyWithId>;
     isOpen: boolean;
@@ -28,6 +35,7 @@ function CompanyList() {
     isOpen: false,
     isEditing: false,
   });
+  const { companyId } = useParams();
 
   const openAddForm = () => {
     setFormData({ company: {}, isOpen: true, isEditing: false });
@@ -52,15 +60,25 @@ function CompanyList() {
 
   useEffect(() => {
     fetchCompanies();
-  }, []);
+  }, [companyId]);
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = async (cursorParam?: string | null) => {
     setLoading(true);
-    const { data, error } = await listCompaniesEndpointCompaniesGet();
+    const { data, error } = await listCompaniesEndpointCompaniesGet({
+      query: {
+        cursor: cursorParam || undefined,
+        limit: 20,
+      },
+    });
     if (error) {
       console.error("Error fetching companies:", error);
     } else {
-      setCompanies(data!);
+      const [newCompanies, newNextCursor] = data!;
+      setCompanies((prev) =>
+        cursorParam ? [...prev, ...newCompanies] : newCompanies
+      );
+      setNextCursor(newNextCursor);
+      setHasMore(!!newNextCursor);
     }
     setLoading(false);
   };
@@ -121,8 +139,20 @@ function CompanyList() {
     }
   };
 
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchCompanies(nextCursor);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      <BreadCrumbs
+        items={[
+          { label: "Companies", path: "/" },
+          { label: "Roles", path: `/companies/${companyId}/roles` },
+        ]}
+      />
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
@@ -132,28 +162,42 @@ function CompanyList() {
             <Plus className="mr-2 h-4 w-4" /> Add Company
           </Button>
         </div>
-        <DataTable
-          columns={[
-            { key: "status", label: "Status" },
-            { key: "company_name", label: "Company Name" },
-            { key: "contract_size", label: "Contract Size" },
-            {
-              key: "founders",
-              label: "Point of Contact",
-              render: (founders: CompanyFounder[]) =>
-                founders.map((f) => f.founder_name).join(", "),
-            },
-            { key: "roles_count", label: "Number of Roles" },
-          ]}
-          data={companies}
-          onEdit={openEditForm}
-          onDelete={deleteCompany}
-          detailsPath={(company: CompanyWithId) =>
-            `/companies/${company.company_id}/roles`
-          }
-          idField="company_id"
-          isLoading={loading}
-        />
+        <div id="scrollableDiv" style={{ height: "80vh", overflow: "auto" }}>
+          <InfiniteScroll
+            dataLength={companies.length}
+            next={loadMore}
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center items-center p-4">
+                <Loader />
+              </div>
+            }
+            scrollableTarget="scrollableDiv"
+          >
+            <DataTable
+              columns={[
+                { key: "status", label: "Status" },
+                { key: "company_name", label: "Company Name" },
+                { key: "contract_size", label: "Contract Size" },
+                {
+                  key: "founders",
+                  label: "Point of Contact",
+                  render: (founders: CompanyFounder[]) =>
+                    founders.map((f) => f.founder_name).join(", "),
+                },
+                { key: "roles_count", label: "Number of Roles" },
+              ]}
+              data={companies}
+              onEdit={openEditForm}
+              onDelete={deleteCompany}
+              detailsPath={(company: CompanyWithId) =>
+                `/companies/${company.company_id}/roles`
+              }
+              idField="company_id"
+              isLoading={loading}
+            />
+          </InfiniteScroll>
+        </div>
       </div>
 
       <CompanyForm
