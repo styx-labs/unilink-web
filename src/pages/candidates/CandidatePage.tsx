@@ -9,37 +9,7 @@ import { ProfessionalLinksCard } from "../../components/ProfessionalLinksCard";
 import { GitHubRatingCard } from "../../components/GitHubRatingCard";
 import { PortfolioRatingCard } from "../../components/PortfolioRatingCard";
 import { GeneratedInformationCard } from "../../components/GeneratedInformationCard";
-import { Skeleton } from "../../components/ui/skeleton";
-
-const CandidateLoading: React.FC = () => (
-  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-10 w-40" />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-6 w-1/2" />
-        </div>
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-6 w-3/4" />
-        </div>
-        <div className="md:col-span-2 space-y-4">
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-6 w-full" />
-        </div>
-      </div>
-    </div>
-  </div>
-);
+import { CandidatePageLoading } from "../../components/CandidatePageLoading";
 
 const CandidatePage: React.FC = () => {
   const { candidateId } = useParams();
@@ -61,7 +31,7 @@ const CandidatePage: React.FC = () => {
   const candidate = candidates[0];
 
   if (!candidate || loading) {
-    return <CandidateLoading />;
+    return <CandidatePageLoading />;
   }
 
   const breadcrumbItems = [

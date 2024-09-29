@@ -1,5 +1,3 @@
-// TODO: FIX issue when update it removes all other parts of candidate role
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
@@ -10,9 +8,7 @@ import {
   CardContent,
 } from "../../components/ui/card";
 import { Label } from "../../components/ui/label";
-import { ScrollArea } from "../../components/ui/scroll-area";
 import { ArrowLeft } from "lucide-react";
-import { Markdown } from "../../components/Markdown";
 import BreadCrumbs from "../../components/breadcrumbs";
 import { CandidateRole, CandidateRoleStatus } from "../../client/types.gen";
 import {
@@ -22,12 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { CandidateRoleNoteType, CandidateWithId } from "../../client/types.gen";
-import NotesInput from "../../components/inputs/NotesInput";
-import { CriteriaScoresInput } from "../../components/inputs/CriteriaScoresInput";
+import { CandidateWithId } from "../../client/types.gen";
 import { useCandidateRoles } from "../../hooks/useCandidateRoles";
+import { CandidateRoleNotesCard } from "../../components/CandidateRoleNotesCard";
 import { ProfessionalLinksCard } from "../../components/ProfessionalLinksCard";
-
+import { CandidatePageLoading } from "../../components/CandidatePageLoading";
+import { GeneratedDescriptionCard } from "../../components/GeneratedDescriptionCard";
 const CandidateRolePage: React.FC = () => {
   const { companyId, roleId, candidateId } = useParams();
   const navigate = useNavigate();
@@ -70,7 +66,7 @@ const CandidateRolePage: React.FC = () => {
   ];
 
   if (!candidateRole) {
-    return <div>Loading...</div>;
+    return <CandidatePageLoading />;
   }
 
   return (
@@ -126,74 +122,17 @@ const CandidateRolePage: React.FC = () => {
         candidate={candidateRole.candidate as CandidateWithId}
       />
 
-      {/* Generated Description */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Generated Role Description</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {candidateRole.candidate_role_generated_description ? (
-            <>
-              <ScrollArea className="w-full rounded-md p-4 mb-4">
-                <Markdown
-                  content={candidateRole.candidate_role_generated_description}
-                />
-              </ScrollArea>
-              <Button onClick={generateRoleDescription} disabled={isLoading}>
-                {isLoading ? "Regenerating..." : "Regenerate Description"}
-              </Button>
-            </>
-          ) : (
-            <div>
-              <p className="mb-2">No generated description available.</p>
-              <Button onClick={generateRoleDescription} disabled={isLoading}>
-                {isLoading ? "Generating..." : "Generate Role Description"}
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <GeneratedDescriptionCard
+        candidateRole={candidateRole}
+        generateRoleDescription={generateRoleDescription}
+        isLoading={isLoading}
+      />
 
-      {/* Notes and Ratings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Notes and Ratings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Rating</Label>
-            <div className="flex items-center space-x-1 mt-1">
-              <CriteriaScoresInput
-                values={candidateRole.criteria_scores || []}
-                onChange={(value) => {
-                  const updatedCandidateRole = {
-                    ...candidateRole,
-                    criteria_scores: value,
-                  };
-                  updateCandidateRole(updatedCandidateRole).then(() => {
-                    setCandidateRole(updatedCandidateRole);
-                  });
-                }}
-              />
-            </div>
-          </div>
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-            <NotesInput
-              value={candidateRole.candidate_role_notes || []}
-              onChange={(value) => {
-                const updatedCandidateRole = {
-                  ...candidateRole,
-                  candidate_role_notes: value,
-                };
-                updateCandidateRole(updatedCandidateRole).then(() => {
-                  setCandidateRole(updatedCandidateRole);
-                });
-              }}
-              options={Object.values(CandidateRoleNoteType) || []}
-            />
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <CandidateRoleNotesCard
+        candidateRole={candidateRole}
+        updateCandidateRole={updateCandidateRole}
+        setCandidateRole={setCandidateRole}
+      />
     </div>
   );
 };
