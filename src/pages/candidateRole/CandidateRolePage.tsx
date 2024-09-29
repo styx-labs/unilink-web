@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
@@ -10,28 +8,9 @@ import {
   CardContent,
 } from "../../components/ui/card";
 import { Label } from "../../components/ui/label";
-import { ScrollArea } from "../../components/ui/scroll-area";
-import {
-  Star,
-  ArrowLeft,
-  Mail,
-  Phone,
-  Linkedin,
-  Github,
-  FileText,
-} from "lucide-react";
-import { Markdown } from "../../components/Markdown";
+import { ArrowLeft } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
-import {
-  getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet,
-  generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost,
-  updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
-} from "../../client/services.gen";
-import {
-  CandidateRole,
-  CandidateRoleUpdate,
-  CandidateRoleStatus,
-} from "../../client/types.gen";
+import { CandidateRole, CandidateRoleStatus } from "../../client/types.gen";
 import {
   Select,
   SelectContent,
@@ -39,11 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { CandidateRoleNoteType } from "../../client/types.gen";
-import NotesInput from "../../components/inputs/NotesInput";
-import { CriteriaScoresInput } from "../../components/inputs/CriteriaScoresInput";
-
-
+import { CandidateWithId } from "../../client/types.gen";
+import { useCandidateRoles } from "../../hooks/useCandidateRoles";
+import { CandidateRoleNotesCard } from "../../components/CandidateRoleNotesCard";
+import { ProfessionalLinksCard } from "../../components/ProfessionalLinksCard";
+import { CandidatePageLoading } from "../../components/CandidatePageLoading";
+import { GeneratedDescriptionCard } from "../../components/GeneratedDescriptionCard";
 const CandidateRolePage: React.FC = () => {
   const { companyId, roleId, candidateId } = useParams();
   const navigate = useNavigate();
@@ -51,72 +31,29 @@ const CandidateRolePage: React.FC = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-
-  const fetchCandidateRole = async () => {
-    const { data, error } =
-      await getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet(
-        {
-          path: {
-            company_id: companyId || "",
-            role_id: roleId || "",
-            candidate_id: candidateId || "",
-          },
-        }
-      );
-    if (error) {
-      console.error("Error fetching candidate role:", error);
-    } else {
-      setCandidateRole(data!);
-    }
-  };
+  const {
+    getCandidateRole,
+    generateCandidateRoleDescription,
+    updateCandidateRole,
+  } = useCandidateRoles();
 
   useEffect(() => {
-    fetchCandidateRole();
+    getCandidateRole(candidateId || "").then((role) => {
+      setCandidateRole(role);
+    });
   }, [companyId, roleId, candidateId]);
 
   const generateRoleDescription = async () => {
     if (!candidateRole) return;
     setIsLoading(true);
-    const { data, error } =
-      await generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
-        {
-          path: {
-            company_id: companyId || "",
-            role_id: roleId || "",
-            candidate_id: candidateId || "",
-          },
-        }
-      );
-    if (error) {
-      console.error("Error generating role description:", error);
-    } else {
-      setCandidateRole({
-        ...candidateRole,
-        candidate_role_generated_description: data,
-      });
-    }
+    const candidateDescription = await generateCandidateRoleDescription(
+      candidateId || ""
+    );
+    setCandidateRole(() => ({
+      ...candidateRole,
+      candidate_role_generated_description: candidateDescription,
+    }));
     setIsLoading(false);
-  };
-
-  const updateCandidateRole = async (
-    updatedCandidateRole: Partial<CandidateRole>
-  ) => {
-    const { data, error } =
-      await updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
-        {
-          path: {
-            company_id: companyId || "",
-            role_id: roleId || "",
-            candidate_id: candidateId || "",
-          },
-          body: updatedCandidateRole as CandidateRoleUpdate,
-        }
-      );
-    if (error) {
-      console.error("Error updating candidate role:", error);
-    } else {
-      setCandidateRole(data!);
-    }
   };
 
   const breadcrumbItems = [
@@ -129,7 +66,7 @@ const CandidateRolePage: React.FC = () => {
   ];
 
   if (!candidateRole) {
-    return <div>Loading...</div>;
+    return <CandidatePageLoading />;
   }
 
   return (
@@ -146,7 +83,7 @@ const CandidateRolePage: React.FC = () => {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Candidates
         </Button>
       </div>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Status</CardTitle>
@@ -157,13 +94,14 @@ const CandidateRolePage: React.FC = () => {
             <Select
               value={candidateRole.candidate_role_status || ""}
               onValueChange={(value) => {
-                  const updatedCandidateRole = {
-                    ...candidateRole,
-                    candidate_role_status: value as CandidateRoleStatus
-                  };
-                  updateCandidateRole(updatedCandidateRole)
-                }
-              }
+                const updatedCandidateRole = {
+                  ...candidateRole,
+                  candidate_role_status: value as CandidateRoleStatus,
+                };
+                updateCandidateRole(updatedCandidateRole).then(() => {
+                  setCandidateRole(updatedCandidateRole);
+                });
+              }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
@@ -180,142 +118,21 @@ const CandidateRolePage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* General Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>General Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {candidateRole.candidate?.email && (
-            <div className="flex items-center space-x-2">
-              <Mail className="h-4 w-4" />
-              <a
-                href={`mailto:${candidateRole.candidate.email}`}
-                className="text-primary hover:underline"
-              >
-                {candidateRole.candidate.email}
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.phone_number && (
-            <div className="flex items-center space-x-2">
-              <Phone className="h-4 w-4" />
-              <a
-                href={`tel:${candidateRole.candidate.phone_number}`}
-                className="text-primary hover:underline"
-              >
-                {candidateRole.candidate.phone_number}
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.linkedin && (
-            <div className="flex items-center space-x-2">
-              <Linkedin className="h-4 w-4" />
-              <a
-                href={candidateRole.candidate.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                LinkedIn Profile
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.github && (
-            <div className="flex items-center space-x-2">
-              <Github className="h-4 w-4" />
-              <a
-                href={candidateRole.candidate.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                GitHub Profile
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.resume && (
-            <div className="flex items-center space-x-2">
-              <FileText className="h-4 w-4" />
-              <a
-                href={candidateRole.candidate.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                View Resume
-              </a>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <ProfessionalLinksCard
+        candidate={candidateRole.candidate as CandidateWithId}
+      />
 
-      {/* Generated Description */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Generated Role Description</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {candidateRole.candidate_role_generated_description ? (
-            <>
-              <ScrollArea className="w-full rounded-md p-4 mb-4">
-                <Markdown
-                  content={candidateRole.candidate_role_generated_description}
-                />
-              </ScrollArea>
-              <Button onClick={generateRoleDescription} disabled={isLoading}>
-                {isLoading ? "Regenerating..." : "Regenerate Description"}
-              </Button>
-            </>
-          ) : (
-            <div>
-              <p className="mb-2">No generated description available.</p>
-              <Button onClick={generateRoleDescription} disabled={isLoading}>
-                {isLoading ? "Generating..." : "Generate Role Description"}
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <GeneratedDescriptionCard
+        candidateRole={candidateRole}
+        generateRoleDescription={generateRoleDescription}
+        isLoading={isLoading}
+      />
 
-      {/* Notes and Ratings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Notes and Ratings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Rating</Label>
-            <div className="flex items-center space-x-1 mt-1">
-            <CriteriaScoresInput
-              values={candidateRole.criteria_scores || []}
-              onChange={(value) => {
-                const updatedCandidateRole = {
-                  ...candidateRole,
-                  criteria_scores: value
-                };
-                updateCandidateRole(updatedCandidateRole)
-              }
-          }
-            />
-            </div>
-          </div>
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-            <NotesInput
-              value={candidateRole.candidate_role_notes || []}
-              onChange={(value) => {
-                    const updatedCandidateRole = {
-                      ...candidateRole,
-                      candidate_role_notes: value
-                    };
-                    updateCandidateRole(updatedCandidateRole)
-                  }
-              }
-              options={Object.values(CandidateRoleNoteType) || []}
-            />
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <CandidateRoleNotesCard
+        candidateRole={candidateRole}
+        updateCandidateRole={updateCandidateRole}
+        setCandidateRole={setCandidateRole}
+      />
     </div>
   );
 };

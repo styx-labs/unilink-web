@@ -26,7 +26,7 @@ interface AddExistingCandidatesDialogProps {
   allCandidates: CandidateWithId[];
   selectedCandidates: string[];
   toggleCandidateSelection: (candidateId: string) => void;
-  addExistingCandidates: () => void;
+  addExistingCandidates: (existingCandidates: string[]) => void;
   loadMoreAllCandidates: () => void;
   allCandidatesHasMore: boolean;
 }
@@ -101,7 +101,7 @@ function AddExistingCandidatesDialog({
         </div>
         <DialogFooter>
           <Button
-            onClick={addExistingCandidates}
+            onClick={() => addExistingCandidates(selectedCandidates)}
             disabled={selectedCandidates.length === 0}
           >
             Add Selected Candidates

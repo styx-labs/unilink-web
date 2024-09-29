@@ -1,31 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import DataTable from "../../components/DataTable";
-import { CompanyForm } from "./CompanyForm";
-import {
-  CompanyWithId,
-  CompanyFounder,
-  CompanyCreate,
-  CompanyUpdate,
-  CompanyStatus,
-} from "../../client/types.gen";
-import {
-  listCompaniesEndpointCompaniesGet,
-  createCompanyEndpointCompaniesPost,
-  updateCompanyEndpointCompaniesCompanyIdPut,
-  deleteCompanyEndpointCompaniesCompanyIdDelete,
-} from "../../client/services.gen";
-import { useParams } from "react-router-dom";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "../../components/ui/loader";
 import BreadCrumbs from "../../components/breadcrumbs";
+import InfiniteScroll from "react-infinite-scroll-component";
+
+import { CompanyForm } from "./CompanyForm";
+import { CompanyWithId, CompanyFounder } from "../../client/types.gen";
+import { useCompanies } from "../../hooks/useCompanies";
 
 function CompanyList() {
-  const [companies, setCompanies] = useState<CompanyWithId[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState<boolean>(true);
+  const {
+    companies,
+    loading,
+    hasMore,
+    addCompany,
+    updateCompany,
+    deleteCompany,
+    loadMore,
+  } = useCompanies();
   const [formData, setFormData] = useState<{
     company: Partial<CompanyWithId>;
     isOpen: boolean;
@@ -35,7 +30,6 @@ function CompanyList() {
     isOpen: false,
     isEditing: false,
   });
-  const { companyId } = useParams();
 
   const openAddForm = () => {
     setFormData({ company: {}, isOpen: true, isEditing: false });
@@ -58,101 +52,9 @@ function CompanyList() {
     closeForm();
   };
 
-  useEffect(() => {
-    fetchCompanies();
-  }, [companyId]);
-
-  const fetchCompanies = async (cursorParam?: string | null) => {
-    setLoading(true);
-    const { data, error } = await listCompaniesEndpointCompaniesGet({
-      query: {
-        cursor: cursorParam || undefined,
-        limit: 20,
-      },
-    });
-    if (error) {
-      console.error("Error fetching companies:", error);
-    } else {
-      const [newCompanies, newNextCursor] = data!;
-      setCompanies((prev) =>
-        cursorParam ? [...prev, ...newCompanies] : newCompanies
-      );
-      setNextCursor(newNextCursor);
-      setHasMore(!!newNextCursor);
-    }
-    setLoading(false);
-  };
-
-  const addCompany = async (newCompany: Partial<CompanyWithId>) => {
-    const completeCompany: CompanyCreate = {
-      company_name: newCompany.company_name ?? "",
-      company_desc: newCompany.company_desc ?? "",
-      founders: newCompany.founders ?? [],
-      contract_size: newCompany.contract_size ?? "",
-      status: newCompany.status ?? CompanyStatus.PENDING,
-    };
-
-    const { error } = await createCompanyEndpointCompaniesPost({
-      body: completeCompany as CompanyCreate,
-    });
-    if (error) {
-      console.error("Error adding company:", error);
-    } else {
-      fetchCompanies();
-    }
-  };
-
-  const updateCompany = async (editingCompany: CompanyWithId) => {
-    const completeCompany: CompanyUpdate = {
-      company_name: editingCompany.company_name ?? "",
-      company_desc: editingCompany.company_desc ?? "",
-      founders: editingCompany.founders ?? [],
-      contract_size: editingCompany.contract_size ?? "",
-      status: editingCompany.status ?? CompanyStatus.PENDING,
-    };
-
-    const { error } = await updateCompanyEndpointCompaniesCompanyIdPut({
-      body: completeCompany as CompanyUpdate,
-      path: { company_id: editingCompany.company_id },
-    });
-    if (error) {
-      console.error("Error updating company:", error);
-    } else {
-      setCompanies(
-        companies.map((company) =>
-          company.company_id === editingCompany.company_id
-            ? editingCompany
-            : company
-        )
-      );
-    }
-  };
-
-  const deleteCompany = async (id: string) => {
-    const { error } = await deleteCompanyEndpointCompaniesCompanyIdDelete({
-      path: { company_id: id },
-    });
-    if (error) {
-      console.error("Error deleting company:", error);
-    } else {
-      setCompanies(companies.filter((company) => company.company_id !== id));
-    }
-  };
-
-  const loadMore = () => {
-    if (!loading && hasMore) {
-      fetchCompanies(nextCursor);
-    }
-  };
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-      <BreadCrumbs
-        items={[
-          { label: "Companies", path: "/" },
-          { label: "Roles", path: `/companies/${companyId}/roles` },
-        ]}
-      />
+      <BreadCrumbs items={[{ label: "Companies", path: "/" }]} />
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
