@@ -9,6 +9,9 @@ import {
   createCandidateEndpointCandidatesPost,
   updateCandidateEndpointCandidatesCandidateIdPut,
   deleteCandidateEndpointCandidatesCandidateIdDelete,
+  getCandidateEndpointCandidatesCandidateIdGet,
+  rateCandidateGithubEndpointCandidatesCandidateIdGithubGet,
+  rateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGet,
 } from "../client/services.gen";
 import {
   CandidateCreateSchema,
@@ -147,6 +150,61 @@ export const useCandidates = () => {
     closeForm();
   };
 
+  const getCandidate = async (candidateId: string) => {
+    setLoading(true);
+    const { data, error } = await getCandidateEndpointCandidatesCandidateIdGet({
+      path: {
+        candidate_id: candidateId,
+      },
+    });
+    if (error) {
+      console.error("Error fetching candidate:", error);
+    } else {
+      setCandidates([data!]);
+    }
+    setLoading(false);
+  };
+
+  const generateGitHubDescription = async (candidateId: string) => {
+    setLoading(true);
+    const { data, error } =
+      await rateCandidateGithubEndpointCandidatesCandidateIdGithubGet({
+        path: { candidate_id: candidateId },
+      });
+    if (error) {
+      console.error("Error generating GitHub description:", error);
+    } else {
+      setCandidates((prevCandidates) =>
+        prevCandidates.map((candidate) =>
+          candidate.candidate_id === candidateId
+            ? { ...candidate, github_rating: data?.github_rating || {} }
+            : candidate
+        )
+      );
+    }
+    setLoading(false);
+  };
+
+  const generatePortfolioRating = async (candidateId: string) => {
+    setLoading(true);
+    const { data, error } =
+      await rateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGet({
+        path: { candidate_id: candidateId },
+      });
+    if (error) {
+      console.error("Error generating portfolio rating:", error);
+    } else {
+      setCandidates((prevCandidates) =>
+        prevCandidates.map((candidate) =>
+          candidate.candidate_id === candidateId
+            ? { ...candidate, portfolio_rating: data?.portfolio_rating || {} }
+            : candidate
+        )
+      );
+    }
+    setLoading(false);
+  };
+
   return {
     candidates,
     loading,
@@ -161,5 +219,8 @@ export const useCandidates = () => {
     closeForm,
     handleSubmit,
     loadMore,
+    getCandidate,
+    generateGitHubDescription,
+    generatePortfolioRating,
   };
 };

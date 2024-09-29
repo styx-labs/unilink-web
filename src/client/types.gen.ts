@@ -454,7 +454,7 @@ export type GetCandidateEndpointCandidatesCandidateIdGetData = {
     };
 };
 
-export type GetCandidateEndpointCandidatesCandidateIdGetResponse = ((Candidate | null));
+export type GetCandidateEndpointCandidatesCandidateIdGetResponse = ((CandidateWithId | null));
 
 export type GetCandidateEndpointCandidatesCandidateIdGetError = (HTTPValidationError);
 

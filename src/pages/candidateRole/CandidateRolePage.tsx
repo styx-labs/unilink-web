@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
@@ -42,7 +40,6 @@ import {
 import { CandidateRoleNoteType } from "../../client/types.gen";
 import NotesInput from "../../components/inputs/NotesInput";
 import { CriteriaScoresInput } from "../../components/inputs/CriteriaScoresInput";
-
 
 const CandidateRolePage: React.FC = () => {
   const { companyId, roleId, candidateId } = useParams();
@@ -146,7 +143,7 @@ const CandidateRolePage: React.FC = () => {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Candidates
         </Button>
       </div>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Status</CardTitle>
@@ -157,13 +154,12 @@ const CandidateRolePage: React.FC = () => {
             <Select
               value={candidateRole.candidate_role_status || ""}
               onValueChange={(value) => {
-                  const updatedCandidateRole = {
-                    ...candidateRole,
-                    candidate_role_status: value as CandidateRoleStatus
-                  };
-                  updateCandidateRole(updatedCandidateRole)
-                }
-              }
+                const updatedCandidateRole = {
+                  ...candidateRole,
+                  candidate_role_status: value as CandidateRoleStatus,
+                };
+                updateCandidateRole(updatedCandidateRole);
+              }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
@@ -287,30 +283,28 @@ const CandidateRolePage: React.FC = () => {
           <div>
             <Label>Rating</Label>
             <div className="flex items-center space-x-1 mt-1">
-            <CriteriaScoresInput
-              values={candidateRole.criteria_scores || []}
-              onChange={(value) => {
-                const updatedCandidateRole = {
-                  ...candidateRole,
-                  criteria_scores: value
-                };
-                updateCandidateRole(updatedCandidateRole)
-              }
-          }
-            />
+              <CriteriaScoresInput
+                values={candidateRole.criteria_scores || []}
+                onChange={(value) => {
+                  const updatedCandidateRole = {
+                    ...candidateRole,
+                    criteria_scores: value,
+                  };
+                  updateCandidateRole(updatedCandidateRole);
+                }}
+              />
             </div>
           </div>
           <ScrollArea className="h-[300px] w-full rounded-md border p-4">
             <NotesInput
               value={candidateRole.candidate_role_notes || []}
               onChange={(value) => {
-                    const updatedCandidateRole = {
-                      ...candidateRole,
-                      candidate_role_notes: value
-                    };
-                    updateCandidateRole(updatedCandidateRole)
-                  }
-              }
+                const updatedCandidateRole = {
+                  ...candidateRole,
+                  candidate_role_notes: value,
+                };
+                updateCandidateRole(updatedCandidateRole);
+              }}
               options={Object.values(CandidateRoleNoteType) || []}
             />
           </ScrollArea>
