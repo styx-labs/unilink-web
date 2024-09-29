@@ -4,12 +4,12 @@ import { Button } from "../../components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
 import { useCandidates } from "../../hooks/useCandidates";
-import { PersonalInformationCard } from "../../components/PersonalInformationCard";
-import { ProfessionalLinksCard } from "../../components/ProfessionalLinksCard";
-import { GitHubRatingCard } from "../../components/GitHubRatingCard";
-import { PortfolioRatingCard } from "../../components/PortfolioRatingCard";
-import { GeneratedInformationCard } from "../../components/GeneratedInformationCard";
-import { CandidatePageLoading } from "../../components/CandidatePageLoading";
+import { PersonalInformationCard } from "../../components/pageCards/PersonalInformationCard";
+import { ProfessionalLinksCard } from "../../components/pageCards/ProfessionalLinksCard";
+import { GitHubRatingCard } from "../../components/pageCards/GitHubRatingCard";
+import { PortfolioRatingCard } from "../../components/pageCards/PortfolioRatingCard";
+import { GeneratedInformationCard } from "../../components/pageCards/GeneratedInformationCard";
+import { CandidatePageLoading } from "../../components/pageCards/CandidatePageLoading";
 
 const CandidatePage: React.FC = () => {
   const { candidateId } = useParams();

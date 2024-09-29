@@ -1,6 +1,6 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Label } from "./ui/label";
-import { Candidate } from "../client/types.gen";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Label } from "../ui/label";
+import { Candidate } from "../../client/types.gen";
 
 interface GeneratedInformationCardProps {
   candidate: Candidate;

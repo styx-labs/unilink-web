@@ -1,7 +1,7 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Label } from "./ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Label } from "../ui/label";
 import { Mail, Phone } from "lucide-react";
-import { CandidateWithId } from "../client/types.gen";
+import { CandidateWithId } from "../../client/types.gen";
 
 interface PersonalInformationCardProps {
   candidate: CandidateWithId;

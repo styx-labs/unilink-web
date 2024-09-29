@@ -1,8 +1,8 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { ScrollArea } from "./ui/scroll-area";
-import { Markdown } from "./Markdown";
-import { Button } from "./ui/button";
-import { CandidateRole } from "../client/types.gen";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { ScrollArea } from "../ui/scroll-area";
+import { Markdown } from "../Markdown";
+import { Button } from "../ui/button";
+import { CandidateRole } from "../../client/types.gen";
 export const GeneratedDescriptionCard: React.FC<{
   candidateRole: CandidateRole;
   generateRoleDescription: () => void;
