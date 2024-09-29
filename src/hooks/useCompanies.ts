@@ -7,6 +7,7 @@ import {
 } from "../client/types.gen";
 import {
   listCompaniesEndpointCompaniesGet,
+  getCompanyEndpointCompaniesCompanyIdGet,
   createCompanyEndpointCompaniesPost,
   updateCompanyEndpointCompaniesCompanyIdPut,
   deleteCompanyEndpointCompaniesCompanyIdDelete,
@@ -38,6 +39,17 @@ export const useCompanies = () => {
     }
     setLoading(false);
   }, []);
+
+  const getCompany = async (companyId: string) => {
+    const { data, error } = await getCompanyEndpointCompaniesCompanyIdGet({
+      path: { company_id: companyId || "" },
+    });
+    if (error) {
+      console.error("Error fetching company:", error);
+    } else {
+      return data;
+    }
+  };
 
   const addCompany = async (newCompany: Partial<CompanyWithId>) => {
     const completeCompany: CompanyCreate = {
@@ -112,6 +124,7 @@ export const useCompanies = () => {
     addCompany,
     updateCompany,
     deleteCompany,
+    getCompany,
     loadMore,
   };
 };

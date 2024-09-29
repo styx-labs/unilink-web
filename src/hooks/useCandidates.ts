@@ -100,7 +100,10 @@ export const useCandidates = () => {
       if (
         key !== "created_at" &&
         key !== "updated_at" &&
-        key !== "github_rating"
+        key !== "github_rating" &&
+        key !== "portfolio_rating" &&
+        key !== "requires_sponsorship" &&
+        key !== "authorized_us"
       ) {
         acc[key as keyof CandidateUpdate] =
           (candidate[key as keyof CandidateUpdate] as any) ?? "";

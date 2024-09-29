@@ -3,7 +3,6 @@ import DialogForm from "../../components/DialogForm";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { Label } from "../../components/ui/label";
-import { useParams } from "react-router-dom";
 import { RoleWithId, RoleStatus } from "../../client/types.gen";
 import { RoleCriteriaInput } from "../../components/inputs/RoleCriteriaInput";
 import {
@@ -30,7 +29,6 @@ export function RoleForm({
   description: string;
 }) {
   const [formData, setFormData] = useState<Partial<RoleWithId>>(role);
-  const { companyId } = useParams();
 
   useEffect(() => {
     setFormData(role);
@@ -116,7 +114,6 @@ export function RoleForm({
             label="Role Criteria"
             value={formData.role_criteria || []}
             onChange={(id, value) => setFormData({ ...formData, [id]: value })}
-            companyId={companyId || ""}
             roleId={formData.role_id}
             onGenerateCriteria={(generatedCriteria) => {
               setFormData({

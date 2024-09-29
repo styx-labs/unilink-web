@@ -8,9 +8,11 @@ import {
 } from "../client/types.gen";
 import {
   listRolesEndpointCompaniesCompanyIdRolesGet,
+  getRoleEndpointCompaniesCompanyIdRolesRoleIdGet,
   createRoleEndpointCompaniesCompanyIdRolesPost,
   updateRoleEndpointCompaniesCompanyIdRolesRoleIdPut,
   deleteRoleEndpointCompaniesCompanyIdRolesRoleIdDelete,
+  generateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost,
 } from "../client/services.gen";
 
 export const useRoles = () => {
@@ -42,6 +44,18 @@ export const useRoles = () => {
       setHasMore(!!newNextCursor);
     }
     setLoading(false);
+  };
+
+  const getRole = async (roleId: string) => {
+    const { data, error } =
+      await getRoleEndpointCompaniesCompanyIdRolesRoleIdGet({
+        path: { company_id: companyId || "", role_id: roleId },
+      });
+    if (error) {
+      console.error("Error fetching role:", error);
+    } else {
+      return data;
+    }
   };
 
   const addRole = async (newRole: Partial<RoleWithId>) => {
@@ -100,6 +114,20 @@ export const useRoles = () => {
     }
   };
 
+  const generateCriteria = async (roleId: string) => {
+    const { data, error } =
+      await generateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost(
+        {
+          path: { company_id: companyId || "", role_id: roleId },
+        }
+      );
+    if (error) {
+      console.error("Error generating criteria:", error);
+    } else {
+      return data;
+    }
+  };
+
   const loadMore = () => {
     if (!loading && hasMore) {
       fetchRoles(nextCursor);
@@ -110,9 +138,11 @@ export const useRoles = () => {
     roles,
     loading,
     hasMore,
+    getRole,
     addRole,
     updateRole,
     deleteRole,
+    generateCriteria,
     loadMore,
   };
 };

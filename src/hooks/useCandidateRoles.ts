@@ -5,7 +5,7 @@ import {
   CandidateWithId,
   CandidateCreate,
   FindCandidatesBody,
-  CandidateUpdate,
+  CandidateRoleUpdate,
 } from "../client/types.gen";
 import {
   listCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGet,
@@ -15,7 +15,9 @@ import {
   addCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesPost,
   findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost,
   getCandidateEndpointCandidatesCandidateIdGet,
-  updateCandidateEndpointCandidatesCandidateIdPut,
+  updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
+  getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet,
+  generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost,
 } from "../client/services.gen";
 import { CandidateCreateSchema } from "../client/schemas.gen";
 
@@ -188,30 +190,24 @@ export const useCandidateRoles = () => {
     }
   };
 
-  const updateCandidate = async (
-    updatedCandidate: Partial<CandidateWithId>
+  const updateCandidateRole = async (
+    updatedCandidateRole: Partial<CandidateRole>
   ) => {
-    const completeCandidate: CandidateUpdate = {
-      candidate_first_name: updatedCandidate.candidate_first_name ?? "",
-      candidate_last_name: updatedCandidate.candidate_last_name ?? "",
-      linkedin: updatedCandidate.linkedin ?? "",
-      email: updatedCandidate.email ?? "",
-      phone_number: updatedCandidate.phone_number ?? "",
-      github: updatedCandidate.github ?? "",
-      portfolio: updatedCandidate.portfolio ?? "",
-      candidate_desc: updatedCandidate.candidate_desc ?? "",
-      resume: updatedCandidate.resume ?? "",
-      grad_year: updatedCandidate.grad_year ?? "",
-      grad_month: updatedCandidate.grad_month ?? "",
-    };
-    const { error } = await updateCandidateEndpointCandidatesCandidateIdPut({
-      path: { candidate_id: updatedCandidate.candidate_id || "" },
-      body: completeCandidate as CandidateUpdate,
-    });
+    const { data, error } =
+      await updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
+        {
+          path: {
+            company_id: companyId || "",
+            role_id: roleId || "",
+            candidate_id: updatedCandidateRole.candidate_id || "",
+          },
+          body: updatedCandidateRole as CandidateRoleUpdate,
+        }
+      );
     if (error) {
-      console.error("Error updating candidate:", error);
+      console.error("Error updating candidate role:", error);
     } else {
-      fetchCandidates();
+      return data;
     }
   };
 
@@ -227,6 +223,55 @@ export const useCandidateRoles = () => {
     }
   };
 
+  const getCandidateRole = async (candidateId: string) => {
+    const { data, error } =
+      await getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet(
+        {
+          path: {
+            company_id: companyId || "",
+            role_id: roleId || "",
+            candidate_id: candidateId,
+          },
+        }
+      );
+    if (error) {
+      console.error("Error fetching candidate role:", error);
+      return null;
+    }
+    return data;
+  };
+
+  const generateCandidateRoleDescription = async (candidateId: string) => {
+    const { data, error } =
+      await generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
+        {
+          path: {
+            company_id: companyId || "",
+            role_id: roleId || "",
+            candidate_id: candidateId,
+          },
+        }
+      );
+    if (error) {
+      console.error("Error generating candidate role description:", error);
+      return null;
+    }
+    return data;
+  };
+
+  const updateCandidateInRole = async (updatedCandidate: CandidateWithId) => {
+    const updatedCandidates = candidates.map((candidateRole) => {
+      if (candidateRole.candidate_id === updatedCandidate.candidate_id) {
+        return {
+          ...candidateRole,
+          candidate: updatedCandidate,
+        };
+      }
+      return candidateRole;
+    });
+    setCandidates(updatedCandidates);
+  };
+
   return {
     candidates,
     allCandidates,
@@ -238,8 +283,11 @@ export const useCandidateRoles = () => {
     findCandidates,
     getCandidateDetails,
     addCandidate,
-    updateCandidate,
+    updateCandidateRole,
     loadMore,
     loadMoreAllCandidates,
+    getCandidateRole,
+    generateCandidateRoleDescription,
+    updateCandidateInRole,
   };
 };

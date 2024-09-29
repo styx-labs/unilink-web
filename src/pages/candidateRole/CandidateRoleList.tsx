@@ -13,6 +13,7 @@ import { useCandidateRoles } from "../../hooks/useCandidateRoles";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "../../components/ui/loader";
 import { CandidateRole } from "../../client/types.gen";
+import { useCandidates } from "../../hooks/useCandidates";
 
 function CandidateRoleList() {
   const {
@@ -26,10 +27,11 @@ function CandidateRoleList() {
     findCandidates,
     getCandidateDetails,
     addCandidate,
-    updateCandidate,
     loadMore,
     loadMoreAllCandidates,
+    updateCandidateInRole,
   } = useCandidateRoles();
+  const { updateCandidate } = useCandidates();
   const [isAddExistingDialogOpen, setIsAddExistingDialogOpen] =
     useState<boolean>(false);
   const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] =
@@ -79,6 +81,7 @@ function CandidateRoleList() {
   const handleSubmit = async (submittedCandidate: Partial<CandidateWithId>) => {
     if (formData.isEditing) {
       await updateCandidate(submittedCandidate as CandidateWithId);
+      await updateCandidateInRole(submittedCandidate as CandidateWithId);
     } else {
       await addCandidate(submittedCandidate);
     }

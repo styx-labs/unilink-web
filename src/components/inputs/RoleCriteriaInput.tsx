@@ -2,14 +2,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { RoleCriteria } from "../../client/types.gen";
-import { generateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost } from "../../client/services.gen";
+import { useRoles } from "../../hooks/useRoles";
 
 export const RoleCriteriaInput = ({
   id,
   label,
   value,
   onChange,
-  companyId,
   roleId,
   onGenerateCriteria,
 }: {
@@ -17,10 +16,10 @@ export const RoleCriteriaInput = ({
   label: string;
   value: RoleCriteria[];
   onChange: (id: string, value: RoleCriteria[]) => void;
-  companyId: string;
   roleId: string | undefined;
   onGenerateCriteria: (generatedCriteria: RoleCriteria[]) => void;
 }) => {
+  const { generateCriteria } = useRoles();
   const handleItemChange = (index: number, newValue: string) => {
     const newArray = [...value];
     newArray[index] = { criteria_name: newValue };
@@ -36,20 +35,6 @@ export const RoleCriteriaInput = ({
   const handleAddItem = () => {
     const newArray = [...value, { criteria_name: "" }];
     onChange(id, newArray);
-  };
-
-  const generateCriteria = async () => {
-    const { data, error } =
-      await generateCriteriaEndpointCompaniesCompanyIdRolesRoleIdGenerateCriteriaPost(
-        {
-          path: { company_id: companyId, role_id: roleId || "" },
-        }
-      );
-    if (error) {
-      console.error("Error generating criteria:", error);
-    } else {
-      onGenerateCriteria(data);
-    }
   };
 
   return (
@@ -88,7 +73,11 @@ export const RoleCriteriaInput = ({
         <Button
           type="button"
           size="sm"
-          onClick={generateCriteria}
+          onClick={() => {
+            generateCriteria(roleId || "").then((data) => {
+              onGenerateCriteria(data || []);
+            });
+          }}
           disabled={!roleId}
         >
           Generate Criteria

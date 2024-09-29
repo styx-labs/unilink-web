@@ -1,3 +1,5 @@
+// TODO: FIX issue when update it removes all other parts of candidate role
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
@@ -9,27 +11,10 @@ import {
 } from "../../components/ui/card";
 import { Label } from "../../components/ui/label";
 import { ScrollArea } from "../../components/ui/scroll-area";
-import {
-  Star,
-  ArrowLeft,
-  Mail,
-  Phone,
-  Linkedin,
-  Github,
-  FileText,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Markdown } from "../../components/Markdown";
 import BreadCrumbs from "../../components/breadcrumbs";
-import {
-  getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet,
-  generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost,
-  updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut,
-} from "../../client/services.gen";
-import {
-  CandidateRole,
-  CandidateRoleUpdate,
-  CandidateRoleStatus,
-} from "../../client/types.gen";
+import { CandidateRole, CandidateRoleStatus } from "../../client/types.gen";
 import {
   Select,
   SelectContent,
@@ -37,9 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { CandidateRoleNoteType } from "../../client/types.gen";
+import { CandidateRoleNoteType, CandidateWithId } from "../../client/types.gen";
 import NotesInput from "../../components/inputs/NotesInput";
 import { CriteriaScoresInput } from "../../components/inputs/CriteriaScoresInput";
+import { useCandidateRoles } from "../../hooks/useCandidateRoles";
+import { ProfessionalLinksCard } from "../../components/ProfessionalLinksCard";
 
 const CandidateRolePage: React.FC = () => {
   const { companyId, roleId, candidateId } = useParams();
@@ -48,72 +35,29 @@ const CandidateRolePage: React.FC = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-
-  const fetchCandidateRole = async () => {
-    const { data, error } =
-      await getCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGet(
-        {
-          path: {
-            company_id: companyId || "",
-            role_id: roleId || "",
-            candidate_id: candidateId || "",
-          },
-        }
-      );
-    if (error) {
-      console.error("Error fetching candidate role:", error);
-    } else {
-      setCandidateRole(data!);
-    }
-  };
+  const {
+    getCandidateRole,
+    generateCandidateRoleDescription,
+    updateCandidateRole,
+  } = useCandidateRoles();
 
   useEffect(() => {
-    fetchCandidateRole();
+    getCandidateRole(candidateId || "").then((role) => {
+      setCandidateRole(role);
+    });
   }, [companyId, roleId, candidateId]);
 
   const generateRoleDescription = async () => {
     if (!candidateRole) return;
     setIsLoading(true);
-    const { data, error } =
-      await generateCandidateRoleDescriptionEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdGenerateDescriptionPost(
-        {
-          path: {
-            company_id: companyId || "",
-            role_id: roleId || "",
-            candidate_id: candidateId || "",
-          },
-        }
-      );
-    if (error) {
-      console.error("Error generating role description:", error);
-    } else {
-      setCandidateRole({
-        ...candidateRole,
-        candidate_role_generated_description: data,
-      });
-    }
+    const candidateDescription = await generateCandidateRoleDescription(
+      candidateId || ""
+    );
+    setCandidateRole(() => ({
+      ...candidateRole,
+      candidate_role_generated_description: candidateDescription,
+    }));
     setIsLoading(false);
-  };
-
-  const updateCandidateRole = async (
-    updatedCandidateRole: Partial<CandidateRole>
-  ) => {
-    const { data, error } =
-      await updateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPut(
-        {
-          path: {
-            company_id: companyId || "",
-            role_id: roleId || "",
-            candidate_id: candidateId || "",
-          },
-          body: updatedCandidateRole as CandidateRoleUpdate,
-        }
-      );
-    if (error) {
-      console.error("Error updating candidate role:", error);
-    } else {
-      setCandidateRole(data!);
-    }
   };
 
   const breadcrumbItems = [
@@ -158,7 +102,9 @@ const CandidateRolePage: React.FC = () => {
                   ...candidateRole,
                   candidate_role_status: value as CandidateRoleStatus,
                 };
-                updateCandidateRole(updatedCandidateRole);
+                updateCandidateRole(updatedCandidateRole).then(() => {
+                  setCandidateRole(updatedCandidateRole);
+                });
               }}
             >
               <SelectTrigger>
@@ -176,75 +122,9 @@ const CandidateRolePage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* General Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>General Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {candidateRole.candidate?.email && (
-            <div className="flex items-center space-x-2">
-              <Mail className="h-4 w-4" />
-              <a
-                href={`mailto:${candidateRole.candidate.email}`}
-                className="text-primary hover:underline"
-              >
-                {candidateRole.candidate.email}
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.phone_number && (
-            <div className="flex items-center space-x-2">
-              <Phone className="h-4 w-4" />
-              <a
-                href={`tel:${candidateRole.candidate.phone_number}`}
-                className="text-primary hover:underline"
-              >
-                {candidateRole.candidate.phone_number}
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.linkedin && (
-            <div className="flex items-center space-x-2">
-              <Linkedin className="h-4 w-4" />
-              <a
-                href={candidateRole.candidate.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                LinkedIn Profile
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.github && (
-            <div className="flex items-center space-x-2">
-              <Github className="h-4 w-4" />
-              <a
-                href={candidateRole.candidate.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                GitHub Profile
-              </a>
-            </div>
-          )}
-          {candidateRole.candidate?.resume && (
-            <div className="flex items-center space-x-2">
-              <FileText className="h-4 w-4" />
-              <a
-                href={candidateRole.candidate.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                View Resume
-              </a>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <ProfessionalLinksCard
+        candidate={candidateRole.candidate as CandidateWithId}
+      />
 
       {/* Generated Description */}
       <Card>
@@ -290,7 +170,9 @@ const CandidateRolePage: React.FC = () => {
                     ...candidateRole,
                     criteria_scores: value,
                   };
-                  updateCandidateRole(updatedCandidateRole);
+                  updateCandidateRole(updatedCandidateRole).then(() => {
+                    setCandidateRole(updatedCandidateRole);
+                  });
                 }}
               />
             </div>
@@ -303,7 +185,9 @@ const CandidateRolePage: React.FC = () => {
                   ...candidateRole,
                   candidate_role_notes: value,
                 };
-                updateCandidateRole(updatedCandidateRole);
+                updateCandidateRole(updatedCandidateRole).then(() => {
+                  setCandidateRole(updatedCandidateRole);
+                });
               }}
               options={Object.values(CandidateRoleNoteType) || []}
             />
