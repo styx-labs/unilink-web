@@ -499,6 +499,16 @@ export type RateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGetRespo
 
 export type RateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGetError = (HTTPValidationError);
 
+export type GenerateCandidateDescriptionEndpointCandidatesCandidateIdGenerateDescriptionGetData = {
+    path: {
+        candidate_id: string;
+    };
+};
+
+export type GenerateCandidateDescriptionEndpointCandidatesCandidateIdGenerateDescriptionGetResponse = ((string | null));
+
+export type GenerateCandidateDescriptionEndpointCandidatesCandidateIdGenerateDescriptionGetError = (HTTPValidationError);
+
 export type CreateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCreatePostData = {
     body: CandidateCreate;
     path: {

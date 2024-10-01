@@ -83,7 +83,6 @@ const CandidateRolePage: React.FC = () => {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Candidates
         </Button>
       </div>
-
       <Card>
         <CardHeader>
           <CardTitle>Status</CardTitle>
@@ -123,8 +122,8 @@ const CandidateRolePage: React.FC = () => {
       />
 
       <GeneratedDescriptionCard
-        candidateRole={candidateRole}
-        generateRoleDescription={generateRoleDescription}
+        description={candidateRole.candidate_role_generated_description || ""}
+        generateDescription={generateRoleDescription}
         isLoading={isLoading}
       />
 

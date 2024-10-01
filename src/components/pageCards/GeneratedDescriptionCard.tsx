@@ -2,38 +2,56 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { ScrollArea } from "../ui/scroll-area";
 import { Markdown } from "../Markdown";
 import { Button } from "../ui/button";
-import { CandidateRole } from "../../client/types.gen";
-export const GeneratedDescriptionCard: React.FC<{
-  candidateRole: CandidateRole;
-  generateRoleDescription: () => void;
+import { Skeleton } from "../ui/skeleton";
+
+interface GeneratedDescriptionCardProps {
+  description: string;
+  generateDescription: () => void;
   isLoading: boolean;
-}> = ({ candidateRole, generateRoleDescription, isLoading }) => {
+}
+
+export const GeneratedDescriptionCard: React.FC<
+  GeneratedDescriptionCardProps
+> = ({ description, generateDescription, isLoading }) => {
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-[90%]" />
+          <Skeleton className="h-4 w-[75%]" />
+          <Button disabled className="mt-4">
+            Generating...
+          </Button>
+        </div>
+      );
+    }
+
+    if (description) {
+      return (
+        <>
+          <ScrollArea className="w-full rounded-md p-4 mb-4">
+            <Markdown content={description} />
+          </ScrollArea>
+          <Button onClick={generateDescription}>Regenerate Description</Button>
+        </>
+      );
+    }
+
+    return (
+      <div>
+        <p className="mb-2">No generated description available.</p>
+        <Button onClick={generateDescription}>Generate Description</Button>
+      </div>
+    );
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Generated Role Description</CardTitle>
+        <CardTitle>Generated Description</CardTitle>
       </CardHeader>
-      <CardContent>
-        {candidateRole.candidate_role_generated_description ? (
-          <>
-            <ScrollArea className="w-full rounded-md p-4 mb-4">
-              <Markdown
-                content={candidateRole.candidate_role_generated_description}
-              />
-            </ScrollArea>
-            <Button onClick={generateRoleDescription} disabled={isLoading}>
-              {isLoading ? "Regenerating..." : "Regenerate Description"}
-            </Button>
-          </>
-        ) : (
-          <div>
-            <p className="mb-2">No generated description available.</p>
-            <Button onClick={generateRoleDescription} disabled={isLoading}>
-              {isLoading ? "Generating..." : "Generate Role Description"}
-            </Button>
-          </div>
-        )}
-      </CardContent>
+      <CardContent>{renderContent()}</CardContent>
     </Card>
   );
 };

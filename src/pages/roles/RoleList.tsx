@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
@@ -9,9 +9,26 @@ import { RoleForm } from "./RoleForm";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "../../components/ui/loader";
 import { useRoles } from "../../hooks/useRoles";
+import { CompanyWithId } from "../../client/types.gen";
+import { useCompanies } from "../../hooks/useCompanies";
+
+function CompanyInfo({ company }: { company: CompanyWithId }) {
+  return (
+    <div>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        {company.company_name}
+      </h1>
+      <p className="text-gray-600 dark:text-gray-300 mb-2">
+        {company.company_desc}
+      </p>
+    </div>
+  );
+}
 
 function RoleList() {
   const { companyId } = useParams();
+  const { getCompany } = useCompanies();
+  const [company, setCompany] = useState<CompanyWithId | null>(null);
   const { roles, loading, hasMore, addRole, updateRole, deleteRole, loadMore } =
     useRoles();
   const [formData, setFormData] = useState<{
@@ -23,6 +40,16 @@ function RoleList() {
     isOpen: false,
     isEditing: false,
   });
+
+  useEffect(() => {
+    if (companyId) {
+      getCompany(companyId).then((fetchedCompany) => {
+        if (fetchedCompany) {
+          setCompany(fetchedCompany as CompanyWithId);
+        }
+      });
+    }
+  }, [companyId]);
 
   const openAddForm = () => {
     setFormData({ role: {}, isOpen: true, isEditing: false });
@@ -54,6 +81,7 @@ function RoleList() {
         ]}
       />
       <div className="p-4">
+        {company && <CompanyInfo company={company} />}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
             Roles

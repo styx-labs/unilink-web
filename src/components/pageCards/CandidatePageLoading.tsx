@@ -1,4 +1,4 @@
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "../ui/skeleton";
 
 export const CandidatePageLoading: React.FC = () => (
   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
