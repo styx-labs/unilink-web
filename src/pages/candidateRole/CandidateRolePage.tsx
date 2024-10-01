@@ -20,10 +20,10 @@ import {
 } from "../../components/ui/select";
 import { CandidateWithId } from "../../client/types.gen";
 import { useCandidateRoles } from "../../hooks/useCandidateRoles";
-import { CandidateRoleNotesCard } from "../../components/CandidateRoleNotesCard";
-import { ProfessionalLinksCard } from "../../components/ProfessionalLinksCard";
-import { CandidatePageLoading } from "../../components/CandidatePageLoading";
-import { GeneratedDescriptionCard } from "../../components/GeneratedDescriptionCard";
+import { CandidateRoleNotesCard } from "../../components/pageCards/CandidateRoleNotesCard";
+import { ProfessionalLinksCard } from "../../components/pageCards/ProfessionalLinksCard";
+import { CandidatePageLoading } from "../../components/pageCards/CandidatePageLoading";
+import { GeneratedDescriptionCard } from "../../components/pageCards/GeneratedDescriptionCard";
 const CandidateRolePage: React.FC = () => {
   const { companyId, roleId, candidateId } = useParams();
   const navigate = useNavigate();
@@ -83,7 +83,6 @@ const CandidateRolePage: React.FC = () => {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Candidates
         </Button>
       </div>
-
       <Card>
         <CardHeader>
           <CardTitle>Status</CardTitle>
@@ -123,8 +122,8 @@ const CandidateRolePage: React.FC = () => {
       />
 
       <GeneratedDescriptionCard
-        candidateRole={candidateRole}
-        generateRoleDescription={generateRoleDescription}
+        description={candidateRole.candidate_role_generated_description || ""}
+        generateDescription={generateRoleDescription}
         isLoading={isLoading}
       />
 

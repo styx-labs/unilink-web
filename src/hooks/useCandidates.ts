@@ -12,6 +12,7 @@ import {
   getCandidateEndpointCandidatesCandidateIdGet,
   rateCandidateGithubEndpointCandidatesCandidateIdGithubGet,
   rateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGet,
+  generateCandidateDescriptionEndpointCandidatesCandidateIdGenerateDescriptionGet,
 } from "../client/services.gen";
 import {
   CandidateCreateSchema,
@@ -20,7 +21,12 @@ import {
 
 export const useCandidates = () => {
   const [candidates, setCandidates] = useState<CandidateWithId[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingStates, setLoadingStates] = useState({
+    candidate: false,
+    description: false,
+    gitHubRating: false,
+    portfolioRating: false,
+  });
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [formData, setFormData] = useState<{
@@ -34,7 +40,7 @@ export const useCandidates = () => {
   });
 
   const fetchCandidates = useCallback(async (cursorParam?: string | null) => {
-    setLoading(true);
+    setLoadingStates((prev) => ({ ...prev, candidate: true }));
     const { data, error } = await listCandidatesEndpointCandidatesGet({
       query: {
         cursor: cursorParam || undefined,
@@ -52,7 +58,7 @@ export const useCandidates = () => {
       setNextCursor(newNextCursor);
       setHasMore(!!newNextCursor);
     }
-    setLoading(false);
+    setLoadingStates((prev) => ({ ...prev, candidate: false }));
   }, []);
 
   useEffect(() => {
@@ -60,7 +66,7 @@ export const useCandidates = () => {
   }, [fetchCandidates]);
 
   const loadMore = () => {
-    if (!loading && hasMore) {
+    if (!loadingStates.candidate && hasMore) {
       fetchCandidates(nextCursor);
     }
   };
@@ -128,7 +134,9 @@ export const useCandidates = () => {
     if (error) {
       console.error("Error deleting candidate:", error);
     } else {
-      fetchCandidates();
+      setCandidates((prev) =>
+        prev.filter((candidate) => candidate.candidate_id !== id)
+      );
     }
   };
 
@@ -154,7 +162,7 @@ export const useCandidates = () => {
   };
 
   const getCandidate = async (candidateId: string) => {
-    setLoading(true);
+    setLoadingStates((prev) => ({ ...prev, candidate: true }));
     const { data, error } = await getCandidateEndpointCandidatesCandidateIdGet({
       path: {
         candidate_id: candidateId,
@@ -163,54 +171,81 @@ export const useCandidates = () => {
     if (error) {
       console.error("Error fetching candidate:", error);
     } else {
-      setCandidates([data!]);
+      return data;
     }
-    setLoading(false);
+    setLoadingStates((prev) => ({ ...prev, candidate: false }));
   };
 
   const generateGitHubDescription = async (candidateId: string) => {
-    setLoading(true);
-    const { data, error } =
-      await rateCandidateGithubEndpointCandidatesCandidateIdGithubGet({
-        path: { candidate_id: candidateId },
-      });
-    if (error) {
-      console.error("Error generating GitHub description:", error);
-    } else {
-      setCandidates((prevCandidates) =>
-        prevCandidates.map((candidate) =>
-          candidate.candidate_id === candidateId
-            ? { ...candidate, github_rating: data?.github_rating || {} }
-            : candidate
-        )
-      );
+    try {
+      setLoadingStates((prev) => ({ ...prev, gitHubRating: true }));
+      const { data, error } =
+        await rateCandidateGithubEndpointCandidatesCandidateIdGithubGet({
+          path: { candidate_id: candidateId },
+        });
+      if (error) {
+        console.error("Error generating GitHub description:", error);
+      } else {
+        return data || "";
+      }
+    } catch (error) {
+      console.error("Unexpected error generating GitHub rating:", error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, gitHubRating: false }));
     }
-    setLoading(false);
   };
 
   const generatePortfolioRating = async (candidateId: string) => {
-    setLoading(true);
-    const { data, error } =
-      await rateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGet({
-        path: { candidate_id: candidateId },
-      });
-    if (error) {
-      console.error("Error generating portfolio rating:", error);
-    } else {
-      setCandidates((prevCandidates) =>
-        prevCandidates.map((candidate) =>
-          candidate.candidate_id === candidateId
-            ? { ...candidate, portfolio_rating: data?.portfolio_rating || {} }
-            : candidate
-        )
-      );
+    setLoadingStates((prev) => ({ ...prev, portfolioRating: true }));
+    try {
+      const { data, error } =
+        await rateCandidatePortfolioEndpointCandidatesCandidateIdPortfolioGet({
+          path: { candidate_id: candidateId },
+        });
+      if (error) {
+        console.error("Error generating portfolio rating:", error);
+      } else {
+        setCandidates((prevCandidates) =>
+          prevCandidates.map((candidate) =>
+            candidate.candidate_id === candidateId
+              ? { ...candidate, portfolio_rating: data?.portfolio_rating || {} }
+              : candidate
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Unexpected error generating portfolio rating:", error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, portfolioRating: false }));
     }
-    setLoading(false);
+  };
+
+  const generateDescription = async (candidateId: string) => {
+    setLoadingStates((prev) => ({ ...prev, description: true }));
+    try {
+      const { data, error } =
+        await generateCandidateDescriptionEndpointCandidatesCandidateIdGenerateDescriptionGet(
+          {
+            path: { candidate_id: candidateId },
+          }
+        );
+      if (error) {
+        console.error("Error generating description:", error);
+        return null;
+      } else {
+        return data || "";
+      }
+    } catch (error) {
+      console.error("Unexpected error generating description:", error);
+      return null;
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, description: false }));
+    }
   };
 
   return {
     candidates,
-    loading,
+    loadingStates,
     hasMore,
     formData,
     fetchCandidates,
@@ -225,5 +260,6 @@ export const useCandidates = () => {
     getCandidate,
     generateGitHubDescription,
     generatePortfolioRating,
+    generateDescription,
   };
 };

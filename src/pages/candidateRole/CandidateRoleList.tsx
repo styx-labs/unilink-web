@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Plus, ClipboardCopy } from "lucide-react";
 import BreadCrumbs from "../../components/breadcrumbs";
@@ -12,8 +12,29 @@ import { CandidateWithId } from "../../client/types.gen";
 import { useCandidateRoles } from "../../hooks/useCandidateRoles";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "../../components/ui/loader";
-import { CandidateRole } from "../../client/types.gen";
+import { CandidateRole, RoleWithId } from "../../client/types.gen";
 import { useCandidates } from "../../hooks/useCandidates";
+import { useRoles } from "../../hooks/useRoles";
+
+function RoleInfo({ role }: { role: RoleWithId }) {
+  return (
+    <div>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        {role.role_name}
+      </h1>
+      <p className="text-gray-600 dark:text-gray-300 mb-2">{role.role_desc}</p>
+      <p className="text-gray-600 dark:text-gray-300 mb-2">
+        {role.role_requirements}
+      </p>
+      <p className="text-gray-600 dark:text-gray-300 mb-2">
+        {role.candidates_interview_count}
+      </p>
+      <p className="text-gray-600 dark:text-gray-300 mb-2">
+        {role.candidates_sent_count}
+      </p>
+    </div>
+  );
+}
 
 function CandidateRoleList() {
   const {
@@ -32,6 +53,8 @@ function CandidateRoleList() {
     updateCandidateInRole,
   } = useCandidateRoles();
   const { updateCandidate } = useCandidates();
+  const { getRole } = useRoles();
+  const [role, setRole] = useState<RoleWithId | null>(null);
   const [isAddExistingDialogOpen, setIsAddExistingDialogOpen] =
     useState<boolean>(false);
   const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] =
@@ -49,6 +72,15 @@ function CandidateRoleList() {
 
   const { companyId, roleId } = useParams();
 
+  useEffect(() => {
+    if (roleId) {
+      getRole(roleId).then((fetchedRole) => {
+        if (fetchedRole) {
+          setRole(fetchedRole as RoleWithId);
+        }
+      });
+    }
+  }, [roleId]);
   const toggleCandidateSelection = (candidateId: string) => {
     setSelectedCandidates((prev) =>
       prev.includes(candidateId)
@@ -105,6 +137,7 @@ function CandidateRoleList() {
         ]}
       />
       <div className="p-4">
+        {role && <RoleInfo role={role} />}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
             Candidates

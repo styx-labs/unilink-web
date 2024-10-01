@@ -9,7 +9,7 @@ import { Loader } from "../../components/ui/loader";
 function CandidateList() {
   const {
     candidates,
-    loading,
+    loadingStates,
     hasMore,
     formData,
     deleteCandidate,
@@ -155,7 +155,7 @@ function CandidateList() {
                 `/candidates/${candidate.candidate_id}`
               }
               idField="candidate_id"
-              isLoading={loading}
+              isLoading={loadingStates.candidate}
             />
           </InfiniteScroll>
         </div>

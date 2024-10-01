@@ -1,9 +1,9 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { Progress } from "./ui/progress";
-import { Skeleton } from "./ui/skeleton";
-import { CandidateWithId } from "../client/types.gen";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Progress } from "../ui/progress";
+import { Skeleton } from "../ui/skeleton";
+import { CandidateWithId } from "../../client/types.gen";
 
 interface PortfolioRatingCardProps {
   candidate: CandidateWithId;

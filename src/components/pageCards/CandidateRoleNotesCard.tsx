@@ -1,11 +1,11 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Label } from "./ui/label";
-import { CriteriaScoresInput } from "./inputs/CriteriaScoresInput";
-import NotesInput from "./inputs/NotesInput";
-import { CandidateRoleNoteType } from "../client/types.gen";
-import { CandidateRole } from "../client/types.gen";
-import { ScrollArea } from "./ui/scroll-area";
-import { UpdateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutResponse } from "../client/types.gen";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Label } from "../ui/label";
+import { CriteriaScoresInput } from "../inputs/CriteriaScoresInput";
+import NotesInput from "../inputs/NotesInput";
+import { CandidateRoleNoteType } from "../../client/types.gen";
+import { CandidateRole } from "../../client/types.gen";
+import { ScrollArea } from "../ui/scroll-area";
+import { UpdateCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdPutResponse } from "../../client/types.gen";
 export const CandidateRoleNotesCard: React.FC<{
   candidateRole: CandidateRole;
   updateCandidateRole: (

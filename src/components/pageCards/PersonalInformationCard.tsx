@@ -1,7 +1,7 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Label } from "./ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Label } from "../ui/label";
 import { Mail, Phone } from "lucide-react";
-import { CandidateWithId } from "../client/types.gen";
+import { CandidateWithId } from "../../client/types.gen";
 
 interface PersonalInformationCardProps {
   candidate: CandidateWithId;
@@ -16,13 +16,16 @@ export const PersonalInformationCard: React.FC<
     </CardHeader>
     <CardContent>
       <div className="space-y-2">
-        {candidate.candidate_first_name ||
-          (candidate.candidate_last_name && (
-            <div>
-              <Label>Name</Label>
-              <div className="font-medium">{`${candidate.candidate_first_name} ${candidate.candidate_last_name}`}</div>
+        {(candidate.candidate_first_name || candidate.candidate_last_name) && (
+          <div>
+            <Label>Name</Label>
+            <div className="font-medium">
+              {`${candidate.candidate_first_name || ""} ${
+                candidate.candidate_last_name || ""
+              }`}
             </div>
-          ))}
+          </div>
+        )}
         {candidate.candidate_desc && (
           <div>
             <Label>Description</Label>

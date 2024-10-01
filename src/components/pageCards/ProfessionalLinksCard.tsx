@@ -1,6 +1,6 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Linkedin, Github, FileText } from "lucide-react";
-import { CandidateWithId } from "../client/types.gen";
+import { CandidateWithId } from "../../client/types.gen";
 
 interface ProfessionalLinksCardProps {
   candidate: CandidateWithId;

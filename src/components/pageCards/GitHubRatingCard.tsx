@@ -1,16 +1,16 @@
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { Progress } from "./ui/progress";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Progress } from "../ui/progress";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./ui/accordion";
-import { Skeleton } from "./ui/skeleton";
-import { CandidateWithId } from "../client/types.gen";
-import { Label } from "./ui/label";
+} from "../ui/accordion";
+import { Skeleton } from "../ui/skeleton";
+import { CandidateWithId } from "../../client/types.gen";
+import { Label } from "../ui/label";
 interface GitHubRatingCardProps {
   candidate: CandidateWithId;
   isGeneratingGitHubRating: boolean;
