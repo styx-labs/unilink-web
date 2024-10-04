@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-
+import { checkURL } from "../../lib/utils";
 const RequiredLabel = ({
   htmlFor,
   children,
@@ -229,7 +229,7 @@ export function CandidateForm({
         />
         {formData.resume && (
           <a
-            href={formData.resume}
+            href={checkURL(formData.resume)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-blue-500"

@@ -5,7 +5,7 @@ import { CandidateForm } from "./CandidateForm";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useCandidates } from "../../hooks/useCandidates";
 import { Loader } from "../../components/ui/loader";
-
+import { checkURL } from "../../lib/utils";
 function CandidateList() {
   const {
     candidates,
@@ -55,7 +55,7 @@ function CandidateList() {
                   render: (value) =>
                     value ? (
                       <a
-                        href={value}
+                        href={checkURL(value)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
@@ -72,7 +72,7 @@ function CandidateList() {
                   render: (value) =>
                     value ? (
                       <a
-                        href={value}
+                        href={checkURL(value)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
@@ -89,7 +89,7 @@ function CandidateList() {
                   render: (value) =>
                     value ? (
                       <a
-                        href={value}
+                        href={checkURL(value)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
@@ -106,7 +106,7 @@ function CandidateList() {
                   render: (value) =>
                     value ? (
                       <a
-                        href={value}
+                        href={checkURL(value)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"

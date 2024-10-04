@@ -56,7 +56,9 @@ export const GitHubRatingCard: React.FC<GitHubRatingCardProps> = ({
                 className="w-full"
               />
               <span className="text-2xl font-bold">
-                {(candidate.github_rating.overall_score as number).toFixed(2)}
+                {(
+                  (candidate.github_rating.overall_score as number) || 0
+                ).toFixed(2)}
               </span>
             </div>
           </div>

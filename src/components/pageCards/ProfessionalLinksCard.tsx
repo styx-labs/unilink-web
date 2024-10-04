@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Linkedin, Github, FileText } from "lucide-react";
 import { CandidateWithId } from "../../client/types.gen";
-
+import { checkURL } from "../../lib/utils";
 interface ProfessionalLinksCardProps {
   candidate: CandidateWithId;
 }
@@ -19,7 +19,7 @@ export const ProfessionalLinksCard: React.FC<ProfessionalLinksCardProps> = ({
           <div className="flex items-center space-x-2">
             <Linkedin className="h-4 w-4" />
             <a
-              href={candidate.linkedin}
+              href={checkURL(candidate.linkedin)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
@@ -32,7 +32,7 @@ export const ProfessionalLinksCard: React.FC<ProfessionalLinksCardProps> = ({
           <div className="flex items-center space-x-2">
             <Github className="h-4 w-4" />
             <a
-              href={candidate.github}
+              href={checkURL(candidate.github)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
@@ -45,7 +45,7 @@ export const ProfessionalLinksCard: React.FC<ProfessionalLinksCardProps> = ({
           <div className="flex items-center space-x-2">
             <FileText className="h-4 w-4" />
             <a
-              href={candidate.portfolio}
+              href={checkURL(candidate.portfolio)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
@@ -58,7 +58,7 @@ export const ProfessionalLinksCard: React.FC<ProfessionalLinksCardProps> = ({
           <div className="flex items-center space-x-2">
             <FileText className="h-4 w-4" />
             <a
-              href={candidate.resume}
+              href={checkURL(candidate.resume)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
