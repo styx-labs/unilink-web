@@ -87,7 +87,7 @@ function CandidateRoleExternal() {
             {role?.meeting_link ? (
               submittedCandidate && (
                 <>
-                  <h2 className="text-xl font-semibold mb-2">
+                  <h2 className="text-xl font-semibold mb-6 text-center">
                     Thank you for submitting your information. Please schedule
                     your interview below.
                   </h2>
@@ -103,7 +103,9 @@ function CandidateRoleExternal() {
                         optionValue: submittedCandidate.phone_number || "",
                       }),
                       email: submittedCandidate.email || "",
-                      github: submittedCandidate.github || "",
+                      ...(submittedCandidate.github && {
+                        github: submittedCandidate.github,
+                      }),
                       resume: submittedCandidate.resume || "",
                     }}
                   />
