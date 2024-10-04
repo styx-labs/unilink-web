@@ -63,11 +63,12 @@ export function CandidateForm({
   ];
 
   useEffect(() => {
-    setFormData(candidate);
+    if (internal) {
+      setFormData(candidate);
+    }
   }, [candidate]);
 
   const handleSubmit = async () => {
-    // Add phone number validation
     if (!formData.phone_number || !isValidPhoneNumber(formData.phone_number)) {
       alert("Please enter a valid phone number");
       return;
