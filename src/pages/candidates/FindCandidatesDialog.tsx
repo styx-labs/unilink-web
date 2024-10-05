@@ -1,81 +1,62 @@
-import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import {
+  CandidateWithHighlights,
+} from "../../client/types.gen";
+import DataTable from "../../components/DataTable";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { FindCandidatesBody } from "../../client/types.gen";
+import { Loader } from "../../components/ui/loader";
+import { Markdown } from "../../components/Markdown";
+
 
 interface FindCandidatesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (findCandidatesBody: FindCandidatesBody) => void;
+  findCandidates: () => void;
+  addExistingCandidates: (existingCandidates: string[]) => void;
+  recommendedCandidates: CandidateWithHighlights[];
 }
 
-export function FindCandidatesDialog({ open, onOpenChange, onSubmit }: FindCandidatesDialogProps) {
-  const [numCandidates, setNumCandidates] = useState<number>(10);
-  const [graduationYears, setGraduationYears] = useState<string[]>([]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ n: numCandidates, grad_years: graduationYears });
-    onOpenChange(false);
-  };
-
-  const addGraduationYear = () => {
-    setGraduationYears([...graduationYears, ""]);
-  };
-
-  const updateGraduationYear = (index: number, value: string) => {
-    const updatedYears = [...graduationYears];
-    updatedYears[index] = value;
-    setGraduationYears(updatedYears);
-  };
-
-  const removeGraduationYear = (index: number) => {
-    setGraduationYears(graduationYears.filter((_, i) => i !== index));
-  };
-
+export function FindCandidatesDialog({
+  open,
+  onOpenChange,
+  findCandidates,
+  addExistingCandidates,
+  recommendedCandidates
+}: FindCandidatesDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Find Candidates</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="numCandidates" className="block text-sm font-medium text-gray-700">
-              Number of Candidates
-            </label>
-            <Input
-              type="number"
-              id="numCandidates"
-              value={numCandidates}
-              onChange={(e) => setNumCandidates(parseInt(e.target.value))}
-              min={1}
-              required
+      <DialogContent className="w-[80vw] max-w-[1000px]">
+        <DialogTitle>Recommended Candidates</DialogTitle>
+        <div className="flex justify-end mb-4">
+          <Button onClick={findCandidates}>Refresh</Button>
+        </div>
+        <div
+          className="flex-grow overflow-auto"
+          style={{ height: "calc(80vh - 40px)" }}
+          id="scrollableDivModal"
+        >
+          {recommendedCandidates.length > 0 ? (
+            <DataTable
+              columns={[
+                { key: "candidate_first_name", label: "First Name" },
+                { key: "candidate_last_name", label: "Last Name" },
+                { key: "highlights", label: "Highlights", render: (value) => <div className="markdown-content"><Markdown content={value} /></div> },
+                { key: "grad_year", label: "Graduation Year", render: (value) => value || "" },
+                { key: "linkedin", label: "LinkedIn", render: (value) => value ? <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">LinkedIn</a> : "" },
+              ]}
+              data={recommendedCandidates}
+              idField="candidate_id"
+              onAdd={(candidateId) => {
+                addExistingCandidates([candidateId]);
+                recommendedCandidates.splice(recommendedCandidates.findIndex(c => c.candidate_id === candidateId), 1);
+              }}
             />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Graduation Years</label>
-            {graduationYears.map((year, index) => (
-              <div key={index} className="flex items-center mt-2">
-                <Input
-                  type="text"
-                  value={year}
-                  onChange={(e) => updateGraduationYear(index, e.target.value)}
-                  placeholder="e.g., 2023"
-                  className="mr-2"
-                />
-                <Button type="button" onClick={() => removeGraduationYear(index)} variant="destructive">
-                  Remove
-                </Button>
-              </div>
-            ))}
-            <Button type="button" onClick={addGraduationYear} className="mt-2">
-              Add Graduation Year
-            </Button>
-          </div>
-          <Button type="submit">Find Candidates</Button>
-        </form>
+          ) : (
+            <div className="flex justify-center items-center h-full">
+              <Loader size={48} />
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

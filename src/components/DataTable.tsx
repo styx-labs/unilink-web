@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Button } from "./ui/button";
-import { ChevronRight, Pencil, Trash2 } from "lucide-react";
+import { ChevronRight, Pencil, Trash2, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
 
@@ -23,17 +23,20 @@ interface DataTableProps {
   data: any[];
   onEdit?: (item: any) => void;
   onDelete?: (id: string) => void;
-  detailsPath: (item: any) => string;
+  onAdd?: (id: string) => void;
+  detailsPath?: (item: any) => string;
   idField?: string;
   isLoading?: boolean;
   className?: string;
 }
+
 
 const DataTable: React.FC<DataTableProps> = ({
   columns,
   data,
   onEdit,
   onDelete,
+  onAdd,
   detailsPath,
   idField = "id",
   className,
@@ -60,6 +63,15 @@ const DataTable: React.FC<DataTableProps> = ({
             ))}
             <TableCell>
               <div className="flex space-x-2">
+                {onAdd && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onAdd(item[idField])}
+                  >
+                    <CirclePlus className="h-4 w-4 text-blue-500" />
+                  </Button>
+                )}
                 {onEdit && (
                   <Button
                     variant="ghost"
@@ -78,11 +90,13 @@ const DataTable: React.FC<DataTableProps> = ({
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>
                 )}
-                <Link to={detailsPath(item)}>
-                  <Button variant="ghost" size="sm">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </Link>
+                {detailsPath && (
+                  <Link to={detailsPath(item)}>
+                    <Button variant="ghost" size="sm">
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                )}
               </div>
             </TableCell>
           </TableRow>

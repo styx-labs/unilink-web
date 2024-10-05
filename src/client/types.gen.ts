@@ -130,6 +130,33 @@ export type CandidateUpdate = {
     updated_at?: string;
 };
 
+export type CandidateWithHighlights = {
+    candidate_first_name: string;
+    candidate_last_name: string;
+    candidate_desc: string;
+    linkedin: string;
+    resume: string;
+    email: string;
+    phone_number: string;
+    github: string;
+    requires_sponsorship?: (boolean | null);
+    authorized_us?: (boolean | null);
+    github_rating?: ({
+    [key: string]: unknown;
+} | null);
+    portfolio?: (string | null);
+    portfolio_rating?: ({
+    [key: string]: unknown;
+} | null);
+    grad_year?: (string | null);
+    grad_month?: (string | null);
+    created_at: string;
+    updated_at: string;
+    generated_desc: string;
+    candidate_id: string;
+    highlights: string;
+};
+
 export type CandidateWithId = {
     candidate_first_name: string;
     candidate_last_name: string;
@@ -216,11 +243,6 @@ export type CompanyWithId = {
 export type CriteriaScoringItem = {
     criteria_name: string;
     score: number;
-};
-
-export type FindCandidatesBody = {
-    n: number;
-    grad_years?: (Array<(string)> | null);
 };
 
 export type HTTPValidationError = {
@@ -589,14 +611,13 @@ export type DeleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandid
 export type DeleteCandidateEndpointCompaniesCompanyIdRolesRoleIdCandidatesCandidateIdDeleteError = (HTTPValidationError);
 
 export type FindCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPostData = {
-    body: FindCandidatesBody;
     path: {
         company_id: string;
         role_id: string;
     };
 };
 
-export type FindCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPostResponse = ((Array<CandidateRole> | null));
+export type FindCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPostResponse = ((Array<CandidateWithHighlights> | null));
 
 export type FindCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPostError = (HTTPValidationError);
 

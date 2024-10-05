@@ -43,14 +43,15 @@ function CandidateRoleList() {
     loading,
     hasMore,
     allCandidatesHasMore,
+    recommendedCandidates,
     deleteCandidate,
     addExistingCandidates,
-    findCandidates,
     getCandidateDetails,
     addCandidate,
     loadMore,
     loadMoreAllCandidates,
     updateCandidateInRole,
+    findCandidates,
   } = useCandidateRoles();
   const { updateCandidate } = useCandidates();
   const { getRole } = useRoles();
@@ -58,6 +59,8 @@ function CandidateRoleList() {
   const [isAddExistingDialogOpen, setIsAddExistingDialogOpen] =
     useState<boolean>(false);
   const [isFindCandidatesModalOpen, setIsFindCandidatesModalOpen] =
+    useState<boolean>(false);
+  const [hasFetchedRecommendedCandidates, setHasFetchedRecommendedCandidates] = 
     useState<boolean>(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [formData, setFormData] = useState<{
@@ -71,6 +74,13 @@ function CandidateRoleList() {
   });
 
   const { companyId, roleId } = useParams();
+
+  useEffect(() => {
+    if (isFindCandidatesModalOpen && !hasFetchedRecommendedCandidates) {
+      findCandidates();
+      setHasFetchedRecommendedCandidates(true);
+    }
+  }, [isFindCandidatesModalOpen]);
 
   useEffect(() => {
     if (roleId) {
@@ -222,7 +232,9 @@ function CandidateRoleList() {
       <FindCandidatesDialog
         open={isFindCandidatesModalOpen}
         onOpenChange={setIsFindCandidatesModalOpen}
-        onSubmit={findCandidates}
+        findCandidates={findCandidates}
+        addExistingCandidates={addExistingCandidates}
+        recommendedCandidates={recommendedCandidates}
       />
 
       <CandidateForm
