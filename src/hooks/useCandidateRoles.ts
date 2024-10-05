@@ -4,8 +4,8 @@ import {
   CandidateRole,
   CandidateWithId,
   CandidateCreate,
-  FindCandidatesBody,
   CandidateRoleUpdate,
+  CandidateWithHighlights,
 } from "../client/types.gen";
 import {
   listCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesGet,
@@ -33,6 +33,7 @@ export const useCandidateRoles = () => {
   const [allCandidatesHasMore, setAllCandidatesHasMore] =
     useState<boolean>(true);
   const { companyId, roleId } = useParams();
+  const [recommendedCandidates, setRecommendedCandidates] = useState<CandidateWithHighlights[]>([]);
 
   useEffect(() => {
     fetchCandidates();
@@ -126,22 +127,6 @@ export const useCandidateRoles = () => {
 
     if (errors.length > 0) {
       console.error("Error adding existing candidates:", errors);
-    } else {
-      fetchCandidates();
-    }
-  };
-
-  const findCandidates = async (findCandidatesBody: FindCandidatesBody) => {
-    const { error } =
-      await findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost(
-        {
-          path: { company_id: companyId || "", role_id: roleId || "" },
-          body: findCandidatesBody,
-        }
-      );
-
-    if (error) {
-      console.error("Error finding candidates:", error);
     } else {
       fetchCandidates();
     }
@@ -272,15 +257,32 @@ export const useCandidateRoles = () => {
     setCandidates(updatedCandidates);
   };
 
+  const findCandidates = async () => {
+    setRecommendedCandidates([]);
+    const { data, error } =
+      await findCandidatesEndpointCompaniesCompanyIdRolesRoleIdCandidatesFindPost(
+        {
+          path: { company_id: companyId || "", role_id: roleId || "" }
+        }
+      );
+
+    if (error) {
+      console.error("Error finding candidates:", error);
+      return null;
+    } else {
+      setRecommendedCandidates(data!);
+    }
+  };
+
   return {
     candidates,
     allCandidates,
     loading,
     hasMore,
     allCandidatesHasMore,
+    recommendedCandidates,
     deleteCandidate,
     addExistingCandidates,
-    findCandidates,
     getCandidateDetails,
     addCandidate,
     updateCandidateRole,
@@ -289,5 +291,6 @@ export const useCandidateRoles = () => {
     getCandidateRole,
     generateCandidateRoleDescription,
     updateCandidateInRole,
+    findCandidates,
   };
 };

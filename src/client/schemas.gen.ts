@@ -630,6 +630,145 @@ export const CandidateUpdateSchema = {
     title: 'CandidateUpdate'
 } as const;
 
+export const CandidateWithHighlightsSchema = {
+    properties: {
+        candidate_first_name: {
+            type: 'string',
+            title: 'Candidate First Name'
+        },
+        candidate_last_name: {
+            type: 'string',
+            title: 'Candidate Last Name'
+        },
+        candidate_desc: {
+            type: 'string',
+            title: 'Candidate Desc'
+        },
+        linkedin: {
+            type: 'string',
+            title: 'Linkedin'
+        },
+        resume: {
+            type: 'string',
+            title: 'Resume'
+        },
+        email: {
+            type: 'string',
+            title: 'Email'
+        },
+        phone_number: {
+            type: 'string',
+            title: 'Phone Number'
+        },
+        github: {
+            type: 'string',
+            title: 'Github'
+        },
+        requires_sponsorship: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Requires Sponsorship'
+        },
+        authorized_us: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Authorized Us'
+        },
+        github_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Github Rating'
+        },
+        portfolio: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio'
+        },
+        portfolio_rating: {
+            anyOf: [
+                {
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Portfolio Rating'
+        },
+        grad_year: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Grad Year'
+        },
+        grad_month: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Grad Month'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        },
+        updated_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Updated At'
+        },
+        generated_desc: {
+            type: 'string',
+            title: 'Generated Desc'
+        },
+        candidate_id: {
+            type: 'string',
+            title: 'Candidate Id'
+        },
+        highlights: {
+            type: 'string',
+            title: 'Highlights'
+        }
+    },
+    type: 'object',
+    required: ['candidate_first_name', 'candidate_last_name', 'candidate_desc', 'linkedin', 'resume', 'email', 'phone_number', 'github', 'created_at', 'updated_at', 'generated_desc', 'candidate_id', 'highlights'],
+    title: 'CandidateWithHighlights'
+} as const;
+
 export const CandidateWithIdSchema = {
     properties: {
         candidate_first_name: {
@@ -1031,32 +1170,6 @@ export const CriteriaScoringItemSchema = {
     type: 'object',
     required: ['criteria_name', 'score'],
     title: 'CriteriaScoringItem'
-} as const;
-
-export const FindCandidatesBodySchema = {
-    properties: {
-        n: {
-            type: 'integer',
-            title: 'N'
-        },
-        grad_years: {
-            anyOf: [
-                {
-                    items: {
-                        type: 'string'
-                    },
-                    type: 'array'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Grad Years'
-        }
-    },
-    type: 'object',
-    required: ['n'],
-    title: 'FindCandidatesBody'
 } as const;
 
 export const HTTPValidationErrorSchema = {
