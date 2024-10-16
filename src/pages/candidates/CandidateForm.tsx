@@ -69,7 +69,7 @@ export function CandidateForm({
   }, [candidate]);
 
   const handleSubmit = async () => {
-    if (!formData.phone_number || !isValidPhoneNumber(formData.phone_number)) {
+    if ((!internal && !formData.phone_number) || (formData.phone_number && !isValidPhoneNumber(formData.phone_number))) {
       alert("Please enter a valid phone number");
       return;
     }
@@ -158,11 +158,9 @@ export function CandidateForm({
           defaultCountry="US"
           required={!internal}
           error={
-            formData.phone_number
-              ? isValidPhoneNumber(formData.phone_number)
-                ? undefined
-                : "Invalid phone number"
-              : "Phone number required"
+            formData.phone_number && !isValidPhoneNumber(formData.phone_number)
+              ? "Invalid phone number"
+              : undefined
           }
         />
       </div>
